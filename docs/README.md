@@ -1,2 +1,2 @@
-# ai Documentation
+# Cogiter Documentation
 
