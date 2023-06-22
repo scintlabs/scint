@@ -1,2 +1,1 @@
-# Cogiter Documentation
-
+# Buftype Documentation

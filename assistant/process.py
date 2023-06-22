@@ -1,6 +1,6 @@
 import json
-from api.openai import openai_chat
-from cogiter.context import Context
+from .api.openai import openai_chat
+from .context import Context
 
 logit_bias = {1102: -100, 4717: -100, 7664: -100}
 

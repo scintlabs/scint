@@ -1,4 +1,4 @@
-* Cogiter version:
+* buftype version:
 * Python version:
 * Operating System:
 

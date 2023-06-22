@@ -1,6 +1,6 @@
 from rich.console import Console
-from cogiter.interfaces.keanu import system_init as keanu_init
-from cogiter.interface import Interface
+from buftype.interfaces.keanu import system_init as keanu_init
+from buftype.interface import Interface
 
 exit_commands = ["/quit"]
 

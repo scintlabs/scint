@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/kaechle/cogiter/issues.
+Report bugs at https://github.com/kaechle/buftype/issues.
 
 If you are reporting a bug, please include:
 
@@ -38,14 +38,14 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-Cogiter could always use more documentation, whether as part of the
-official Cogiter docs, in docstrings, or even on the web in blog posts,
+buftype could always use more documentation, whether as part of the
+official buftype docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/kaechle/cogiter/issues.
+The best way to send feedback is to file an issue at https://github.com/kaechle/buftype/issues.
 
 If you are proposing a feature:
 
@@ -57,12 +57,12 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `cogiter` for local development.
+Ready to contribute? Here's how to set up `buftype` for local development.
 
-#. Fork the `cogiter` repo on GitHub.
+#. Fork the `buftype` repo on GitHub.
 #. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/cogiter.git
+    $ git clone git@github.com:your_name_here/buftype.git
 
 #. Ensure `poetry is installed`_.
 #. Install dependencies and start your virtualenv::
@@ -100,7 +100,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 3.5, 3.6, 3.7 and 3.8, and for PyPy. Check
-   https://travis-ci.com/kaechle/cogiter/pull_requests
+   https://travis-ci.com/kaechle/buftype/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 Tips
@@ -108,7 +108,7 @@ Tips
 
 To run a subset of tests::
 
-$ pytest tests.test_cogiter
+$ pytest tests.test_buftype
 
 
 Deploying

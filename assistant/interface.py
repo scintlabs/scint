@@ -1,8 +1,8 @@
 import re
 import io
 import contextlib
-from api.openai import openai_chat
-from cogiter.process import Process
+from .api.openai import openai_chat
+from .process import Process
 from rich.console import Console
 from rich.markdown import Markdown
 

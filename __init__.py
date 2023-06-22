@@ -1,4 +1,4 @@
-"""Top-level package for Cogiter."""
+"""Top-level package for buftype."""
 
 __author__ = """Tim Kaechle"""
 __email__ = "timothy.kaechle@me.com"

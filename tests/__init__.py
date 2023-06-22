@@ -1,1 +1,1 @@
-"""Unit test package for cogiter."""
+"""Unit test package for buftype."""
