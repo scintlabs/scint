@@ -6,13 +6,15 @@ logit_bias = {1102: -100, 4717: -100, 7664: -100}
 
 
 class Process:
+    """main process"""
+
     def __init__(self, system_init, functions=None, config=None, context=True):
         self.context = Context()
         self.messages = []
         self.messages.append({"role": "system", "content": system_init})
         self.functions = functions
         self.config = config
-        self.config = {  # TODO: fix the config parameter
+        self.config = {  # fix the config parameter
             "model": "gpt-4-0613",
             "temperature": 1.8,
             "top_p": 0.5,
@@ -25,7 +27,7 @@ class Process:
     def nth_shot(self, message, role="user"):
         self.messages.append({"role": role, "content": message})
 
-    def eval_function(self, function):  # TODO: move out of process class?
+    def eval_function(self, function):  # move out of process class?
         self.function_call = function["function_call"]
         self.function_name = self.function_call["name"]
         self.function_arguments = self.function_call["arguments"]
