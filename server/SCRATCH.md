@@ -1,5 +1,21 @@
 # Scratchpad
 
+# Context: overview
+
+          Self + Curiosity \
+Heuristic                   〉---> Observation / Reflection
+       Environment + Event /
+
+# Env
+
+
+Project
+Task list
+Files
+Application access
+Actions
+〉
+
 ## Search engines
 
 The schema of a search engine can be pretty complex, but it fundamentally centers on storing, indexing, and retrieving data efficiently and accurately. Let's break down the general conceptual components:

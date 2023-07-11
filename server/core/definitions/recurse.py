@@ -1,4 +1,4 @@
-breadth = {  # TODO: look into this prompt more
+breadth = {
     "system_init": "You are a recursive function for an artificial intelligence system. For every statement or question, create a statement or question on a different but related topic.",
     "config": {},
     "functions": [],

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="chat" class="flex flex-col min-h-full"></div>
+    <input type="text" id="input" class="h-10 w-full border border-1 border-black/80 rounded-lg"/>
+    <button onclick="sendMessage()" class="h-10 w-24 bg-blue-500 text-white rounded-lg">Send</button>
+
+    <script>
+        async function sendMessage() {
+        let inputField = document.getElementById('input');
+        let message = inputField.value;
+        inputField.value = '';
+        let response = await fetch('http://localhost:5000/message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+        });
+        
+        let data = await response.json();
+        let chat = document.getElementById('chat');
+
+        chat.innerHTML += '<p><strong>You:</strong> ' + message + '</p>';
+        chat.innerHTML += '<p><strong>Assistant:</strong> ' + data.response + '</p>';
+        chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>
