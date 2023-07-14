@@ -1,0 +1,11 @@
+
+## Search engines
+
+The schema of a search engine can be pretty complex, but it fundamentally centers on storing, indexing, and retrieving data efficiently and accurately. Let's break down the general conceptual components:
+
+- **Crawling:** This is the process of collecting documents or webpages from the internet. The crawler, also known as a spider or bot, visits websites and downloads their content for further processing. The schema here might include fields for the URL of the webpage, the date and time it was last visited, its relationship to other pages (links), etc.
+- **Indexing:** Once the pages are crawled, they need to be indexed. This involves processing the crawled data and creating a large data structure (the index) that allows for fast full-text searches. An indexing schema might include fields for every unique word (called a token) found in the documents, a list of documents each word appears in, the frequency of each word in each document, etc.
+- **Ranking:** Ranking determines the order in which results are presented to the user based on a specific query. The ranking algorithm often relies on many factors, including the relevance of a webpage to the query, the popularity of the webpage, the user's personalization settings, etc. The schema here might include fields for each document's relevance score, its popularity score, etc.
+- **Query Processing:** This part of the schema deals with handling user queries. It needs to parse and understand the query, interact with the index to find relevant documents, and then use the ranking algorithm to order them. The schema might include fields for the original user query, the parsed query, the final list of results, etc.
+
+Keep in mind that each of these components might actually be made up of several smaller databases, services, or microservices, each with their own schemas. Also, different search engines might use very different schemas depending on their specific needs and the technologies they're built on. For example, a search engine that specializes in academic papers might have a schema that includes fields for authors, citations, and publication dates, while a search engine for e-commerce might have fields for product categories, prices, and customer reviews.
