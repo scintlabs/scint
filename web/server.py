@@ -2,7 +2,7 @@ import os
 import sys
 import signal
 
-sys.path.insert(0, "/Users/kaechle/Developer/projects/scint")
+sys.path.insert(0, "/Users/kaechle/Developer/projects-active/scint")
 from flask import Flask, request, jsonify, send_from_directory
 from core.assistant import Assistant
 from flask_cors import CORS, cross_origin

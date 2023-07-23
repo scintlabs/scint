@@ -1,6 +1,6 @@
 functions = [
     {
-        "name": "assistant",
+        "name": "write_code",
         "description": "Use this function to write code and save it to a destination.",
         "parameters": {
             "type": "object",

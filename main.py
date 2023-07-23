@@ -1,14 +1,14 @@
 import sys
 import signal
 import subprocess
-import assistant
+from core.assistant import Assistant
 from rich.console import Console
 
 
 console = Console()
 exit_commands = ["/quit"]
 keanu = "keanu"
-assistant = assistant.Assistant(keanu)
+assistant = Assistant(keanu)
 
 
 def input():
@@ -17,7 +17,7 @@ def input():
 
 
 def save_and_exit(signal, frame):
-    print("Saving the assistant's state.")
+    print("Saving and exiting gracefully.")
     assistant.save()
     sys.exit(0)
 
@@ -27,25 +27,28 @@ signal.signal(signal.SIGTERM, save_and_exit)
 
 
 def main():
-    message = input()
-    while message not in exit_commands:
-        if message.startswith("/cmd"):
-            command = message[5:]
+    user_message = input()
+
+    while user_message not in exit_commands:
+        if user_message.startswith("/cmd"):
+            command = user_message[5:]
             process = subprocess.Popen(
                 command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
             output, error = process.communicate()
             output_text = output.decode()
             error_text = error.decode()
+
             if output_text:
                 console.print(f"\n{output_text}\n")
-                response = assistant.chat(output_text)
+                # response = assistant.chat(output_text)
                 pass
             elif error_text:
                 console.print(f"\n{error_text}\n")
-                response = assistant.chat(output_text)
+                # response = assistant.chat(output_text)
                 pass
-        response = assistant.chat(message)
+
+        response = assistant.chat(user_message)
         console.print(f"\n❯❯ {response} \n")
         message = input()
 
