@@ -4,14 +4,14 @@ import signal
 
 sys.path.insert(0, "/Users/kaechle/Developer/projects-active/scint")
 from flask import Flask, request, jsonify, send_from_directory
-from core.assistant import Assistant
+from core.assistant import Collaborator
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__, static_folder="web")
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
 keanu = "keanu"
-assistant = Assistant(keanu)
+assistant = Collaborator(keanu)
 
 
 def save_and_exit(signal, frame):

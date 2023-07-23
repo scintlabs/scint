@@ -1,21 +1,21 @@
 import json
-from core.context import Context
 from core.state import State
+from core.context import Context, ContextObserver
+from core.environment import Environment
 from core.providers.openai import gpt
-from core.capabilities.functions import functions
+
 
 functions = functions
 
 
-class Assistant:
-    def __init__(self, name):
-        self.state = State(name)
-        self.identity = self.state.identity_constructor()
-        self.functions = functions
-        self.context = Context(name)
+class Collaborator:
+    def __init__(self):
+        self.state = State()
+        self.environment = Environment()
+        self.context = Context()
 
     def chat(self, user_message):
-        self.messages = [{"role": "system", "content": self.identity}]
+        self.messages = [{"role": "system", "content": self.core}]
         self.messages.append({"role": "user", "content": user_message})
         response = gpt(self.messages, self.functions)
 

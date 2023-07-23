@@ -1,14 +1,13 @@
 import sys
 import signal
 import subprocess
-from core.assistant import Assistant
+from core.collaborator import Collaborator
 from rich.console import Console
 
 
 console = Console()
 exit_commands = ["/quit"]
-keanu = "keanu"
-assistant = Assistant(keanu)
+collaborator = Collaborator()
 
 
 def input():
@@ -18,7 +17,7 @@ def input():
 
 def save_and_exit(signal, frame):
     print("Saving and exiting gracefully.")
-    assistant.save()
+    collaborator.save()
     sys.exit(0)
 
 
@@ -41,14 +40,14 @@ def main():
 
             if output_text:
                 console.print(f"\n{output_text}\n")
-                # response = assistant.chat(output_text)
+                # response = collaborator.chat(output_text)
                 pass
             elif error_text:
                 console.print(f"\n{error_text}\n")
-                # response = assistant.chat(output_text)
+                # response = collaborator.chat(output_text)
                 pass
 
-        response = assistant.chat(user_message)
+        response = collaborator.chat(user_message)
         console.print(f"\n❯❯ {response} \n")
         message = input()
 
