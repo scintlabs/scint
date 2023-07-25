@@ -1,8 +1,9 @@
 import json
-from core.state import State
-from core.context import Context, ContextObserver
-from core.environment import Environment
 from core.providers.openai import gpt
+from core.state import State
+from core.context import Context
+from core.environment import Environment
+from core.functions import functions
 
 
 functions = functions
@@ -11,11 +12,15 @@ functions = functions
 class Collaborator:
     def __init__(self):
         self.state = State()
-        self.environment = Environment()
+        self.env = Environment()
         self.context = Context()
+        self.functions = functions
+        self.messages = []
 
     def chat(self, user_message):
-        self.messages = [{"role": "system", "content": self.core}]
+        self.core = self.state.core()
+        self.messages.append({"role": "system", "content": self.core})
+        self.messages.append({"role": "system", "content": self.env.loadout})
         self.messages.append({"role": "user", "content": user_message})
         response = gpt(self.messages, self.functions)
 
@@ -24,26 +29,21 @@ class Collaborator:
             and response["choices"][0]["message"]["function_call"] is not None
         ):
             function = response["choices"][0]["message"]["function_call"]
-            self.eval_function(function)
-
         if (
             "content" in response["choices"][0]["message"]
             and response["choices"][0]["message"]["content"] is not None
         ):
             assistant_message = response["choices"][0]["message"]["content"]
             self.messages.append({"role": "assistant", "content": assistant_message})
-            return assistant_message
+            function_return = self.eval_function(function)
+            return assistant_message, function_return
 
     def eval_function(self, function):
         function_name = function["name"]
         function_arguments = function["arguments"]
         data = json.loads(function_arguments)
-        code = data["code"]
-        try:
-            result = exec(code)
-            self.messages.append({"role": "system", "content": result})
-        except Exception as e:
-            print(f"{e}")
+        content = data["content"]
+        return content
 
         if data.get("function_call"):
             self.eval_function(data)

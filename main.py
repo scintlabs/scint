@@ -17,7 +17,7 @@ def input():
 
 def save_and_exit(signal, frame):
     print("Saving and exiting gracefully.")
-    collaborator.save()
+    collaborator.state.save()
     sys.exit(0)
 
 
@@ -49,7 +49,7 @@ def main():
 
         response = collaborator.chat(user_message)
         console.print(f"\n❯❯ {response} \n")
-        message = input()
+        user_message = input()
 
 
 if __name__ == "__main__":

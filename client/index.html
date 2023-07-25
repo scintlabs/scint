@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html
+  class="h-screen bg-[#1f1f1f] w-screen max-h-screen max-w-screen overscroll-none"
+>
+  <head>
+    <title>Scint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"
+    ></script>
+
+    <meta theme-color="#1f1f1f" />
+  </head>
+
+  <body class="flex flex-row h-full w-full">
+    <div
+      :class="{ 'opacity-0 blur-md transition-all linear duration-1000': isFocused, 'revert transition-all linear duration-100': !isFocused  }"
+      class="basis-[20%] overflow-auto pl-8 pr-8"
+    >
+      <h2 class="text-neutral-500 mb-3 font-medium text-md text-neutral-400">
+        Files
+      </h2>
+
+      <div class="grid grid-cols-2 gap-2 mb-8">
+        <div
+          class="flex items-end h-28 w-20 mx-auto bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 w-20 mx-auto bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 w-20 mx-auto bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 w-20 mx-auto bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 w-20 mx-auto bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 w-20 mx-auto bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+      </div>
+      <h2
+        class="text-neutral-500 mb-3 mt-2 font-medium text-md text-neutral-400"
+      >
+        Snippets
+      </h2>
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <div
+          class="flex items-end h-28 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-28 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+      </div>
+
+      <h2 class="mb-3 font-medium text-md text-neutral-400">Links</h2>
+      <div class="grid grid-cols-2 gap-2 mb-8">
+        <div
+          class="flex items-end h-12 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-12 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-12 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-12 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-12 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+        <div
+          class="flex items-end h-12 bg-neutral-700/20 rounded-md p-2 text-sm text-stone-300"
+        >
+          Thing
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col relative basis-[52%] overflow-auto">
+      <textarea
+        id="editor"
+        class="resize-none w-full grow text-md pt-12 px-12 mx-auto text-neutral-200 placeholder-neutral-700 ring-transparent outline-none bg-[#1f1f1f] filter-none opacity-100"
+        placeholder="Start writing ..."
+      >
+      </textarea>
+    </div>
+
+    <div
+      id="chat"
+      class="basis-[28%] w-full h-full flex flex-col gap-3 overflow-auto pl-2 pr-8 pb-14"
+    ></div>
+
+    <div x-data="dialogue()">
+      <input
+        id="input"
+        type="text"
+        placeholder="Message"
+        autocomplete="off"
+        @keyup.enter="sendMessage()"
+        class="fixed bottom-3 right-[1%] h-8 w-[27%] pl-3 mx-2 text-sm focus:outline-none text-stone-200 placeholder-neutral-700 bg-neutral-800/80 backdrop-blur border border-1 border-neutral-600/50 rounded-2xl"
+      />
+    </div>
+    <script>
+      const editor = document.getElementById("editor");
+      let editorBuffer = editor.value;
+      editorBuffer.value = "";
+      editor.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let data = event.target.value;
+        event.target.value = "";
+        data += editorState(data);
+      });
+
+      const editorState = (data) => {
+        return {
+          async sendMessage(data) {
+            try {
+              let response = await fetch("http://localhost:5000/message", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: data }),
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              } else {
+                let newData = await response.json();
+                return newData;
+              }
+            } catch (error) {
+              console.log(
+                "There was a problem with the fetch operation: " + error.message
+              );
+            }
+          },
+        };
+      };
+
+      function dialogue() {
+        return {
+          async sendMessage() {
+            const inputField = document.getElementById("input");
+            let message = inputField.value;
+            inputField.value = "";
+
+            const chat = document.getElementById("chat");
+            chat.innerHTML +=
+              '<div class="flex flex-col gap-3 bg-[#6c96fc1c] max-w-[80%] border border-1 border-t-gray-200/5 border-x-slate-400/5 border-b-sky-300/10 shadow-sm py-1 px-3 rounded-2xl text-[14px] self-end text-stone-100/90"><p>' +
+              message +
+              "</p></div>";
+
+            try {
+              let response = await fetch("http://localhost:5000/message", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: message }),
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              let data = await response.json();
+              chat.innerHTML +=
+                '<div class="flex flex-col gap-3 bg-[#282828] max-w-[80%] border border-1 border-t-zinc-300/5 border-x-slate-300/5 border-b-blue-300/5 shadow-sm py-1 px-3 rounded-2xl text-[14px] self-start text-stone-200/90"><p>' +
+                data.response +
+                "</p></div>";
+            } catch (error) {
+              console.log(
+                "There was a problem with the fetch operation: " + error.message
+              );
+            }
+          },
+        };
+      }
+    </script>
+  </body>
+</html>

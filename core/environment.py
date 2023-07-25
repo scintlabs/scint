@@ -3,16 +3,34 @@ import json
 import tiktoken
 
 
+chunk_size = 1333
+
+
 class Environment:
     def __init__(self):
         self.cwd = os.getcwd()
-        env_vars = os.environ
-        path = os.getenv("PATH")
-        abs_path = os.path.abspath("relative/path/to/file")
-        dir_name = os.path.dirname("/path/to/file")
-        base_name = os.path.basename("/path/to/file")
+        self.loadout = f"{self.cwd}"
 
-    def file_loader(pathname, chunk_size):
+    def envvars(self):
+        self.env_vars = f"{os.environ}"
+
+    def buffers(self):
+        self.editor_buffer = {}
+
+    @staticmethod
+    def load_state():
+        env = Environment()
+        env_paths = os.getenv("PATH")
+        path = os.path.dirname(
+            "/Users/kaechle/Developer/projects-active/scint/core/state/"
+        )
+        data = env.load_json(f"{path}/data.json")
+        messages = env.load_json(f"{path}/messages.json")
+        context = env.load_json(f"{path}/context.json")
+        methods = env.load_json(f"{path}/methods.json")
+        return data, context, methods, messages
+
+    def project(self, filepath, chunk_size):
         chunked_files = {}
         ignored_dirs = [".git", ".github", "docs"]
         ignored_dirs.append(ignore_dirs)
@@ -43,18 +61,16 @@ class Environment:
                     print(f"Failed to read file {filepath} with error {e}")
         return chunked_files
 
-        @staticmethod
-        def load_json(filepath):
-            with open(filepath, "r") as f:
-                return json.load(f)
+    @staticmethod
+    def load_json(filepath):
+        with open(filepath, "r") as f:
+            return json.load(f)
 
-        @staticmethod
-        def save_json(filepath, data):
-            with open(filepath, "w") as f:
-                json.dump(data, f)
+    @staticmethod
+    def save_json(filepath, data):
+        with open(filepath, "w") as f:
+            json.dump(data, f)
 
-
-chunk_size = 1333
 
 for dirpath, dirnames, filenames in os.walk("/path/to/directory"):
     print(f"Found directory: {dirpath}")
