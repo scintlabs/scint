@@ -1,3 +1,0 @@
-# Scint
-
-## Stateful, Collaborative Intelligence
