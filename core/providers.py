@@ -1,5 +1,6 @@
 import asyncio, os, openai
 from typing import Tuple, Optional, Dict, Any, cast
+from terminusdb_client import WOQLClient
 
 
 async def openai_chat(messages):
@@ -11,11 +12,16 @@ async def openai_chat(messages):
 
     response = await openai.ChatCompletion.acreate(
         model="gpt-4-0613",
-        temperature=1.8,
-        top_p=0.5,
-        frequency_penalty=0.2,
-        presence_penalty=0.2,
+        temperature=1.6,
+        top_p=0.8,
+        frequency_penalty=0.35,
+        presence_penalty=0.35,
         logit_bias=logit_bias,
-        messages=messages
-        )
+        messages=messages,
+    )
     return response
+
+
+team = "scint"
+client = WOQLClient("https://cloud.terminusdb.com/scint/")
+client.connect(team=team, use_token=True)

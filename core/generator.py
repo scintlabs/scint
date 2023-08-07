@@ -2,34 +2,15 @@ import asyncio, json, logging
 from tenacity import retry, stop_after_attempt, wait_fixed
 from typing import Dict, Any, Tuple, List, Optional, cast
 from core.providers import openai_chat
-from core.definitions.prompts import (
-    Prompt,
-    validate,
-    refactor,
-    sort,
-    recurse,
-    diverge,
-)
-from core.definitions.text import (
-    Sentence,
-    Paragraph,
-    Title,
-    Subtitle,
-    Paragraph,
-    Document,
-)
-from core.definitions.functions import generate_function
+from core.prompt import Prompt
+import core.definitions.content as content
+from core.function import generate_function
 
 
 logging.basicConfig(level=logging.ERROR)
 
-
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def generate(
-        message: str,
-        cls,
-        prompts: List[Prompt]
-    ) -> Dict[str, Any]:
+async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]:
     result = ""
     messages = []
     messages.append({"role": "system", "content": message})
@@ -39,7 +20,7 @@ async def generate(
 
     try:
         for prompt in prompts:
-            prompt_content = prompt.content
+            prompt_content = prompt
 
             if len(messages) == 1:
                 messages.insert(0, {"role": "system", "content": prompt_content})
@@ -60,6 +41,7 @@ async def generate(
     except Exception as e:
         logging.error(f"There was a problem contacting the API: {e}")
         raise
+
 
 async def get_response(
     response: Dict[str, Any]
@@ -97,6 +79,7 @@ async def eval_function(function: Dict[str, Any]) -> Optional[str]:
 
     if data.get("function_call"):
         content = await eval_function(data)
+
     return content
 
 

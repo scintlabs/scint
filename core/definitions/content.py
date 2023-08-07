@@ -3,9 +3,7 @@ from typing import NamedTuple, List, Dict
 
 class Sentence:
     content: str
-    properties: object = {
-        "content": {"model": "statement", "type": "string"}
-    }
+    properties: object = {"content": {"model": "statement", "type": "string"}}
 
 
 class Paragraph(NamedTuple):

@@ -1,5 +1,5 @@
 from typing import NamedTuple, List, Dict
-from core.definitions.text import Sentence, Paragraph, Title, Subtitle
+from core.definitions.content import Sentence, Paragraph, Title, Subtitle
 
 
 def generate_function(cls):
