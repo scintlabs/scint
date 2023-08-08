@@ -9,6 +9,7 @@ from core.function import generate_function
 
 logging.basicConfig(level=logging.ERROR)
 
+
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]:
     result = ""
@@ -43,7 +44,41 @@ async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]
         raise
 
 
-async def get_response(
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+async def send(message: str, prompts: List["Prompt"]) -> Dict[str, Any]:
+    result = ""
+    messages = []
+    messages.append({"role": "system", "content": message})
+    iterations = 0
+    tasks = len(prompts)
+    functions = generate_function(cls)
+
+    try:
+        for prompt in prompts:
+            prompt_content = prompt
+
+            if len(messages) == 1:
+                messages.insert(0, {"role": "system", "content": prompt_content})
+            else:
+                messages[0] = {"role": "system", "content": prompt_content}
+
+            response = await openai_chat(messages)
+            data = response["choices"][0]
+            generated = data["message"].get("content")
+            result += f"{generated} \n"
+            messages.append({"role": "system", "content": generated})
+            iterations += 1
+            print(f"Completed task {iterations} of {tasks}\n")
+
+        print(f"{result}\n")
+        return result
+
+    except Exception as e:
+        logging.error(f"There was a problem contacting the API: {e}")
+        raise
+
+
+async def receive(
     response: Dict[str, Any]
 ) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
     message_log = []

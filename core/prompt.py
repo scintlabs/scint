@@ -25,4 +25,4 @@ def load_prompts(prompts: Dict[str, Dict[str, str]]) -> Dict[str, Dict[str, "Pro
     return prompts
 
 
-prompts = load_prompts(prompt_data)
+meta_prompts = load_prompts(prompt_data)

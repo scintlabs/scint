@@ -11,18 +11,6 @@ class Paragraph(NamedTuple):
     sentences: List[str]
 
 
-class Title(NamedTuple):
-    content: str
-
-
-class Subtitle(NamedTuple):
-    content: str
-
-
-class CodeBlock(NamedTuple):
-    content: Dict[str, str]
-
-
 class Function(CodeBlock):
     pass
 

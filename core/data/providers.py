@@ -18,10 +18,12 @@ async def openai_chat(messages):
         presence_penalty=0.35,
         logit_bias=logit_bias,
         messages=messages,
+        functinos=[],
+        Stream=False,
     )
     return response
 
 
-team = "scint"
-client = WOQLClient("https://cloud.terminusdb.com/scint/")
-client.connect(team=team, use_token=True)
+# team = "scint"
+# client = WOQLClient("https://cloud.terminusdb.com/scint/")
+# client.connect(team=team, use_token=True)
