@@ -11,10 +11,6 @@ class Paragraph(NamedTuple):
     sentences: List[str]
 
 
-class Function(CodeBlock):
-    pass
-
-
 class Parameters(NamedTuple):
     content: Dict[str, str]
 

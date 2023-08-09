@@ -1,7 +1,7 @@
 import asyncio, json, logging
 from tenacity import retry, stop_after_attempt, wait_fixed
 from typing import Dict, Any, Tuple, List, Optional, cast
-from core.providers import openai_chat
+from core.data.providers import openai_chat
 from core.prompt import Prompt
 import core.definitions.content as content
 from core.function import generate_function

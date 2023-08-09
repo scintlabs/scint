@@ -18,8 +18,6 @@ async def openai_chat(messages):
         presence_penalty=0.35,
         logit_bias=logit_bias,
         messages=messages,
-        functinos=[],
-        Stream=False,
     )
     return response
 
