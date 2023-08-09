@@ -1,5 +1,5 @@
 from typing import Dict, List, Union, Literal, Optional
-from core.data.prompts import prompt_data
+from core.data.prompts import meta
 
 
 class Prompt:
@@ -25,4 +25,4 @@ def load_prompts(prompts: Dict[str, Dict[str, str]]) -> Dict[str, Dict[str, "Pro
     return prompts
 
 
-meta_prompts = load_prompts(prompt_data)
+meta_prompts = load_prompts(meta)

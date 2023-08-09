@@ -1,9 +1,8 @@
 import asyncio, json, logging
 from tenacity import retry, stop_after_attempt, wait_fixed
-from typing import Dict, Any, Tuple, List, Optional, cast
-from core.providers import openai_chat
+from typing import Dict, Any, Tuple, List, Optional
+from core.data.providers import openai_chat
 from core.prompt import Prompt
-import core.definitions.content as content
 from core.function import generate_function
 
 
@@ -11,13 +10,13 @@ logging.basicConfig(level=logging.ERROR)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]:
-    result = ""
+async def generate(message: str, cls, prompts: List[Prompt]) -> List[Dict]:
+    result = []
     messages = []
     messages.append({"role": "system", "content": message})
     iterations = 0
     tasks = len(prompts)
-    functions = generate_function(cls)
+    # functions = generate_function(cls)
 
     try:
         for prompt in prompts:
@@ -44,38 +43,38 @@ async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]
         raise
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def send(message: str, prompts: List["Prompt"]) -> Dict[str, Any]:
-    result = ""
-    messages = []
-    messages.append({"role": "system", "content": message})
-    iterations = 0
-    tasks = len(prompts)
-    functions = generate_function(cls)
+# @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+# async def send(message: str, prompts: List[Prompt]) -> Dict[List[str], Any]:
+#     """Generator for producing content with functional prompts"""
+#     result = {}
+#     messages = []
+#     messages.append({"role": "system", "content": message})
+#     iterations = 0
+#     tasks = len(prompts)
+#     # functions = generate_function(cls)
 
-    try:
-        for prompt in prompts:
-            prompt_content = prompt
+#     try:
+#         for prompt in prompts:
+#             prompt_content = prompt
 
-            if len(messages) == 1:
-                messages.insert(0, {"role": "system", "content": prompt_content})
-            else:
-                messages[0] = {"role": "system", "content": prompt_content}
+#             if len(messages) == 1:
+#                 messages.insert(0, {"role": "system", "content": prompt_content})
+#             else:
+#                 messages[0] = {"role": "system", "content": prompt_content}
 
-            response = await openai_chat(messages)
-            data = response["choices"][0]
-            generated = data["message"].get("content")
-            result += f"{generated} \n"
-            messages.append({"role": "system", "content": generated})
-            iterations += 1
-            print(f"Completed task {iterations} of {tasks}\n")
+#             response: Dict[str, Any] = await openai_chat(messages)
+#             data = response["choices"][0]
+#             generated = data["message"].get("content")
+#             result.append(f"{generated} \n")
+#             messages.append({"role": "system", "content": generated})
+#             iterations += 1
+#             print(f"Completed task {iterations} of {tasks}\n")
 
-        print(f"{result}\n")
-        return result
+#         return result
 
-    except Exception as e:
-        logging.error(f"There was a problem contacting the API: {e}")
-        raise
+#     except Exception as e:
+#         logging.error(f"There was a problem contacting the API: {e}")
+#         raise
 
 
 async def receive(
@@ -95,7 +94,7 @@ async def receive(
         raise
 
     if function_call is not None:
-        eval_function(function_call)
+        await eval_function(function_call)
         message_log.append(
             {
                 "message": [message_content],
@@ -116,7 +115,3 @@ async def eval_function(function: Dict[str, Any]) -> Optional[str]:
         content = await eval_function(data)
 
     return content
-
-
-async def save_response():
-    message_log.append({"message": [message_content]})

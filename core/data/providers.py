@@ -1,9 +1,9 @@
 import asyncio, os, openai
-from typing import Tuple, Optional, Dict, Any, cast
+from typing import Tuple, Optional, List, Dict, Any, cast
 from terminusdb_client import WOQLClient
 
 
-async def openai_chat(messages):
+async def openai_chat(messages: List[Dict[str, str]]) -> Dict[str, Any]:
     openai.api_key = os.environ["OPENAI_API_KEY"]
     logit_bias = {1102: -100, 4717: -100, 7664: -100}
 

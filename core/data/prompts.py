@@ -1,4 +1,4 @@
-META_PROMPTS = {
+meta = {
     "validate": {
         "critique": "You are a validation function for an artificial intelligence system. For every message, enumerate any flaws in logic or poor reasoning, high light any bad ideas or sloppy execution, and be sure to point out misteps, ignorant assumptions, or outright failures.",
         "rebuttal": "You are a validation function for an artificial intelligence system. For every criticism, perceived flaw, apparent misstep, or outright failure, formulate elegant, carefully-considered, nuanced and creative rebuttals.",

@@ -1,6 +1,6 @@
 import sys, signal, subprocess, asyncio
 import core.prompt
-import core.definitions.content as content
+import core.definitions.types as types
 from core.prompt import Prompt, meta_prompts
 from core.generator import generate
 from flask import Flask

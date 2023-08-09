@@ -1,6 +1,6 @@
 import sys, signal, subprocess, asyncio
 import core.prompt as prompt
-import core.definitions.content as content
+import core.definitions.types as types
 from core.prompt import Prompt, meta_prompts
 from core.generator import generate
 from flask import Flask
@@ -13,22 +13,11 @@ sort = meta_prompts["sort"]
 recurse = meta_prompts["recurse"]
 diverge = meta_prompts["diverge"]
 
-sentence = content.Sentence()
+sentence = types.Fragment()
 data = """"""
 
-# generate some shit based on the input
-# source = asyncio.run(
-#     generate(
-#         data,
-#         sentence,
-#         prompts=[
-#             recurse["depth"],
-#             recurse["depth"],
-#             recurse["breadth"],
-#             recurse["depth"],
-#         ],
-#     )
-# )
+
+data = "Testing Python code."
 
 
 source = asyncio.run(
@@ -36,11 +25,22 @@ source = asyncio.run(
         data,
         sentence,
         prompts=[
-            refactor["prune"],
-            refactor["clarify"],
-            refactor["format"],
+            recurse["depth"],
+            recurse["depth"],
+            recurse["depth"],
         ],
     )
 )
 
-source = asyncio.run(generate(source, sentence, prompts=[diverge["insight"]]))
+asyncio.run(
+    generate(
+        source,
+        sentence,
+        prompts=[
+            validate["critique"],
+            validate["rebuttal"],
+            diverge["insight"],
+            refactor["format"],
+        ],
+    )
+)
