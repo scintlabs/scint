@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.ERROR)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]:
+async def generate(message: str, cls, prompts: List[Prompt]) -> Dict[str, Any]:
     result = ""
     messages = []
     messages.append({"role": "system", "content": message})
@@ -28,7 +28,7 @@ async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]
             else:
                 messages[0] = {"role": "system", "content": prompt_content}
 
-            response = await openai_chat(messages)
+            response = await openai_chat(messages)  # type: ignore
             data = response["choices"][0]
             generated = data["message"].get("content")
             result += f"{generated} \n"
@@ -37,7 +37,7 @@ async def generate(message: str, cls, prompts: List["Prompt"]) -> Dict[str, Any]
             print(f"Completed task {iterations} of {tasks}\n")
 
         print(f"{result}\n")
-        return result
+        return result  # type: ignore
 
     except Exception as e:
         logging.error(f"There was a problem contacting the API: {e}")

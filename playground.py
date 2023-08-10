@@ -14,7 +14,7 @@ recurse = meta_prompts["recurse"]
 diverge = meta_prompts["diverge"]
 
 sentence = content.Sentence()
-data = """The best war-based FPS games on the playstation4"""
+data = """A curious cat explores a creaking door"""
 
 source = asyncio.run(
     generate(
@@ -23,21 +23,24 @@ source = asyncio.run(
         prompts=[
             recurse["depth"],
             recurse["depth"],
-            recurse["depth"],
-        ],
-    )
-)
-
-source = asyncio.run(
-    generate(
-        data,
-        sentence,
-        prompts=[
-            refactor["prune"],
             refactor["clarify"],
+            recurse["depth"],
+            diverge["insight"],
             refactor["format"],
         ],
     )
 )
 
-asyncio.run(generate(source, sentence, prompts=[diverge["insight"]]))
+# source = asyncio.run(
+#     generate(
+#         data,
+#         sentence,
+#         prompts=[
+#             refactor["prune"],
+#             refactor["clarify"],
+#             refactor["format"],
+#         ],
+#     )
+# )
+
+# asyncio.run(generate(source, sentence, prompts=[diverge["insight"]]))
