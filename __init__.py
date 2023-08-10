@@ -1,6 +1,6 @@
 """Top-level package for scint."""
 
-from core import generator, plugins, providers, reader
+from core import generator, plugins, processor, providers
 from core.data import environment
 from core.definitions import code, functions, prompts, text
 from plugins import cli, websearch

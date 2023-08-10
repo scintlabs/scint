@@ -1,11 +1,16 @@
 import os
 import json
 import tiktoken
-
+from terminusdb_client import WOQLClient
 
 cwd = os.getcwd()
 loadout = f"{cwd}"
 env_vars = f"{os.environ}"
+
+
+# team = "scint"
+# client = WOQLClient("https://cloud.terminusdb.com/scint/")
+# client.connect(team=team, use_token=True)
 
 
 def state():

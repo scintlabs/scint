@@ -3,13 +3,18 @@ import core.prompt
 import core.definitions.types as types
 from core.prompt import Prompt, meta_prompts
 from core.generator import generate
-from flask import Flask
-from flask_restful import Api, Resource
+from fastapi import FastAPI
+from typing import Union
 
 
-app = Flask(__name__)
-api = Api(app)
+app = FastAPI()
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
+
+@app.get("/items/{item_id}")
+async def read_item(item_id: int, q: Union[str, None] = None):
+    return {"item_id": item_id, "q": q}

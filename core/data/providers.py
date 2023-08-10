@@ -1,6 +1,6 @@
 import asyncio, os, openai
-from typing import Tuple, Optional, List, Dict, Any, cast
-from terminusdb_client import WOQLClient
+from typing import List, Dict, Any
+from core.util import minify
 
 
 async def openai_chat(messages: List[Dict[str, str]]) -> Dict[str, Any]:
@@ -18,12 +18,5 @@ async def openai_chat(messages: List[Dict[str, str]]) -> Dict[str, Any]:
         presence_penalty=0.35,
         logit_bias=logit_bias,
         messages=messages,
-        functinos=[],
-        Stream=False,
     )
-    return response
-
-
-# team = "scint"
-# client = WOQLClient("https://cloud.terminusdb.com/scint/")
-# client.connect(team=team, use_token=True)
+    return response  # type: ignore
