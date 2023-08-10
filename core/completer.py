@@ -1,34 +1,21 @@
-import asyncio, json, logging
+import asyncio, json, logging, subprocess
 from tenacity import retry, stop_after_attempt, wait_fixed
-from typing import Dict, Any, Tuple, List, Optional, Coroutine
+from typing import List
 from core.data.providers import openai_chat
-from core.prompt import Prompt
-from core.function import eval_function
+from core.prompt import Prompt, meta
+import subprocess
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def complete(message: str):
+async def complete(message: str, prompt: List[Prompt]) -> str:  # type: ignore
     """"""
-
-    consg = ""
     messages = []
-    messages.append({"role": "system", "content": "You are a friendly assistant."})
+    messages.append({"role": "system", "content": prompt})
     messages.append({"role": "user", "content": message})
+    response = await openai_chat(messages)
 
-    try:
-        response = await openai_chat(messages)
+    if response is None:
+        raise ValueError("Error.")
 
-        if response is None:
-            raise ValueError("Error.")
-
-        try:
-            data = response
-            print(data)
-
-        except Exception as e:
-            logging.error(f"There was a problem: {e}")
-            raise
-
-    except Exception as e:
-        logging.error(f"There was a problem contacting the API: {e}")
-        raise
+    message = response["choices"][0]["message"].get("content")
+    return message

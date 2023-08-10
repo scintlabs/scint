@@ -14,31 +14,27 @@ sort = meta_prompts["sort"]
 recurse = meta_prompts["recurse"]
 diverge = meta_prompts["diverge"]
 
-fragment = types.Fragment()
+message = ""
 
-data = "I'm conducting a test. Please rewrite this paragraph: In my view, the hybrid approach might be the most effective for someone with your diverse skill set. By emphasizing a few core competencies where you excel, while also subtly showcasing your versatility, you can appeal to clients who want both depth and breadth."
-
-source = asyncio.run(
-    generate(
-        data,
-        fragment,
-        prompts=[
-            recurse["depth"],
-            recurse["depth"],
-            recurse["depth"],
-        ],
-    )
-)
 
 asyncio.run(
     generate(
-        source,
-        fragment,
+        message,
         prompts=[
-            validate["critique"],
-            validate["rebuttal"],
-            diverge["insight"],
-            refactor["format"],
+            diverge["chaos"],
         ],
     )
 )
+
+# asyncio.run(
+#     generate(
+#         source,  # type: ignore
+#         fragment,
+#         prompts=[
+#             validate["critique"],
+#             validate["rebuttal"],
+#             sort["task"],
+#             sort["prioritize"],
+#         ],
+#     )
+# )

@@ -13,10 +13,11 @@ async def openai_chat(messages: List[Dict[str, str]]) -> Dict[str, Any]:
     response = await openai.ChatCompletion.acreate(
         model="gpt-4-0613",
         temperature=1.6,
-        top_p=0.8,
+        top_p=0.7,
         frequency_penalty=0.35,
         presence_penalty=0.35,
         logit_bias=logit_bias,
         messages=messages,
+        stop="",
     )
     return response  # type: ignore
