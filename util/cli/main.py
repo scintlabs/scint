@@ -1,3 +1,7 @@
+import subprocess
+import asyncio
+from rich.console import Console
+
 console = Console()
 exit_commands = ["/quit"]
 
@@ -7,13 +11,8 @@ def get_input():
     return q
 
 
-def save_and_exit(signal, frame):
+def save_and_exit():
     print("Exiting.")
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, save_and_exit)
-signal.signal(signal.SIGTERM, save_and_exit)
 
 
 async def cli():
@@ -31,14 +30,12 @@ async def cli():
 
             if output_text:
                 console.print(f"\n{output_text}\n")
-                response = await get_response(await send_request(output_text))
             elif error_text:
                 console.print(f"\n{error_text}\n")
-                response = await get_response(await send_request(error_text))
 
-        response = await get_response(await send_request(user_message))
-        console.print(f"\n❯❯ {response} \n")
-        user_message = get_input()
+        # response =
+        # console.print(f"\n❯❯ {response} \n")
+        # user_message = get_input()
 
 
 if __name__ == "__cli__":

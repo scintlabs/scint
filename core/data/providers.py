@@ -1,6 +1,14 @@
 import asyncio, os, openai
+import litellm
 from typing import List, Dict, Any
-from core.util import minify
+
+
+async def oai(messages: List[Dict[str, str]]) -> Dict[str, Any]:
+    api_key = litellm.dotenv.get_key(".env", "OPENAI_API_KEY")
+    logit_bias = {1102: -100, 4717: -100, 7664: -100}
+
+    response = {"thing": {"thing": "thing"}}
+    return response
 
 
 async def openai_chat(messages: List[Dict[str, str]]) -> Dict[str, Any]:

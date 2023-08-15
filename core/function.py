@@ -16,15 +16,3 @@ async def generate_function(cls):
             "required": required,
         },
     ]
-
-
-async def eval_function(function: Dict[str, Any]) -> Optional[str]:
-    function_name = function["name"]
-    function_arguments = function["arguments"]
-    data = json.loads(function_arguments)
-    content = data.get("content")
-
-    if data.get("function_call"):
-        content = await eval_function(data)
-
-    return content

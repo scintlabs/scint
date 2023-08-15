@@ -1,31 +1,16 @@
 # Scint
 
-## Beam
+Composable functions for the LLM? State = a collection of functions?
 
-- [ ] Terminus database
-- [ ] Docker container
+“What’s a good directory and file structure to use for this project?” -> app
+
+- [x] Local api
+- [x] Language model functions to send and access files
+- [ ] Composability on the length of data output
+  - [ ] One sentence of prose
+  - [ ] One paragraph
+  - [ ] One line of code
+  - [ ] One code block
 - [ ] Event logging
-- [ ] API
-- [ ] Prompt definitions
-- [ ] Composability on size of output
-
-### Technical considerations
-
-
-### Prompt pipelines
-
-Thoughts: outlines, expositions, conclusions, body paragraphs, code blocks, turns-phrase, links, citations
-
-Idea:
-
-input {
-    recursive depth
-    mutate
-        recursive depth
-        recursive depth
-        recursive depth
-}
-
-
-
-
+- [ ] 
+- [ ] Terminus and Postgres for data
