@@ -11,11 +11,6 @@ loadout = f"{cwd}"
 env_vars = f"{os.environ}"
 
 
-# team = "scint"
-# client = WOQLClient("https://cloud.terminusdb.com/scint/")
-# client.connect(team=team, use_token=True)
-
-
 def parse_data(dir_path):
     total_lines = 0
     total_chars = 0

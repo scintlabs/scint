@@ -96,10 +96,6 @@ chunked_data, total_lines, total_chars = read(
     "/Users/kaechle/Developer/projects/scint-python"
 )
 
-# print(f"{chunked_data}\n")
-# print(f"{total_lines}\n")
-# print(f"{total_chars}\n")
-
 
 async def eval_function(function: Dict[str, Any]) -> Optional[str]:
     function_name = function["name"]

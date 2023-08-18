@@ -1,15 +1,12 @@
-import logging
 from typing import Dict, List
-
 from tenacity import retry, stop_after_attempt, wait_fixed
-
 from core.data.providers import openai_chat
 from core.prompt import Prompt
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
-    """"""
+    """ """
     messages = []
     messages.append({"role": "system", "content": message})
     tasks = len(prompts)
@@ -34,7 +31,6 @@ async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
         return messages
 
     except Exception as e:
-        logging.error(f"There was a problem contacting the API: {e}")
         raise
 
 
