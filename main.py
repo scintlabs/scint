@@ -1,57 +1,54 @@
-import sys
-import signal
-import subprocess
-from core.assistant import Assistant
+import subprocess, asyncio
 from rich.console import Console
-
+from core.chat import chat
 
 console = Console()
-exit_commands = ["/quit"]
-keanu = "keanu"
-assistant = Assistant(keanu)
+
+exit_commands = ["quit"]
 
 
-def input():
-    q = console.input("❯ ")
+def get_input():
+    q = console.input("\n❯ ")
     return q
 
 
-def save_and_exit(signal, frame):
-    print("Saving and exiting gracefully.")
-    assistant.save()
-    sys.exit(0)
+def save_and_exit():
+    console.print("Exiting.")
 
 
-signal.signal(signal.SIGINT, save_and_exit)
-signal.signal(signal.SIGTERM, save_and_exit)
-
-
-def main():
-    user_message = input()
+async def cli():
+    user_message = get_input()
 
     while user_message not in exit_commands:
-        if user_message.startswith("/cmd"):
-            command = user_message[5:]
-            process = subprocess.Popen(
-                command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-            output, error = process.communicate()
-            output_text = output.decode()
-            error_text = error.decode()
+        if user_message.startswith("cmd"):
+            command = user_message[3:].strip()
 
-            if output_text:
-                console.print(f"\n{output_text}\n")
-                # response = assistant.chat(output_text)
-                pass
-            elif error_text:
-                console.print(f"\n{error_text}\n")
-                # response = assistant.chat(output_text)
-                pass
+            try:
+                process = subprocess.Popen(
+                    command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                )
+                output, error = process.communicate()
+                output_text = output.decode()
+                error_text = error.decode()
 
-        response = assistant.chat(user_message)
-        console.print(f"\n❯❯ {response} \n")
-        message = input()
+                if output_text:
+                    console.print(f"\n{output_text}\n")
+                elif error_text:
+                    console.print(f"\n{error_text}\n")
+            except Exception as e:
+                console.print(f"Error executing command: {e}")
+
+        else:
+            try:
+                response = await chat(user_message)
+                console.print(f"\n❯❯ {response} \n")
+            except Exception as e:
+                console.print(f"Error communicating with OpenAI: {e}")
+
+        user_message = get_input()
+
+    save_and_exit()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(cli())

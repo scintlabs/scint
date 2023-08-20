@@ -1,27 +1,26 @@
 import os
-import json
 
 
 class State:
-    def __init__(self, name):
-        self.name = name
-        self.data = load_json(f"core/assistants/{self.name}_state.json")
+    def __init__(self):
+        """Object for managing application state."""
+        self.active: bool = True
+        self.DATA_HOME = os.environ["XDG_DATA_HOME"]
+        self.APPDATA = os.path.join(self.DATA_HOME, "scint")
 
-    def identity_constructor(self):
-        self.identity_data = self.data["definitions"]["keanu"]
-        self.identity = " ".join(self.identity_data["data"])
-        return self.identity
+    def process(self):
+        """State for reading and processing data."""
+        if self.active is False:
+            self.active = True
 
+    def generate(self):
+        """State for generating text and code."""
+        pass
 
-def load_json(filepath):
-    with open(filepath, "r") as f:
-        return json.load(f)
+    def search(self):
+        """State for searching for information."""
+        pass
 
-
-def save_json(filepath, data):
-    with open(filepath, "w") as f:
-        json.dump(data, f)
-
-
-def save_filestore(self):
-    save_json(f"core/assistants/{self.name}_state.json", self.state)
+    def chat(self):
+        """State for general discussion."""
+        pass
