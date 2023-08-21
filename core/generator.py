@@ -2,7 +2,7 @@ from typing import Dict, List
 from tenacity import retry, stop_after_attempt, wait_fixed
 from core.data.providers import openai_chat
 from core.prompt import Prompt
-from core.definitions.functions import generate_code
+from core.definitions.functions import generate_code as functions
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))

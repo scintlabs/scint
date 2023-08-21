@@ -103,3 +103,7 @@ ENV/
 
 # IDE settings
 .vscode/
+
+# macOS
+
+.DS_Store

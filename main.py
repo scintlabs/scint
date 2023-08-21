@@ -3,7 +3,6 @@ from rich.console import Console
 from core.chat import chat
 
 console = Console()
-
 exit_commands = ["quit"]
 
 

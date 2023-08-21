@@ -9,7 +9,9 @@ state = State()
 async def parse_env():
     logger.info(f"Initializing environment.")
     state.process()
-    """Function for parsing information from the files and directories in the sandbox."""
+    """
+    Function for parsing information from the files and directories in the sandbox.
+    """
     current_dir = os.getcwd()
 
     if current_dir != state.APPDATA:
@@ -23,10 +25,6 @@ async def parse_env():
             )
 
             return dir_data
-
-            # TODO: if files in dirs, recursively extract comments/docstrings
-            # overview = dir_data.stdout, file_data.stdout
-            # return overview
 
         except subprocess.CalledProcessError:
             logger.exception("Error parsing environment data.")
@@ -48,28 +46,3 @@ async def eval_function(function_call):
     code = function_args.get("code")
     print(code)
     exec(code)
-
-
-# async def eval_function(function_call):
-#     pass
-
-# function_name = function_call["name"]
-# function_args = json.loads(function_call["arguments"])
-
-# if function_name == "folders":
-#     directory = function_args.get("dir_path")
-#     if directory:
-#         folders(directory)
-#         print(os.getcwd())
-#     else:
-#         print("Directory path not provided.")
-
-# elif function_name == "files":
-#     file = function_args.get("filename")
-#     if file:
-#         await files(file, writable)
-#     else:
-#         print("Filename not provided.")
-
-# else:
-#     print(f"We got issues.")

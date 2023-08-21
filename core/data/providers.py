@@ -1,5 +1,21 @@
-import asyncio, os, openai, requests, json
+import asyncio, os, env, openai, requests, json
 from typing import List, Dict, Any
+from googleapiclient.discovery import build
+
+google_api_key = "AIzaSyABuLAz5vgY6Xy1K8CWgONWmZIclIw0rqw"
+custom_search_id = "66ac278048c154f5f"
+
+
+def google_search(search_term, api_key, cse_id, **kwargs):
+    service = build("customsearch", "v1", developerKey=api_key)
+    res = service.cse().list(q=search_term, cx=cse_id, **kwargs).execute()
+    return res["items"]
+
+
+results = google_search("openai jobs", google_api_key, custom_search_id, num=10)
+
+for result in results:
+    print(result)
 
 
 async def openai_chat(
@@ -25,7 +41,7 @@ async def openai_chat(
     return response  # type: ignore
 
 
-def get_news(topic: str = "world"):
+def nytimes_newsfeed(topic: str = "world"):
     api_key = "7NKUxGlG9nEuayaoQXaCuqAVdHqbDmYf"
     url = f"https://api.nytimes.com/svc/topstories/v2/{topic}.json?api-key={api_key}"
     response = requests.get(url)
