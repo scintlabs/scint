@@ -2,8 +2,8 @@ import asyncio, os, env, openai, requests, json
 from typing import List, Dict, Any
 from googleapiclient.discovery import build
 
-google_api_key = "AIzaSyABuLAz5vgY6Xy1K8CWgONWmZIclIw0rqw"
-custom_search_id = "66ac278048c154f5f"
+google_api_key = env.environ["GOOGLE_API_KEY"]
+custom_search_id = env.environ["CUSTOM_SEARCH_ID"]
 
 
 def google_search(search_term, api_key, cse_id, **kwargs):
