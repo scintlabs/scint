@@ -18,6 +18,8 @@ asyncio = "^3.4.3"
 terminusdb-client = "^10.2.4"
 env = "^0.1.0"
 google-api-python-client = "^2.97.0"
+python-dotenv = "^1.0.0"
+rethinkdb = "^2.4.9"
 
 
 [build-system]

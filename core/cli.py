@@ -1,21 +1,26 @@
-import subprocess, asyncio
+import subprocess
 from rich.console import Console
 from core.chat import chat
+from util.logging import logger
+from core.state import State
+from core.observer import Observer
 
 console = Console()
-exit_commands = ["quit"]
-
-
-def get_input():
-    q = console.input("\n❯ ")
-    return q
+exit_commands = ["q!"]
 
 
 def save_and_exit():
     console.print("Exiting.")
 
 
-async def cli():
+def get_input():
+    q = console.input(f"❯ ")  # type: ignore
+    return q
+
+
+async def run_cli():
+    state = State()
+    observer = Observer()
     user_message = get_input()
 
     while user_message not in exit_commands:
@@ -30,24 +35,20 @@ async def cli():
                 output_text = output.decode()
                 error_text = error.decode()
 
-                if output_text:
-                    console.print(f"\n{output_text}\n")
-                elif error_text:
-                    console.print(f"\n{error_text}\n")
+                # if output_text:
+                #     console.print(f"{output_text}\n")
+                # elif error_text:
+                #     console.print(f"{error_text}\n")
             except Exception as e:
-                console.print(f"Error executing command: {e}")
+                logger.exception(f"Error running command: {e}\n")
 
         else:
             try:
-                response = await chat(user_message)
-                console.print(f"\n❯❯ {response} \n")
+                response = await chat(user_message)  # type: ignore
+                # console.print(f"❯❯ {response} \n")
             except Exception as e:
-                console.print(f"Error communicating with OpenAI: {e}")
+                logger.exception(f"Error communicating with the assistant: {e}\n")
 
         user_message = get_input()
 
     save_and_exit()
-
-
-if __name__ == "__main__":
-    asyncio.run(cli())

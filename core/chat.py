@@ -1,65 +1,82 @@
-import os, asyncio
-from typing import Any, Tuple, List, Dict
+import os, asyncio, json
+from typing import List, Dict
 from core.state import State
-from core.processor import parse_env, parse_files, eval_function
-from core.data.providers import openai_chat
-from core.definitions.functions import generate_code as functions
+from core.processor import parse_env, eval_function
+from core.data.providers.models import openai
+from core.definitions.functions import google_search, generate_code
 from tenacity import retry, stop_after_attempt, wait_fixed
-from util.logger import logger
+from util.logging import logger
 
-state = State()
 
 system_message: str = "You are Scint, a stateful, collaborative, intelligent assistant. You have access to a secure sandbox environment which you can use to evaluate Python code. You can also create files and directories in this environment to build more complex projects."
 
 
 class MessageHandler:
+    logger.info(f"Calling message handler.")
+    """Message handler class. It handles messages."""
+
     def __init__(self):
-        self.messages: List[Dict[str, str]]
         self.roles = ["system", "assistant", "user"]
         self.message_template = lambda message, role, name: {
-            "role": f"{role}",
             "content": f"{message}",
+            "role": f"{role}",
             "name": f"{name}",
         }
 
     def format_message(self, user_message):
         return self.message_template(user_message, self.roles[2], "Tim")
 
-    async def get_data(self):
-        self.env_data = await parse_env()
-        return self.env_data
-
     async def build_manifest(self):
-        system_init = self.message_template(system_message, self.roles[0], "directive")
-        data = self.message_template(
-            await self.get_data(), self.roles[1], "environment"
-        )
+        logger.info(f"Building message package manifest.")
 
-        return system_init, data
+        messages: List[Dict[str, str]] = []
+        functions: List[Dict[str, str]] = []
+        # env_data = await parse_env()
+        sys_init = self.message_template(system_message, self.roles[0], "system")
+        # data = self.message_template("None", str(self.roles[1]), "environment")
 
+        messages.append(sys_init)
+        # messages.append(data)
+        functions.append(google_search)
+        functions.append(generate_code)
 
-handler = MessageHandler()
+        return messages, functions
 
 
 # @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def chat(user_message):
-    message = handler.format_message(user_message)
-    manifest = await handler.build_manifest()  # type: ignore
-    messages = list(manifest)
-    messages.append(message)  # type: ignore
+    logger.info(f"Starting chat process.")
+
+    handler = MessageHandler()
+
+    messages, functions = await handler.build_manifest()  # type: ignore
+    formatted_user_message = handler.format_message(user_message)
+    messages.append(formatted_user_message)
 
     try:
-        response = await openai_chat(messages, functions)  # type: ignore
-        data = response["choices"][0]
-        reply = data["message"].get("content")
+        response = await openai(messages, functions)  # type: ignore
+        logger.info(f"Sending message manifest.")
+        data = response["choices"][0]  # type: ignore
+        reply = None
 
-        messages.append({"role": "assistant", "content": f"{reply}"})  # type: ignore
+        if "content" in data["message"] and data["message"]["content"] is not None:
+            reply = data["message"]["content"]
+            logger.info(f"Response received: {reply}")
+            messages.append({"role": "assistant", "content": f"{reply}"})  # type: ignore
 
-        if data["message"]["function_call"] is not None:
+        if (
+            "function_call" in data["message"]
+            and data["message"]["function_call"] is not None
+        ):
             function_call = data["message"]["function_call"]
-            await eval_function(function_call)
+            function_results = await eval_function(function_call)
+            results = await chat(f"{function_results}")  # type: ignore
+            return results
 
-        return reply
+        # Return the reply if it exists
+        if reply:
+            return reply
 
     except Exception as e:
+        logger.exception(f"There was a problem delivering the message manifest: {e}")
         raise

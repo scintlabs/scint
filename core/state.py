@@ -1,20 +1,27 @@
 import os
+from util.env import envar
+from util.logging import logger
+
+APPNAME = "scint"
+APPDATA = os.path.join(envar("XDG_DATA_HOME"), APPNAME)
 
 
 class State:
     def __init__(self):
         """Object for managing application state."""
-        self.active: bool = True
-        self.DATA_HOME = os.environ["XDG_DATA_HOME"]
-        self.APPDATA = os.path.join(self.DATA_HOME, "scint")
+        logger.info(f"Initializing application state: idle.")
+        self.idle: bool = True
 
     def process(self):
         """State for reading and processing data."""
-        if self.active is False:
-            self.active = True
+        logger.info(f"State change: processor.")
+
+        if self.idle is True:
+            self.idle = False
 
     def generate(self):
         """State for generating text and code."""
+        logger.info(f"State change: generator.")
         pass
 
     def search(self):
@@ -23,4 +30,5 @@ class State:
 
     def chat(self):
         """State for general discussion."""
+        logger.info(f"State change: chat.")
         pass
