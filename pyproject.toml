@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "scint"
+version = "0.1.0"
+description = "Collaborative intelligence"
+authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "core"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openai = "^0.27.8"
+loguru = "^0.7.0"
+rich = "^13.5.2"
+requests = "^2.31.0"
+tenacity = "^8.2.3"
+asyncio = "^3.4.3"
+terminusdb-client = "^10.2.4"
+env = "^0.1.0"
+google-api-python-client = "^2.97.0"
+python-dotenv = "^1.0.0"
+rethinkdb = "^2.4.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

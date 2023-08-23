@@ -1,8 +1,9 @@
 from typing import Dict, List
 from tenacity import retry, stop_after_attempt, wait_fixed
-from core.data.providers import openai_chat
+from core.data.providers.models import openai
 from core.prompt import Prompt
-from core.definitions.functions import generate_code
+from core.definitions.functions import generate_code as functions
+from util.logging import logger
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
@@ -22,8 +23,8 @@ async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
             else:
                 messages[0] = {"role": "system", "content": prompt_content}
 
-            response = await openai_chat(messages, functions)
-            data = response["choices"][0]
+            response = await openai(messages, functions)  # type: ignore
+            data = response["choices"][0]  # type: ignore
 
             generated = data["message"].get("content")
             messages.append({"role": "system", "content": f"{generated}."})
@@ -33,6 +34,7 @@ async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
         return messages
 
     except Exception as e:
+        logger.exception(f"The generator was halted: {e}")
         raise
 
 
@@ -42,10 +44,10 @@ async def complete(message: str, prompt: List[Prompt]) -> str:
     messages = []
     messages.append({"role": "system", "content": prompt})
     messages.append({"role": "user", "content": message})
-    response = await openai_chat(messages, functions)
+    response = await openai(messages, functions)  # type: ignore
 
     if response is None:
         raise ValueError("Error.")
 
-    message = response["choices"][0]["message"].get("content")
+    message = response["choices"][0]["message"].get("content")  # type: ignore
     return message
