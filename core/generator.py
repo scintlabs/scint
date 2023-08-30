@@ -1,15 +1,17 @@
 from typing import Dict, List
+
 from tenacity import retry, stop_after_attempt, wait_fixed
-from core.data.providers.models import openai
-from core.prompt import Prompt
+
+from core.providers.models import openai
 from core.definitions.functions import generate_code as functions
+from core.prompt import Prompt
 from util.logging import logger
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
     """
-    Experimental function for mutating a string with multiple prompts
+    Experimental function for mutating a string with multiple prompts.
     """
     messages = []
     messages.append({"role": "system", "content": message})
@@ -25,7 +27,6 @@ async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
 
             response = await openai(messages, functions)  # type: ignore
             data = response["choices"][0]  # type: ignore
-
             generated = data["message"].get("content")
             messages.append({"role": "system", "content": f"{generated}."})
             print(f"{generated}")

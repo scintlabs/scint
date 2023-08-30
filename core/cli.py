@@ -1,9 +1,11 @@
 import subprocess
+
 from rich.console import Console
+
 from core.chat import chat
-from util.logging import logger
-from core.state import State
 from core.observer import Observer
+from core.state import State
+from util.logging import logger
 
 console = Console()
 exit_commands = ["q!"]

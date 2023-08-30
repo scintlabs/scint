@@ -20,6 +20,10 @@ env = "^0.1.0"
 google-api-python-client = "^2.97.0"
 python-dotenv = "^1.0.0"
 rethinkdb = "^2.4.9"
+typesense = "^0.16.0"
+meilisearch = "^0.28.2"
+fastapi = "^0.101.1"
+psycopg2 = "^2.9.7"
 
 
 [build-system]

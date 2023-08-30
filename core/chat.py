@@ -1,12 +1,15 @@
-import os, asyncio, json
-from typing import List, Dict
-from core.state import State
-from core.processor import parse_env, eval_function
-from core.data.providers.models import openai
-from core.definitions.functions import google_search, generate_code
-from tenacity import retry, stop_after_attempt, wait_fixed
-from util.logging import logger
+import asyncio
+import json
+import os
+from typing import Dict, List
 
+from tenacity import retry, stop_after_attempt, wait_fixed
+
+from core.providers.models import openai
+from core.definitions.functions import generate_code, google_search
+from core.processor import eval_function, parse_dir
+from core.state import State
+from util.logging import logger
 
 system_message: str = "You are Scint, a stateful, collaborative, intelligent assistant. You have access to a secure sandbox environment which you can use to evaluate Python code. You can also create files and directories in this environment to build more complex projects."
 

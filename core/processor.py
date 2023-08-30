@@ -1,16 +1,19 @@
-import os, subprocess, json
-from typing import Dict, List, Any, Optional
-from core.state import State, APPDATA
-from core.data.providers.search import google
+import json
+import os
+import subprocess
+from typing import Any, Dict, List, Optional
+
 from rich.markdown import Markdown
+
+from core.providers.search import google
+from core.state import APPDATA, State
 from util.logging import logger
 
 
-async def parse_env():
+async def parse_dir():
+    """Function to parse the current working directory."""
     logger.info(f"Parsing environment.")
-
     try:
-        logger.info(f"Running tree subprocess.")
         dir_data: subprocess.CompletedProcess[str] = subprocess.run(
             ["tree", "-J", "--gitignore", "-L", "3", APPDATA],
             capture_output=True,
@@ -25,6 +28,7 @@ async def parse_env():
 
 
 async def parse_files():
+    """Function to parse files."""
     logger.info(f"Parsing files.")
     file_path = os.path.join(APPDATA, "filename")
     mode = "r+"
@@ -37,13 +41,12 @@ async def parse_files():
 
 
 async def eval_function(function_call):
-    logger.info(f"Processing a function call.")
+    """Function to process code function calls from LLMs."""
 
     function_dict = dict(function_call)  # Parsing the JSON string
     function_name = function_dict["name"]
     function_args = function_dict["arguments"]  # This might still be a JSON string
 
-    # If function_args is a string, parse it
     if isinstance(function_args, str):
         function_args = json.loads(function_args)
 

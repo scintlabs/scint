@@ -1,21 +1,19 @@
-from typing import NamedTuple, List, Dict
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-class Fragment:
-    name: str
-    content: str
+# Model Definitions
+class ChatMessage(BaseModel):
+    message: str
 
 
-class Block(NamedTuple):
-    content: str
-    fragments: List[Fragment]
+class Command(BaseModel):
+    command: str
+    data: str
 
 
-class Shard(NamedTuple):
-    title: str
-    blocks: List[Block]
+class StateMessage(BaseModel):
+    state: str
 
 
-class Function(Block):
-    pass
+class Observation(BaseModel):
+    observe: str
