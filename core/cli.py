@@ -2,13 +2,13 @@ import subprocess
 
 from rich.console import Console
 
-from core.chat import chat
+from core.chat import init_chat
 from core.observer import Observer
 from core.state import State
 from util.logging import logger
 
 console = Console()
-exit_commands = ["q!"]
+exit_commands = ["/quit"]
 
 
 def save_and_exit():
@@ -46,7 +46,7 @@ async def run_cli():
 
         else:
             try:
-                response = await chat(user_message)  # type: ignore
+                response = await init_chat(user_message)  # type: ignore
                 # console.print(f"❯❯ {response} \n")
             except Exception as e:
                 logger.exception(f"Error communicating with the assistant: {e}\n")

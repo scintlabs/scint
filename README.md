@@ -18,18 +18,19 @@ Scint is an AI-powered assistant designed with a Command-Line Interface (CLI) fo
 
 ## Potential use cases
 
-- Developer Assistant: Aids developers with code generation, system commands, and quick online searches.
-- Task Automation: Automates certain tasks, like directory or file parsing, based on user prompts.
-- Educational Tool: Serves as a learning assistant for coding or other domains with its content generation and query response capabilities.
-- Customizable Chatbot: Allows users to tailor the assistant's behavior to specific needs using prompts.
+- Developer assistant: Aids developers with code generation, system commands, and quick online searches
+- Content generation pipeline:
+- Task automation: Automates certain tasks, like directory or file parsing, based on user prompts
+- Educational tool: Serves as a learning assistant for coding or other domains with its content generation and query response capabilities
+- Customizable assistant: Allows users to tailor the assistant's behavior to specific needs using prompts
 
 ## Areas for expansion
 
-- Observer Enhancement: Extend the observer to monitor additional data sources or system states.
-- State Transition Enhancement: Introduce actions or behaviors associated with each state transition.
-- Security Measures: Implement measures to ensure safety, especially when executing code or shell commands.
-- Function Expansion: Broaden the range of executable functions to enhance utility.
-- UI/UX Improvements: Consider a graphical interface for a more user-friendly experience beyond the CLI.
+- Observer enhancement: Extend the observer to monitor additional data sources or system states
+- State transition: Introduce actions or behaviors associated with each state transition
+- Security Measures: Implement measures to ensure safety, especially when executing code or shell commands
+- Function Expansion: Broaden the range of executable functions to enhance utility
+- UI/UX Improvements: Consider a graphical interface for a more user-friendly experience beyond the CLI
 
 ## Currently exploring
 

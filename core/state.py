@@ -8,6 +8,7 @@ APPDATA = os.path.join(envar("XDG_DATA_HOME"), APPNAME)
 
 
 class State:
+    """Object for managing application state."""
     PROCESSING = "processing"
     GENERATING = "generating"
     CHATTING = "chatting"
@@ -38,6 +39,3 @@ class State:
 
     def __str__(self):
         return f"AI Assistant is currently: {self.current_state}"
-
-    def __init__(self):
-        """Object for managing application state."""

@@ -3197,3 +3197,861 @@ Please note that I am an AI model running in a sandbox environment, which doesn'
 [23-08-22 15:07] core.observer: email_observer | Email observer active.
 [23-08-22 15:07] core.observer: messaging_observer | Messaging observer active.
 [23-08-22 15:07] core.observer: site_observer | Site observer active, monitoring: ['Upwork', 'Twitter', 'LinkedIn'].
+[23-08-31 12:33] core.chat: MessageHandler | Calling message handler.
+[23-08-31 12:33] core.observer: __init__ | Initializing observer.
+[23-08-31 12:33] core.observer: email_observer | Email observer active.
+[23-08-31 12:33] core.observer: messaging_observer | Messaging observer active.
+[23-08-31 12:33] core.observer: site_observer | Site observer active, monitoring: ['Upwork', 'Twitter', 'LinkedIn'].
+[23-08-31 12:33] core.chat: chat | Starting chat process.
+[23-08-31 12:33] core.chat: build_manifest | Building message package manifest.
+[23-08-31 12:33] core.chat: chat | Sending message manifest.
+[23-08-31 12:33] core.chat: chat | Response received: Hello Tim! How can I assist you today?
+[23-08-31 12:40] core.chat: chat | Starting chat process.
+[23-08-31 12:40] core.chat: build_manifest | Building message package manifest.
+[23-08-31 12:41] core.chat: chat | Sending message manifest.
+[23-08-31 12:41] core.chat: chat | Response received: To connect a Python application to a PostgreSQL database, you can use the `psycopg2` library, which is the most popular PostgreSQL database adapter for Python.
+
+Here's an example of how you might establish a connection:
+
+```python
+import psycopg2
+
+try:
+    connection = psycopg2.connect(
+        user="your_username",
+        password="your_password",
+        host="127.0.0.1",
+        port="5432",
+        database="your_database"
+    )
+
+    cursor = connection.cursor()
+    # Print PostgreSQL version
+    cursor.execute("SELECT version();")
+    record = cursor.fetchone()
+    print("You are connected to - ", record,"\n")
+
+except (Exception, psycopg2.Error) as error :
+    print ("Error while connecting to PostgreSQL", error)
+finally:
+    #closing database connection.
+    if(connection):
+        cursor.close()
+        connection.close()
+        print("PostgreSQL connection is closed")
+```
+
+In this script:
+
+- `user`: This is your PostgreSQL username.
+- `password`: This is your password for the specified user.
+- `host`: If you are running on your local machine, this will be "127.0.0.1".
+- `port`: By default, the PostgreSQL port is "5432".
+- `database`: This is the name of the database you want to connect to.
+
+This code establishes a new DB connection and then creates a new cursor object which can be used to execute SQL queries.
+
+Make sure to replace `"your_username"`, `"your_password"`, and `"your_database"` with your actual PostgreSQL credentials and database name.
+
+Please note that before running this script, you need to install `psycopg2` package. You can install it using pip:
+
+```bash
+pip install psycopg2-binary
+```
+
+If you are facing any issues with installation of `psycopg2`, try installing `psycopg2-binary`.
+
+This binary package comes with its own versions of a few C libraries, among which libpq and libssl, allowing for the psycopg module to be used in environments where installing other C libraries would be difficult.
+
+Let me know if you need help with anything else!
+[23-08-31 12:43] core.chat: chat | Starting chat process.
+[23-08-31 12:43] core.chat: build_manifest | Building message package manifest.
+[23-08-31 12:44] core.chat: chat | Sending message manifest.
+[23-08-31 12:44] core.chat: chat | Response received: Yes, storing sensitive information like usernames and passwords in environment variables is a common and recommended practice. This ensures that the sensitive data isn't accidentally committed to your version control system (like Git) and exposed.
+
+You can store this information in a `.env` file, which is not tracked by version control. When your application starts up, it can load the values from the `.env` file into the environment.
+
+In Python, you can use libraries such as `python-dotenv` to load these variables at runtime. Here's an example of how you might do it:
+
+```python
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+username = os.getenv('USERNAME')
+password = os.getenv('PASSWORD')
+```
+
+In this example, your `.env` file would look something like this:
+
+```
+USERNAME=myusername
+PASSWORD=mypassword
+```
+
+Remember to add `.env` to your `.gitignore` file so it's not tracked by Git.
+[23-09-01 17:55] core.handler: MessageHandler | Calling message handler.
+[23-09-01 17:55] core.observer: __init__ | Initializing observer.
+[23-09-01 17:55] core.observer: email_observer | Email observer active.
+[23-09-01 17:55] core.observer: messaging_observer | Messaging observer active.
+[23-09-01 17:55] core.observer: site_observer | Site observer active, monitoring: ['Upwork', 'Twitter', 'LinkedIn'].
+[23-09-01 17:55] core.chat: chat | Starting chat process.
+[23-09-01 17:55] core.handler: build_manifest | Building message package manifest.
+[23-09-01 17:55] core.chat: chat | Sending message manifest.
+[23-09-01 17:55] core.chat: chat | Response received: Hello, Tim! How can I assist you today?
+[23-09-01 17:55] core.chat: chat | Starting chat process.
+[23-09-01 17:55] core.handler: build_manifest | Building message package manifest.
+[23-09-01 17:55] core.chat: chat | Sending message manifest.
+[23-09-01 17:55] core.chat: chat | Response received: I'm sorry, I didn't understand your question. Could you please provide more information or context?
+[23-09-01 17:56] core.handler: MessageHandler | Calling message handler.
+[23-09-01 17:56] core.handler: MessageHandler | Calling message handler.
+[23-09-01 17:58] core.handler: MessageHandler | Calling message handler.
+[23-09-01 17:59] core.chat: chat | Starting chat process.
+[23-09-01 17:59] core.handler: __init__ | Calling message handler.
+[23-09-01 17:59] core.handler: build_manifest | Building message package manifest.
+[23-09-01 17:59] core.chat: chat | Sending message manifest.
+[23-09-01 17:59] core.chat: chat | Response received: Hello Tim! How can I assist you today?
+[23-09-01 18:13] core.chat: chat | Starting chat process.
+[23-09-01 18:13] core.handler: __init__ | Calling message handler.
+[23-09-01 18:13] core.handler: build_manifest | Building message package manifest.
+[23-09-01 18:13] core.chat: chat | There was a problem delivering the message manifest: 'MessageHandler' object has no attribute 'message_template'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x111d13100>
+    │       └ <function run at 0x105657c40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1055d35b0>
+           │      └ <function Runner.run at 0x10565fe20>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x10565da80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x10565d9e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x10565f7e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1055a1b20>
+    └ <Handle <TaskStepMethWrapper object at 0x110ac8460>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x110ac8460>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x110ac8460>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x110ac8460>()>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hello there.'
+                     └ <function chat at 0x111d13060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hello there.',)
+                 └ <function chat at 0x111d12f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hello there.',)
+                   └ <function chat at 0x110a18860>
+
+> File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 15, in chat
+    messages, functions = await handler.build_manifest()  # type: ignore
+                                │       └ <function MessageHandler.build_manifest at 0x111246700>
+                                └ <core.handler.MessageHandler object at 0x111eaea50>
+
+  File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 36, in build_manifest
+    sys_init = self.message_template(system_message, self.roles[0], "system")
+               │                     │               └ <core.handler.MessageHandler object at 0x111eaea50>
+               │                     └ 'You are Scint, a stateful, collaborative, intelligent assistant. You have access to a secure sandbox environment which you c...
+               └ <core.handler.MessageHandler object at 0x111eaea50>
+
+AttributeError: 'MessageHandler' object has no attribute 'message_template'
+[23-09-01 18:13] core.chat: chat | Starting chat process.
+[23-09-01 18:13] core.handler: __init__ | Calling message handler.
+[23-09-01 18:13] core.handler: build_manifest | Building message package manifest.
+[23-09-01 18:13] core.chat: chat | There was a problem delivering the message manifest: 'MessageHandler' object has no attribute 'message_template'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x111d13100>
+    │       └ <function run at 0x105657c40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1055d35b0>
+           │      └ <function Runner.run at 0x10565fe20>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x10565da80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x10565d9e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x10565f7e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1055a1b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hello there.'
+                     └ <function chat at 0x111d13060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hello there.',)
+                 └ <function chat at 0x111d12f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hello there.',)
+                   └ <function chat at 0x110a18860>
+
+> File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 15, in chat
+    messages, functions = await handler.build_manifest()  # type: ignore
+                                │       └ <function MessageHandler.build_manifest at 0x111246700>
+                                └ <core.handler.MessageHandler object at 0x111d22850>
+
+  File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 36, in build_manifest
+    sys_init = self.message_template(system_message, self.roles[0], "system")
+               │                     │               └ <core.handler.MessageHandler object at 0x111d22850>
+               │                     └ 'You are Scint, a stateful, collaborative, intelligent assistant. You have access to a secure sandbox environment which you c...
+               └ <core.handler.MessageHandler object at 0x111d22850>
+
+AttributeError: 'MessageHandler' object has no attribute 'message_template'
+[23-09-01 18:13] core.chat: chat | Starting chat process.
+[23-09-01 18:13] core.handler: __init__ | Calling message handler.
+[23-09-01 18:13] core.handler: build_manifest | Building message package manifest.
+[23-09-01 18:13] core.chat: chat | There was a problem delivering the message manifest: 'MessageHandler' object has no attribute 'message_template'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x111d13100>
+    │       └ <function run at 0x105657c40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1055d35b0>
+           │      └ <function Runner.run at 0x10565fe20>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x10565da80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x10565d9e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x10565f7e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1055a1b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hello there.'
+                     └ <function chat at 0x111d13060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hello there.',)
+                 └ <function chat at 0x111d12f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hello there.',)
+                   └ <function chat at 0x110a18860>
+
+> File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 15, in chat
+    messages, functions = await handler.build_manifest()  # type: ignore
+                                │       └ <function MessageHandler.build_manifest at 0x111246700>
+                                └ <core.handler.MessageHandler object at 0x111eae990>
+
+  File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 36, in build_manifest
+    sys_init = self.message_template(system_message, self.roles[0], "system")
+               │                     │               └ <core.handler.MessageHandler object at 0x111eae990>
+               │                     └ 'You are Scint, a stateful, collaborative, intelligent assistant. You have access to a secure sandbox environment which you c...
+               └ <core.handler.MessageHandler object at 0x111eae990>
+
+AttributeError: 'MessageHandler' object has no attribute 'message_template'
+[23-09-01 18:13] core.cli: run_cli | Error communicating with the assistant: RetryError[<Future at 0x111eafbd0 state=finished raised AttributeError>]
+
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hello there.',)
+                   └ <function chat at 0x110a18860>
+
+  File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 15, in chat
+    messages, functions = await handler.build_manifest()  # type: ignore
+                                │       └ <function MessageHandler.build_manifest at 0x111246700>
+                                └ <core.handler.MessageHandler object at 0x111eae990>
+
+  File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 36, in build_manifest
+    sys_init = self.message_template(system_message, self.roles[0], "system")
+               │                     │               └ <core.handler.MessageHandler object at 0x111eae990>
+               │                     └ 'You are Scint, a stateful, collaborative, intelligent assistant. You have access to a secure sandbox environment which you c...
+               └ <core.handler.MessageHandler object at 0x111eae990>
+
+AttributeError: 'MessageHandler' object has no attribute 'message_template'
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x111d13100>
+    │       └ <function run at 0x105657c40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1055d35b0>
+           │      └ <function Runner.run at 0x10565fe20>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:53> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x10565da80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x111d16610>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x10565d9e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x10565f7e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1055a1b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+> File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hello there.'
+                     └ <function chat at 0x111d13060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hello there.',)
+                 └ <function chat at 0x111d12f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 47, in __call__
+    do = self.iter(retry_state=retry_state)
+         │    │                └ <RetryCallState 4582139024: attempt #3; slept for 2.0; last result: failed (AttributeError 'MessageHandler' object has no att...
+         │    └ <function BaseRetrying.iter at 0x11098b380>
+         └ <AsyncRetrying object at 0x111eac510 (stop=<tenacity.stop.stop_after_attempt object at 0x11093bb10>, wait=<tenacity.wait.wait...
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/__init__.py", line 326, in iter
+    raise retry_exc from fut.exception()
+          │              │   └ <function Future.exception at 0x10512bb00>
+          │              └ <Future at 0x111eafbd0 state=finished raised AttributeError>
+          └ RetryError(<Future at 0x111eafbd0 state=finished raised AttributeError>)
+
+tenacity.RetryError: RetryError[<Future at 0x111eafbd0 state=finished raised AttributeError>]
+[23-09-01 18:14] core.chat: chat | Starting chat process.
+[23-09-01 18:14] core.handler: __init__ | Calling message handler.
+[23-09-01 18:14] core.handler: build_manifest | Building message package manifest.
+[23-09-01 18:14] core.handler: format_message | Formatting message.
+[23-09-01 18:14] core.data.db: insert_message | Inserting message into database.
+[23-09-01 18:14] core.data.db: init_sql_connection | Opening database connection.
+[23-09-01 18:14] core.handler: store_message | Failed to store message: 'NoneType' object has no attribute 'cursor'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x1043a3100>
+    │       └ <function run at 0x10177bc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1016f75b0>
+           │      └ <function Runner.run at 0x101783e20>
+           └ <asyncio.runners.Runner object at 0x10457ec50>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x101781a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x10457ec50>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1017819e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1017837e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1016c5b20>
+    └ <Handle <TaskStepMethWrapper object at 0x1042cace0>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x1042cace0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x1042cace0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x1042cace0>()>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hello there.'
+                     └ <function chat at 0x1043a3060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hello there.',)
+                 └ <function chat at 0x1043a2f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hello there.',)
+                   └ <function chat at 0x103384860>
+
+  File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 20, in chat
+    handler.store_message("user", user_message, None)
+    │       │                     └ 'Hello there.'
+    │       └ <function MessageHandler.store_message at 0x103b0e7a0>
+    └ <core.handler.MessageHandler object at 0x1045638d0>
+
+> File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 49, in store_message
+    insert_message(role, content, response_id)
+    │              │     │        └ None
+    │              │     └ 'Hello there.'
+    │              └ 'user'
+    └ <function insert_message at 0x103aa28e0>
+
+  File "/Users/kaechle/Developer/projects/scint/core/data/db.py", line 38, in insert_message
+    cursor = conn.cursor()
+             └ None
+
+AttributeError: 'NoneType' object has no attribute 'cursor'
+[23-09-01 18:14] core.chat: chat | Response received: Hello, Tim! How can I assist you today?
+[23-09-01 18:14] core.data.db: insert_message | Inserting message into database.
+[23-09-01 18:14] core.data.db: init_sql_connection | Opening database connection.
+[23-09-01 18:14] core.handler: store_message | Failed to store message: 'NoneType' object has no attribute 'cursor'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x1043a3100>
+    │       └ <function run at 0x10177bc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1016f75b0>
+           │      └ <function Runner.run at 0x101783e20>
+           └ <asyncio.runners.Runner object at 0x10457ec50>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x101781a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x10457ec50>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1017819e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1017837e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1016c5b20>
+    └ <Handle <TaskStepMethWrapper object at 0x1042c8b50>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x1042c8b50>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x1042c8b50>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x1042c8b50>()>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hello there.'
+                     └ <function chat at 0x1043a3060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hello there.',)
+                 └ <function chat at 0x1043a2f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hello there.',)
+                   └ <function chat at 0x103384860>
+
+  File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 44, in chat
+    handler.store_message(
+    │       └ <function MessageHandler.store_message at 0x103b0e7a0>
+    └ <core.handler.MessageHandler object at 0x1045638d0>
+
+> File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 49, in store_message
+    insert_message(role, content, response_id)
+    │              │     │        └ 'chatcmpl-7u5lgfgKWFpSh7XSsViEP1q77kqkV'
+    │              │     └ 'Hello, Tim! How can I assist you today?'
+    │              └ 'assistant'
+    └ <function insert_message at 0x103aa28e0>
+
+  File "/Users/kaechle/Developer/projects/scint/core/data/db.py", line 38, in insert_message
+    cursor = conn.cursor()
+             └ None
+
+AttributeError: 'NoneType' object has no attribute 'cursor'
+[23-09-01 18:29] core.chat: chat | Starting chat process.
+[23-09-01 18:29] core.handler: __init__ | Calling message handler.
+[23-09-01 18:29] core.handler: build_manifest | Building message package manifest.
+[23-09-01 18:29] core.handler: format_message | Formatting message.
+[23-09-01 18:29] core.data.db: insert_message | Inserting message into database.
+[23-09-01 18:29] core.data.db: init_sql_connection | Opening database connection.
+[23-09-01 18:29] core.data.db: init_sql_connection | You are connected to - ('PostgreSQL 14.9 (Homebrew) on aarch64-apple-darwin22.4.0, compiled by Apple clang version 14.0.3 (clang-1403.0.22.14.1), 64-bit',)
+[23-09-01 18:29] core.handler: store_message | Failed to store message: can't adapt type 'UUID'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x103d87100>
+    │       └ <function run at 0x10115fc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1010db5b0>
+           │      └ <function Runner.run at 0x101167e20>
+           └ <asyncio.runners.Runner object at 0x103f6f8d0>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x101165a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x103f6f8d0>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1011659e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1011677e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1010a9b20>
+    └ <Handle <TaskStepMethWrapper object at 0x102a25b40>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x102a25b40>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x102a25b40>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x102a25b40>()>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hi there.'
+                     └ <function chat at 0x103d87060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hi there.',)
+                 └ <function chat at 0x103d86f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hi there.',)
+                   └ <function chat at 0x102d68860>
+
+  File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 20, in chat
+    handler.store_message("user", user_message, None)
+    │       │                     └ 'Hi there.'
+    │       └ <function MessageHandler.store_message at 0x1034f27a0>
+    └ <core.handler.MessageHandler object at 0x103f20a10>
+
+> File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 49, in store_message
+    insert_message(role, content, response_id)
+    │              │     │        └ None
+    │              │     └ 'Hi there.'
+    │              └ 'user'
+    └ <function insert_message at 0x1034868e0>
+
+  File "/Users/kaechle/Developer/projects/scint/core/data/db.py", line 52, in insert_message
+    cursor.execute(insert_query, (message_id, role, content, response_id))
+    │      │       │              │           │     │        └ None
+    │      │       │              │           │     └ 'Hi there.'
+    │      │       │              │           └ 'user'
+    │      │       │              └ UUID('60626734-0583-45fb-972f-d2e6962ee0f0')
+    │      │       └ '\n    INSERT INTO messages (message_id, role, content, timestamp, response_id)\n    VALUES (%s, %s, %s, NOW(), %s);\n    '
+    │      └ <method 'execute' of 'psycopg2.extensions.cursor' objects>
+    └ <cursor object at 0x103e2bb50; closed: 0>
+
+psycopg2.ProgrammingError: can't adapt type 'UUID'
+[23-09-01 18:29] core.chat: chat | Response received: Hello, Tim! How can I assist you today?
+[23-09-01 18:29] core.data.db: insert_message | Inserting message into database.
+[23-09-01 18:29] core.data.db: init_sql_connection | Opening database connection.
+[23-09-01 18:29] core.data.db: init_sql_connection | You are connected to - ('PostgreSQL 14.9 (Homebrew) on aarch64-apple-darwin22.4.0, compiled by Apple clang version 14.0.3 (clang-1403.0.22.14.1), 64-bit',)
+[23-09-01 18:29] core.handler: store_message | Failed to store message: can't adapt type 'UUID'
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint/app.py", line 73, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x103d87100>
+    │       └ <function run at 0x10115fc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1010db5b0>
+           │      └ <function Runner.run at 0x101167e20>
+           └ <asyncio.runners.Runner object at 0x103f6f8d0>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint/core/cli.py:50> cb=[_run_until...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x101165a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x103f6f8d0>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1011659e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1011677e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x1010a9b20>
+    └ <Handle <TaskStepMethWrapper object at 0x1038e5ea0>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x1038e5ea0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x1038e5ea0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x1038e5ea0>()>
+
+  File "/Users/kaechle/Developer/projects/scint/core/cli.py", line 50, in run_cli
+    response = await chat(user_message)  # type: ignore
+                     │    └ 'Hi there.'
+                     └ <function chat at 0x103d87060>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('Hi there.',)
+                 └ <function chat at 0x103d86f20>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-tXXp93ol-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('Hi there.',)
+                   └ <function chat at 0x102d68860>
+
+  File "/Users/kaechle/Developer/projects/scint/core/chat.py", line 44, in chat
+    handler.store_message(
+    │       └ <function MessageHandler.store_message at 0x1034f27a0>
+    └ <core.handler.MessageHandler object at 0x103f20a10>
+
+> File "/Users/kaechle/Developer/projects/scint/core/handler.py", line 49, in store_message
+    insert_message(role, content, response_id)
+    │              │     │        └ 'chatcmpl-7u5zrREtLreT7xU6RZWVZt3jPFbTb'
+    │              │     └ 'Hello, Tim! How can I assist you today?'
+    │              └ 'assistant'
+    └ <function insert_message at 0x1034868e0>
+
+  File "/Users/kaechle/Developer/projects/scint/core/data/db.py", line 52, in insert_message
+    cursor.execute(insert_query, (message_id, role, content, response_id))
+    │      │       │              │           │     │        └ 'chatcmpl-7u5zrREtLreT7xU6RZWVZt3jPFbTb'
+    │      │       │              │           │     └ 'Hello, Tim! How can I assist you today?'
+    │      │       │              │           └ 'assistant'
+    │      │       │              └ UUID('6aa24651-9137-4586-8395-36a55298d03f')
+    │      │       └ '\n    INSERT INTO messages (message_id, role, content, timestamp, response_id)\n    VALUES (%s, %s, %s, NOW(), %s);\n    '
+    │      └ <method 'execute' of 'psycopg2.extensions.cursor' objects>
+    └ <cursor object at 0x103fc49a0; closed: 0>
+
+psycopg2.ProgrammingError: can't adapt type 'UUID'
+[23-09-01 18:31] core.chat: chat | Starting chat process.
+[23-09-01 18:31] core.handler: __init__ | Calling message handler.
+[23-09-01 18:31] core.handler: build_manifest | Building message package manifest.
+[23-09-01 18:31] core.handler: format_message | Formatting message.
+[23-09-01 18:31] core.data.db: insert_message | Inserting message into database.
+[23-09-01 18:31] core.data.db: init_sql_connection | Opening database connection.
+[23-09-01 18:31] core.data.db: init_sql_connection | You are connected to - ('PostgreSQL 14.9 (Homebrew) on aarch64-apple-darwin22.4.0, compiled by Apple clang version 14.0.3 (clang-1403.0.22.14.1), 64-bit',)
+[23-09-01 18:31] core.handler: store_message | Stored user message in the database.
+[23-09-01 18:31] core.chat: chat | Response received: Hello Tim! How can I assist you today?
+[23-09-01 18:31] core.data.db: insert_message | Inserting message into database.
+[23-09-01 18:31] core.data.db: init_sql_connection | Opening database connection.
+[23-09-01 18:31] core.data.db: init_sql_connection | You are connected to - ('PostgreSQL 14.9 (Homebrew) on aarch64-apple-darwin22.4.0, compiled by Apple clang version 14.0.3 (clang-1403.0.22.14.1), 64-bit',)
+[23-09-01 18:31] core.handler: store_message | Stored assistant message in the database.
+[core.chat 23-09-01 18:34:31] chat | Starting chat process.
+[core.handler 23-09-01 18:34:31] __init__ | Calling message handler.
+[core.handler 23-09-01 18:34:31] build_manifest | Building message package manifest.
+[core.handler 23-09-01 18:34:31] format_message | Formatting message.
+[core.data.db 23-09-01 18:34:31] insert_message | Inserting message into database.
+[core.data.db 23-09-01 18:34:31] init_sql_connection | Opening database connection.
+[core.handler 23-09-01 18:34:32] store_message | Stored user message in the database.
+[core.chat 23-09-01 18:34:33] chat | Response received: Hello Tim! How can I assist you today?
+[core.data.db 23-09-01 18:34:33] insert_message | Inserting message into database.
+[core.data.db 23-09-01 18:34:33] init_sql_connection | Opening database connection.
+[core.handler 23-09-01 18:34:33] store_message | Stored assistant message in the database.
+[core.chat 23-09-01 18:37:50] chat | Starting chat process.
+[core.handler 23-09-01 18:37:50] __init__ | Calling message handler.
+[core.handler 23-09-01 18:37:50] build_manifest | Building message package manifest.
+[core.handler 23-09-01 18:37:50] format_message | Formatting message.
+[core.data.db 23-09-01 18:37:50] init_sql_connection | Opening database connection.
+[core.data.db 23-09-01 18:37:50] insert_message | Inserting message into database.
+[core.handler 23-09-01 18:37:50] store_message | Stored user message in the database.
+[core.chat 23-09-01 18:37:52] chat | Response received: Hello, Tim! How can I assist you today?
+[core.data.db 23-09-01 18:37:52] init_sql_connection | Opening database connection.
+[core.data.db 23-09-01 18:37:52] insert_message | Inserting message into database.
+[core.handler 23-09-01 18:37:52] store_message | Stored assistant message in the database.
+23-09-01 18:40:01 Starting chat process.
+23-09-01 18:40:01 Calling message handler.
+23-09-01 18:40:01 Building message package manifest.
+23-09-01 18:40:01 Formatting message.
+23-09-01 18:40:01 Opening database connection.
+23-09-01 18:40:02 Inserting message into database.
+23-09-01 18:40:02 Stored user message in the database.
+23-09-01 18:40:03 Response received: Hello Tim! How can I assist you today?
+23-09-01 18:40:03 Opening database connection.
+23-09-01 18:40:03 Inserting message into database.
+23-09-01 18:40:03 Stored assistant message in the database.
+[23-09-01 18:43] core.chat | chat | Starting chat process.
+[23-09-01 18:43] core.handler | __init__ | Calling message handler.
+[23-09-01 18:43] core.handler | build_manifest | Building message package manifest.
+[23-09-01 18:43] core.handler | format_message | Formatting message.
+[23-09-01 18:43] core.data.db | init_sql_connection | Opening database connection.
+[23-09-01 18:43] core.data.db | insert_message | Inserting message into database.
+[23-09-01 18:43] core.handler | store_message | Stored user message in the database.
+[23-09-01 18:43] core.chat | chat | Response received: Hello Tim! How can I assist you today?
+[23-09-01 18:43] core.data.db | init_sql_connection | Opening database connection.
+[23-09-01 18:43] core.data.db | insert_message | Inserting message into database.
+[23-09-01 18:43] core.handler | store_message | Stored assistant message in the database.
+[23-09-01 18:47] core.chat.init_chat: Starting chat process.
+[23-09-01 18:47] core.handler.__init__: Calling message handler.
+[23-09-01 18:47] core.handler.build_manifest: Building message package manifest.
+[23-09-01 18:47] core.handler.format_message: Formatting message.
+[23-09-01 18:47] core.data.db.init_sql_connection: Opening database connection.
+[23-09-01 18:47] core.data.db.insert_message: Inserting message into database.
+[23-09-01 18:47] core.handler.store_message: Stored user message in the database.
+[23-09-01 18:47] core.chat.init_chat: Response received: Hello, Tim! How can I assist you today?
+[23-09-01 18:47] core.data.db.init_sql_connection: Opening database connection.
+[23-09-01 18:47] core.data.db.insert_message: Inserting message into database.
+[23-09-01 18:47] core.handler.store_message: Stored assistant message in the database.
