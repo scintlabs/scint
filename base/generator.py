@@ -2,16 +2,45 @@ from typing import Dict, List
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from core.providers.models import openai
-from core.definitions.functions import generate_code as functions
-from core.prompt import Prompt
+from base.providers.models import openai
+from base.definitions.prompts import Prompt
 from util.logging import logger
+
+generate_prose = {
+    "name": "generate_code",
+    "description": "Use this function to write and test Python code. Files are created in a secure environment.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "code": {
+                "type": "string",
+                "description": "The Python code to write and execute. You may write files and folders to create complex projects using Python.",
+            },
+        },
+        "required": ["code"],
+    },
+}
+
+generate_code = {
+    "name": "generate_code",
+    "description": "Use this function to write and test Python code. Files are created and executed in a secure environment.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "code": {
+                "type": "string",
+                "description": "The Python code to write and execute. You may write files and folders to create complex projects using Python.",
+            },
+        },
+        "required": ["code"],
+    },
+}
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
     """
-    Experimental function for mutating a string with multiple prompts.
+    Experimental function for mutating data with multiple, functional prompts.
     """
     messages = []
     messages.append({"role": "system", "content": message})

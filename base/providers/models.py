@@ -1,7 +1,9 @@
-import asyncio, os
-from openai import ChatCompletion, api_key
-from util.env import envar
+import asyncio, os, json
 from typing import List, Dict
+
+from openai import ChatCompletion, api_key
+
+from util.env import envar
 
 envar = lambda var: os.environ.get(var)
 api_key = envar("OPENAI_API_KEY")

@@ -1,12 +1,9 @@
-import json
-import os
-import subprocess
-from typing import Any, Dict, List, Optional
+import os, json, subprocess
 
 from rich.markdown import Markdown
 
-from core.providers.search import google
-from core.state import APPDATA, State
+from base.providers.search import google
+from base.state import APPDATA, StateManager
 from util.logging import logger
 
 
@@ -41,16 +38,23 @@ async def parse_files():
 
 
 async def eval_function(function_call):
-    """Function to process code function calls from LLMs."""
+    """
+    Function for handling the assistant's function calls.
+    """
 
-    function_dict = dict(function_call)  # Parsing the JSON string
+    function_dict = dict(function_call)
     function_name = function_dict["name"]
-    function_args = function_dict["arguments"]  # This might still be a JSON string
+    function_args = function_dict["arguments"]
 
     if isinstance(function_args, str):
         function_args = json.loads(function_args)
 
-    if function_name == "generate_code":
+    if function_name == "classify_message":
+        logger.info(f"Classifying message.")
+        keywords = function_args.get("keywords")
+        logger.info(f"Keywords: {keywords}")
+
+    elif function_name == "generate_code":
         logger.info(f"Evaluating: {function_name}().")
         code = function_args.get("code")
         code_results = exec(code)

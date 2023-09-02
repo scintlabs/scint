@@ -1,7 +1,6 @@
 # Scint
 
-The Scint project is an exploration into the capabilities and potential of OpenAI's GPT-4 and other foundational LLMs.
-
+Scint is a robust intelligent assistant framework designed to augment and enhance knowledge work. At its core, it's a conversational chat bot with writing, coding, and research capabilities.
 ## Overview
 
 Scint is an AI-powered assistant designed with a Command-Line Interface (CLI) for interaction. The project showcases modularity, extensibility, and a blend of synchronous and asynchronous operations to ensure efficient multitasking.
@@ -28,14 +27,6 @@ Scint is an AI-powered assistant designed with a Command-Line Interface (CLI) fo
 
 - Observer enhancement: Extend the observer to monitor additional data sources or system states
 - State transition: Introduce actions or behaviors associated with each state transition
-- Security Measures: Implement measures to ensure safety, especially when executing code or shell commands
-- Function Expansion: Broaden the range of executable functions to enhance utility
-- UI/UX Improvements: Consider a graphical interface for a more user-friendly experience beyond the CLI
+- Security measures: Implement measures to ensure safety, especially when executing code or shell commands
+- Function expansion: Broaden the range of executable functions to enhance utility
 
-## Currently exploring
-
-- State management tools.
-- CLI enhancements.
-- Directory and file parsing tools.
-- Function execution frameworks.
-- Prompt management systems.

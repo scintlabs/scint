@@ -2,9 +2,8 @@ import subprocess
 
 from rich.console import Console
 
-from core.chat import init_chat
-from core.observer import Observer
-from core.state import State
+from base.handlers.message import chat
+from base.state import StateManager
 from util.logging import logger
 
 console = Console()
@@ -12,22 +11,23 @@ exit_commands = ["/quit"]
 
 
 def save_and_exit():
-    console.print("Exiting.")
+    console.print("Quitting.")
 
 
 def get_input():
-    q = console.input(f"❯ ")  # type: ignore
+    q = console.input(f" ❯ ")  # type: ignore
     return q
 
 
 async def run_cli():
-    state = State()
-    observer = Observer()
+    """Message handler class."""
+    logger.info(f"Starting CLI.")
+    state = StateManager()
     user_message = get_input()
 
     while user_message not in exit_commands:
-        if user_message.startswith("cmd"):
-            command = user_message[3:].strip()
+        if user_message.startswith("/cmd"):
+            command = user_message[4:].strip()
 
             try:
                 process = subprocess.Popen(
@@ -37,17 +37,16 @@ async def run_cli():
                 output_text = output.decode()
                 error_text = error.decode()
 
-                # if output_text:
-                #     console.print(f"{output_text}\n")
-                # elif error_text:
-                #     console.print(f"{error_text}\n")
+                if output_text:
+                    console.print(f"{output_text}\n")
+                elif error_text:
+                    console.print(f"{error_text}\n")
             except Exception as e:
                 logger.exception(f"Error running command: {e}\n")
 
-        else:
+        elif user_message.startswith("/msg"):
             try:
-                response = await init_chat(user_message)  # type: ignore
-                # console.print(f"❯❯ {response} \n")
+                await chat(user_message)  # type: ignore
             except Exception as e:
                 logger.exception(f"Error communicating with the assistant: {e}\n")
 

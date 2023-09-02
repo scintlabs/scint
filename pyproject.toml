@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "scint"
 version = "0.1.0"
-description = "Collaborative intelligence"
+description = "Stateful, collaborative intelligence"
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 license = "MIT"
 readme = "README.md"
@@ -24,6 +24,7 @@ typesense = "^0.16.0"
 meilisearch = "^0.28.2"
 fastapi = "^0.101.1"
 psycopg2 = "^2.9.7"
+pytest = "^7.4.1"
 
 
 [build-system]

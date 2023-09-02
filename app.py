@@ -2,10 +2,10 @@ import asyncio
 
 from fastapi import FastAPI, WebSocket, HTTPException, Depends
 
-from core.definitions.types import ChatMessage, Command, StateMessage, Observation
-from core.cli import run_cli
-from core.observer import Observer
-from core.state import State
+from base.definitions.types import ChatMessage, Command, StateMessage, Observation
+from base.cli import run_cli
+from base.state import StateManager
+from util.logging import logger
 
 
 app = FastAPI()
