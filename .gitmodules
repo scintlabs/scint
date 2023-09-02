@@ -1,0 +1,6 @@
+[submodule "scint-web"]
+	path = scint-web
+	url = https://github.com/kaechle/scint-web
+[submodule "web"]
+	path = web
+	url = https://github.com/kaechle/scint-web
