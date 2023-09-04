@@ -2657,3 +2657,525 @@ Now that's enough about me. How can I assist you today?
 [23-09-02 15:13] base.data.db.init_sql_connection: Opening database connection.
 [23-09-02 15:13] base.data.db.insert_message: Inserting message into database.
 [23-09-02 15:13] base.handlers.message.store_message: Stored assistant message in the database.
+[23-09-03 19:31] base.cli.run_cli: Starting CLI.
+[23-09-03 19:31] base.state.__init__: Application state initialized: AppState.CONTROLLER
+[23-09-03 19:31] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:31] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:31] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:31] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:31] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:31] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:31] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:31] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:31] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:31] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:31] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:31] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:31] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:31] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:31] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:31] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:31] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:31] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:35] base.cli.run_cli: Starting CLI.
+[23-09-03 19:35] base.state.__init__: Application state initialized: AppState.CONTROLLER
+[23-09-03 19:35] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:35] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:35] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:35] base.handlers.message.chat: There was a problem delivering the message manifest: name 'prompts' is not defined
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint-server/server.py", line 22, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x16983bb00>
+    │       └ <function run at 0x10574bc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1693269e0>
+           │      └ <function Runner.run at 0x105753e20>
+           └ <asyncio.runners.Runner object at 0x14706b750>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint-server/base/cli.py:49> cb=[_ru...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x105751a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x14706b750>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1057519e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1057537e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x105691b20>
+    └ <Handle <TaskStepMethWrapper object at 0x169811720>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x169811720>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x169811720>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x169811720>()>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/cli.py", line 49, in run_cli
+    await chat(user_message)  # type: ignore
+          │    └ '/msg hi'
+          └ <function chat at 0x16983b9c0>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('/msg hi',)
+                 └ <function chat at 0x16983b880>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('/msg hi',)
+                   └ <function chat at 0x16983b4c0>
+
+> File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 76, in chat
+    messages, functions = await handler.build_manifest()
+                                │       └ <function MessageHandler.build_manifest at 0x169839da0>
+                                └ <base.handlers.message.MessageHandler object at 0x1694510d0>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 53, in build_manifest
+    prompts.SYSTEM_MESSAGES["controller"], MessageRole.SYSTEM, "Scint"
+                                           │           └ <MessageRole.SYSTEM: 'system'>
+                                           └ <enum 'MessageRole'>
+
+NameError: name 'prompts' is not defined
+[23-09-03 19:35] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:35] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:35] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:35] base.handlers.message.chat: There was a problem delivering the message manifest: name 'prompts' is not defined
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint-server/server.py", line 22, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x16983bb00>
+    │       └ <function run at 0x10574bc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1693269e0>
+           │      └ <function Runner.run at 0x105753e20>
+           └ <asyncio.runners.Runner object at 0x14706b750>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint-server/base/cli.py:49> cb=[_ru...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x105751a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x14706b750>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1057519e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1057537e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x105691b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/cli.py", line 49, in run_cli
+    await chat(user_message)  # type: ignore
+          │    └ '/msg hi'
+          └ <function chat at 0x16983b9c0>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('/msg hi',)
+                 └ <function chat at 0x16983b880>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('/msg hi',)
+                   └ <function chat at 0x16983b4c0>
+
+> File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 76, in chat
+    messages, functions = await handler.build_manifest()
+                                │       └ <function MessageHandler.build_manifest at 0x169839da0>
+                                └ <base.handlers.message.MessageHandler object at 0x1694eb910>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 53, in build_manifest
+    prompts.SYSTEM_MESSAGES["controller"], MessageRole.SYSTEM, "Scint"
+                                           │           └ <MessageRole.SYSTEM: 'system'>
+                                           └ <enum 'MessageRole'>
+
+NameError: name 'prompts' is not defined
+[23-09-03 19:35] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:35] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:35] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:35] base.handlers.message.chat: There was a problem delivering the message manifest: name 'prompts' is not defined
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint-server/server.py", line 22, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x16983bb00>
+    │       └ <function run at 0x10574bc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x1693269e0>
+           │      └ <function Runner.run at 0x105753e20>
+           └ <asyncio.runners.Runner object at 0x14706b750>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint-server/base/cli.py:49> cb=[_ru...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x105751a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x14706b750>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1057519e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1057537e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x105691b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/cli.py", line 49, in run_cli
+    await chat(user_message)  # type: ignore
+          │    └ '/msg hi'
+          └ <function chat at 0x16983b9c0>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('/msg hi',)
+                 └ <function chat at 0x16983b880>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('/msg hi',)
+                   └ <function chat at 0x16983b4c0>
+
+> File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 76, in chat
+    messages, functions = await handler.build_manifest()
+                                │       └ <function MessageHandler.build_manifest at 0x169839da0>
+                                └ <base.handlers.message.MessageHandler object at 0x1692cb750>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 53, in build_manifest
+    prompts.SYSTEM_MESSAGES["controller"], MessageRole.SYSTEM, "Scint"
+                                           │           └ <MessageRole.SYSTEM: 'system'>
+                                           └ <enum 'MessageRole'>
+
+NameError: name 'prompts' is not defined
+[23-09-03 19:36] base.cli.run_cli: Starting CLI.
+[23-09-03 19:36] base.state.__init__: Application state initialized: AppState.CONTROLLER
+[23-09-03 19:36] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:36] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:36] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:36] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:36] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:36] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:36] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:36] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:36] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:36] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:36] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:36] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:36] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:36] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:36] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:36] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:36] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:36] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:39] base.cli.run_cli: Starting CLI.
+[23-09-03 19:39] base.state.__init__: Application state initialized: AppState.CONTROLLER
+[23-09-03 19:39] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:39] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:39] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:39] base.handlers.message.chat: There was a problem delivering the message manifest: cannot access local variable 'sys_init' where it is not associated with a value
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint-server/server.py", line 22, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x165e8fba0>
+    │       └ <function run at 0x10320fc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x164dde9e0>
+           │      └ <function Runner.run at 0x103217e20>
+           └ <asyncio.runners.Runner object at 0x164f09290>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint-server/base/cli.py:49> cb=[_ru...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x103215a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x164f09290>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1032159e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1032177e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x103155b20>
+    └ <Handle <TaskStepMethWrapper object at 0x163b932b0>()>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <TaskStepMethWrapper object at 0x163b932b0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <TaskStepMethWrapper object at 0x163b932b0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <TaskStepMethWrapper object at 0x163b932b0>()>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/cli.py", line 49, in run_cli
+    await chat(user_message)  # type: ignore
+          │    └ '/msg hi'
+          └ <function chat at 0x165e8fa60>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('/msg hi',)
+                 └ <function chat at 0x165e8f920>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('/msg hi',)
+                   └ <function chat at 0x165e8f560>
+
+> File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 74, in chat
+    messages, functions = await handler.build_manifest()
+                                │       └ <function MessageHandler.build_manifest at 0x165e8de40>
+                                └ <base.handlers.message.MessageHandler object at 0x164efa110>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 52, in build_manifest
+    sys_init = self.format_message(sys_init, MessageRole.SYSTEM, "Scint")
+               │    │                        │           └ <MessageRole.SYSTEM: 'system'>
+               │    │                        └ <enum 'MessageRole'>
+               │    └ <function MessageHandler.format_message at 0x165c9da80>
+               └ <base.handlers.message.MessageHandler object at 0x164efa110>
+
+UnboundLocalError: cannot access local variable 'sys_init' where it is not associated with a value
+[23-09-03 19:39] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:39] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:39] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:39] base.handlers.message.chat: There was a problem delivering the message manifest: cannot access local variable 'sys_init' where it is not associated with a value
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint-server/server.py", line 22, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x165e8fba0>
+    │       └ <function run at 0x10320fc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x164dde9e0>
+           │      └ <function Runner.run at 0x103217e20>
+           └ <asyncio.runners.Runner object at 0x164f09290>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint-server/base/cli.py:49> cb=[_ru...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x103215a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x164f09290>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1032159e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1032177e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x103155b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/cli.py", line 49, in run_cli
+    await chat(user_message)  # type: ignore
+          │    └ '/msg hi'
+          └ <function chat at 0x165e8fa60>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('/msg hi',)
+                 └ <function chat at 0x165e8f920>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('/msg hi',)
+                   └ <function chat at 0x165e8f560>
+
+> File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 74, in chat
+    messages, functions = await handler.build_manifest()
+                                │       └ <function MessageHandler.build_manifest at 0x165e8de40>
+                                └ <base.handlers.message.MessageHandler object at 0x164ed8410>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 52, in build_manifest
+    sys_init = self.format_message(sys_init, MessageRole.SYSTEM, "Scint")
+               │    │                        │           └ <MessageRole.SYSTEM: 'system'>
+               │    │                        └ <enum 'MessageRole'>
+               │    └ <function MessageHandler.format_message at 0x165c9da80>
+               └ <base.handlers.message.MessageHandler object at 0x164ed8410>
+
+UnboundLocalError: cannot access local variable 'sys_init' where it is not associated with a value
+[23-09-03 19:39] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:39] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:39] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:39] base.handlers.message.chat: There was a problem delivering the message manifest: cannot access local variable 'sys_init' where it is not associated with a value
+Traceback (most recent call last):
+
+  File "/Users/kaechle/Developer/projects/scint-server/server.py", line 22, in <module>
+    asyncio.run(run_cli())
+    │       │   └ <function run_cli at 0x165e8fba0>
+    │       └ <function run at 0x10320fc40>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_cli at 0x164dde9e0>
+           │      └ <function Runner.run at 0x103217e20>
+           └ <asyncio.runners.Runner object at 0x164f09290>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_cli() running at /Users/kaechle/Developer/projects/scint-server/base/cli.py:49> cb=[_ru...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x103215a80>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x164f09290>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 640, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x1032159e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 607, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x1032177e0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 1922, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x103155b20>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/opt/homebrew/Cellar/python@3.11/3.11.5/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/cli.py", line 49, in run_cli
+    await chat(user_message)  # type: ignore
+          │    └ '/msg hi'
+          └ <function chat at 0x165e8fa60>
+
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 88, in async_wrapped
+    return await fn(*args, **kwargs)
+                 │   │       └ {}
+                 │   └ ('/msg hi',)
+                 └ <function chat at 0x165e8f920>
+  File "/Users/kaechle/Library/Caches/pypoetry/virtualenvs/scint-xLD7Xbys-py3.11/lib/python3.11/site-packages/tenacity/_asyncio.py", line 50, in __call__
+    result = await fn(*args, **kwargs)
+                   │   │       └ {}
+                   │   └ ('/msg hi',)
+                   └ <function chat at 0x165e8f560>
+
+> File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 74, in chat
+    messages, functions = await handler.build_manifest()
+                                │       └ <function MessageHandler.build_manifest at 0x165e8de40>
+                                └ <base.handlers.message.MessageHandler object at 0x164f1e2d0>
+
+  File "/Users/kaechle/Developer/projects/scint-server/base/handlers/message.py", line 52, in build_manifest
+    sys_init = self.format_message(sys_init, MessageRole.SYSTEM, "Scint")
+               │    │                        │           └ <MessageRole.SYSTEM: 'system'>
+               │    │                        └ <enum 'MessageRole'>
+               │    └ <function MessageHandler.format_message at 0x165c9da80>
+               └ <base.handlers.message.MessageHandler object at 0x164f1e2d0>
+
+UnboundLocalError: cannot access local variable 'sys_init' where it is not associated with a value
+[23-09-03 19:42] base.cli.run_cli: Starting CLI.
+[23-09-03 19:42] base.state.__init__: Application state initialized: AppState.CONTROLLER
+[23-09-03 19:42] base.handlers.message.chat: Starting chat process.
+[23-09-03 19:42] base.handlers.message.__init__: Message handler initialized.
+[23-09-03 19:42] base.handlers.message.build_manifest: Building message manifest.
+[23-09-03 19:42] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:42] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:42] base.handlers.message.store_message: Stored user message in the database.
+[23-09-03 19:42] base.handlers.message.chat: Response received.
+ ❯ Hey there, Tim! What can I assist you with today?
+[23-09-03 19:42] base.data.db.init_sql_connection: Opening database connection.
+[23-09-03 19:42] base.data.db.insert_message: Inserting message into database.
+[23-09-03 19:42] base.handlers.message.store_message: Stored assistant message in the database.
+[23-09-04 01:22] base.processor.process_files: Error reading ./.DS_Store: 'utf-8' codec can't decode byte 0xb9 in position 99: invalid start byte
+[23-09-04 01:22] base.processor.process_files: Error reading ./base/.DS_Store: 'utf-8' codec can't decode byte 0xb9 in position 99: invalid start byte
+[23-09-04 01:36] base.processor.process_files: Error reading ./.DS_Store: 'utf-8' codec can't decode byte 0xb9 in position 99: invalid start byte

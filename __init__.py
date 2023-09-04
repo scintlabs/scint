@@ -1,6 +1,6 @@
 """Top-level package for scint."""
 
-from base import generator, processor, prompt, state
+from base import processor, prompt, state, transformer
 from base.definitions import functions, prompts, types
 from base.data import providers
 from util import logging, tokenizer

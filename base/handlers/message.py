@@ -3,21 +3,22 @@ from typing import Dict, List
 
 import tenacity
 
-import base.data.db
+import base.handlers.db_connection
 import base.definitions.prompts
 import base.processor
-import conf.default
-import util.logging
-from base.providers.models import openai
-from base.definitions.functions import google_search
+import conf.app
+from util.logging import logger
+from base.providers.openai import openai
 from base.definitions.classes import MessageRole
+from base.definitions.functions import LOCATOR, PROCESSOR, TRANSFORMER
+from base.definitions.prompts import SYSTEM_MESSAGES
 
-prompts = base.definitions.prompts
+controller = SYSTEM_MESSAGES["controller"]
 
 
 class MessageHandler:
     def __init__(self):
-        util.logging.logger.info(f"Message handler initialized.")
+        logger.info(f"Message handler initialized.")
 
     def format_message(
         self, message: str, role: MessageRole, name: str
@@ -46,38 +47,36 @@ class MessageHandler:
         return env_message
 
     async def build_manifest(self):
-        util.logging.logger.info(f"Building message manifest.")
+        logger.info(f"Building message manifest.")
 
         messages: List[Dict[str, str]] = []
         functions: List[Dict[str, str]] = []
 
-        sys_init = self.format_message(
-            prompts.SYSTEM_MESSAGES["controller"], MessageRole.SYSTEM, "Scint"
-        )
+        sys_init = self.format_message(controller, MessageRole.SYSTEM, "Scint")
 
         messages.append(sys_init)
-        functions.append(google_search)
+        functions.append(LOCATOR)
 
         return messages, functions
 
     def store_message(self, role, content, response_id):
         try:
-            base.data.db.insert_message(role, content, response_id)
-            util.logging.logger.info(f"Stored {role} message in the database.")
+            base.handlers.db_connection.insert_message(role, content, response_id)
+            logger.info(f"Stored {role} message in the database.")
         except Exception as e:
-            util.logging.logger.exception(f"Failed to store message: {e}")
+            logger.exception(f"Failed to store message: {e}")
 
 
 @tenacity.retry(stop=tenacity.stop_after_attempt(3), wait=tenacity.wait_fixed(1))
 async def chat(user_message):
-    util.logging.logger.info(f"Starting chat process.")
+    logger.info(f"Starting chat process.")
 
     handler = MessageHandler()
 
     try:
         messages, functions = await handler.build_manifest()
         formatted_user_message = handler.format_message(
-            user_message, MessageRole.USER, conf.default.user
+            user_message, MessageRole.USER, conf.app.user
         )
         messages.append(formatted_user_message)
 
@@ -90,7 +89,7 @@ async def chat(user_message):
         try:
             if "content" in data["message"] and data["message"]["content"] is not None:
                 reply = data["message"]["content"]
-                util.logging.logger.info(f"Response received.\n ❯ {reply}")
+                logger.info(f"Response received.\n ❯ {reply}")
                 messages.append({"role": "assistant", "content": f"{reply}"})
 
             if (
@@ -107,11 +106,9 @@ async def chat(user_message):
                 return reply
 
         except Exception as e:
-            util.logging.logger.exception(f"There was a problem: {e}")
+            logger.exception(f"There was a problem: {e}")
             raise
 
     except Exception as e:
-        util.logging.logger.exception(
-            f"There was a problem delivering the message manifest: {e}"
-        )
+        logger.exception(f"There was a problem delivering the message manifest: {e}")
         raise

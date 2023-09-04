@@ -11,16 +11,12 @@ async def google(query):
     try:
         response = service.cse().list(q=query, cx=envar("CUSTOM_SEARCH_ID")).execute()
 
-        response_items = response.get(
-            "items", []
-        )  # Get the items key, or an empty list if it's not there
+        response_items = response.get("items", [])
         parsed_response = [
             {
                 "title": item["title"],
                 "url": item["link"],
-                "description": item.get(
-                    "snippet", ""
-                ),  # Use get() in case snippet is not present
+                "description": item.get("snippet", ""),
             }
             for item in response_items
         ]

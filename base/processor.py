@@ -1,68 +1,110 @@
 import os, json, subprocess
+from enum import Enum
+from typing import List
 
 from rich.markdown import Markdown
+from sentence_transformers import SentenceTransformer
+from nltk.tokenize import sent_tokenize
 
-from base.providers.search import google
-from base.state import APPDATA, StateManager
 from util.logging import logger
 
 
-async def parse_dir():
-    """Function to parse the current working directory."""
-    logger.info(f"Parsing environment.")
-    try:
-        dir_data: subprocess.CompletedProcess[str] = subprocess.run(
-            ["tree", "-J", "--gitignore", "-L", "3", APPDATA],
-            capture_output=True,
-            text=True,
-            check=True,
+class ProcessorContext:
+    def __init__(self):
+        self.cwd = os.getcwd()
+
+
+class Processor:
+    def __init__(self):
+        self.model = SentenceTransformer(
+            "sentence-transformers/multi-qa-mpnet-base-cos-v1"
         )
 
-        return dir_data
+        self.skip_filetypes = [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".bmp",
+            ".pdf",
+            ".DS_Store",
+            ".gitattributes",
+            ".gitmodules",
+        ]
+        self.skip_dirs = [".git/"]
+        self.text_output_file = "processed_data_text.json"
+        self.embeddings_output_file = "processed_data_embeddings.json"
+        self.chunk_size = 500
+        self.overlap = 150
+        self.code_filetypes = [".py", ".js", ".java", ".c"]
+        self.text_filetypes = [".txt", ".md"]
 
-    except subprocess.CalledProcessError as e:
-        logger.exception(f"Error parsing environment: {e}")
+    def _parse_gitignore(self, path="."):
+        gitignore_path = os.path.join(path, ".gitignore")
 
+        if os.path.exists(gitignore_path):
+            with open(gitignore_path, "r") as f:
+                lines = f.readlines()
 
-async def parse_files():
-    """Function to parse files."""
-    logger.info(f"Parsing files.")
-    file_path = os.path.join(APPDATA, "filename")
-    mode = "r+"
-    with open(file_path, mode) as f:
-        file_content = f.read()
-        if file_content:
-            return file_content
+                for line in lines:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if line.endswith("/"):
+                        self.skip_dirs.append(line)
+                    else:
+                        self.skip_filetypes.append(line)
+
+    def _chunk_text_with_overlap(self, content):
+        start = 0
+        end = self.chunk_size
+        while start < len(content):
+            yield content[start:end]
+            start = end - self.overlap
+            end = start + self.chunk_size
+
+    def _tokenize_content(self, content, file_type):
+        if file_type in self.code_filetypes:
+            return content.split("\n")
+        elif file_type in self.text_filetypes:
+            return sent_tokenize(content)
         else:
-            return "No file information available."
+            return []
 
+    def process_files(self, path="."):
+        text_data = {}
+        embeddings_data = {}
 
-async def eval_function(function_call):
-    """
-    Function for handling the assistant's function calls.
-    """
+        for root, dirs, files in os.walk(path):
+            dirs[:] = [d for d in dirs if d + "/" not in self.skip_dirs]
 
-    function_dict = dict(function_call)
-    function_name = function_dict["name"]
-    function_args = function_dict["arguments"]
+            for file in files:
+                file_extension = os.path.splitext(file)[-1]
+                if file_extension in self.skip_filetypes:
+                    continue
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, encoding="utf-8") as f:
+                        content = f.read()
+                        tokens = self._tokenize_content(content, file_extension)
+                        for token in tokens:
+                            for chunk in self._chunk_text_with_overlap(token):
+                                chunk_embedding = self.model.encode(chunk.strip())
 
-    if isinstance(function_args, str):
-        function_args = json.loads(function_args)
+                                if file_path not in text_data:
+                                    text_data[file_path] = []
+                                    embeddings_data[file_path] = []
 
-    if function_name == "classify_message":
-        logger.info(f"Classifying message.")
-        keywords = function_args.get("keywords")
-        logger.info(f"Keywords: {keywords}")
+                                text_data[file_path].append(chunk)
+                                embeddings_data[file_path].append(
+                                    chunk_embedding.tolist()
+                                )
+                except (UnicodeDecodeError, IOError) as e:
+                    logger.error(f"Error reading {file_path}: {e}")
+                    continue
 
-    elif function_name == "generate_code":
-        logger.info(f"Evaluating: {function_name}().")
-        code = function_args.get("code")
-        code_results = exec(code)
-        print(Markdown(code))
-        return code_results
+        with open(self.text_output_file, "w") as f:
+            json.dump(text_data, f)
 
-    elif function_name == "google_search":
-        logger.info(f"Evaluating: {function_name}().")
-        query = function_args.get("query")
-        search_results = await google(query)
-        return search_results
+        with open(self.embeddings_output_file, "w") as f:
+            json.dump(embeddings_data, f)

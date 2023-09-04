@@ -10,8 +10,6 @@ api_key = envar("OPENAI_API_KEY")
 
 
 async def openai(messages: List[Dict[str, str]], functions: List[Dict]):
-    """A wrapper for the OpenAI ChatCompletion call"""
-
     logit_bias = {1102: -100, 4717: -100, 7664: -100}
 
     if api_key is None:

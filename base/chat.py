@@ -1,12 +1,14 @@
 import asyncio
 from typing import Dict, List
+
 from tenacity import retry, stop_after_attempt, wait_fixed
-import base.data.db
+
+import base.handlers.db_connection
 import base.definitions.prompts
 import base.processor
-import conf.default
+import conf.app
 from base.handlers.message import MessageHandler
-from base.providers.models import openai
+from base.providers.openai import openai
 from base.definitions.classes import MessageRole
 from util.logging import logger
 
@@ -20,7 +22,7 @@ async def chat(user_message):
     try:
         messages, functions = await handler.build_manifest()
         formatted_user_message = handler.format_message(
-            user_message, MessageRole.USER, conf.default.user
+            user_message, MessageRole.USER, conf.app.user
         )
         messages.append(formatted_user_message)
 

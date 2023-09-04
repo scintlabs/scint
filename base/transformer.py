@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from base.providers.models import openai
+from base.providers.openai import openai
 from base.definitions.prompts import Prompt
 from util.logging import logger
 
@@ -38,9 +38,9 @@ generate_code = {
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def generate(message: str, prompts: List[Prompt]) -> List[Dict]:
+async def generator(message: str, prompts: List[Prompt]) -> List[Dict]:
     """
-    Experimental function for mutating data with multiple, functional prompts.
+    This function loops multiple promps over an input, modifying it in some way and passing the result to the next prompt. It was designed with functional prompts in mind and, depending on the prompts used, it occasionally mimes human creativity and reasoning.  creativity in the iterative sense.  modifying it, and pass the result to the next prompt to continue the process. Depending on the prompts used, the process end result ranges from wildly useless to a spark of creative reasoning.  loops over and modifies its input iteratively using functional language prompts.string an input,  input mutating it with functional language prompts which results in an iterative creative reasoning process, albeit one that's quite rudimentary.
     """
     messages = []
     messages.append({"role": "system", "content": message})
