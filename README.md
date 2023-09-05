@@ -1,10 +1,10 @@
 # Scint
 
-Scint is an intelligent assistant engineered to augment user productivity and automate tasks across various domains. Its functionality encompasses research and analysis, planning and management for projects and tasks, and content generation using sophisticated data pipelines. These capabilies are supported by enhanced memory and context.
+Scint is an intelligent assistant engineered to augment user productivity and automate tasks across various domains. Its functionality encompasses research and analysis, planning and management for projects and tasks, and content generation using sophisticated data pipelines. These capabilities are supported by enhanced memory and context.
 
 ## Features
 
-> Note: Scint still in the early stages of development
+> Note: Scint is still in the early stages of development
 
 Many of Scint's features are still in development. Likewise, given the still-early stages of exploration of the capabilities of LLMs, defining its these features is stil as much an exploration as it is a design choice.
 
