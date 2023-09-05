@@ -2,7 +2,9 @@ import subprocess
 
 from rich.console import Console
 
-from base.handlers.message import chat
+from base.definitions.types import Message
+from conf.base import USER
+from base.chat import send_message
 from base.state import StateManager
 from util.logging import logger
 
@@ -15,19 +17,17 @@ def save_and_exit():
 
 
 def get_input():
-    q = console.input(f" ❯ ")  # type: ignore
+    q = console.input(f" ❯ ")
     return q
 
 
 async def run_cli():
-    """Message handler class."""
     logger.info(f"Starting CLI.")
-    state = StateManager()
-    user_message = get_input()
+    message_content: str = get_input()
 
-    while user_message not in exit_commands:
-        if user_message.startswith("/cmd"):
-            command = user_message[4:].strip()
+    while message_content not in exit_commands:
+        if message_content.startswith("/cmd"):
+            command = message_content[4:].strip()
 
             try:
                 process = subprocess.Popen(
@@ -41,15 +41,18 @@ async def run_cli():
                     console.print(f"{output_text}\n")
                 elif error_text:
                     console.print(f"{error_text}\n")
+
             except Exception as e:
                 logger.exception(f"Error running command: {e}\n")
 
-        elif user_message.startswith("/msg"):
+        elif message_content.startswith("/msg"):
+            message_string = message_content[4:].strip()
             try:
-                await chat(user_message)  # type: ignore
+                message = Message(author=USER, content=message_content)
+                await send_message(message)
             except Exception as e:
                 logger.exception(f"Error communicating with the assistant: {e}\n")
 
-        user_message = get_input()
+        message_content = get_input()
 
     save_and_exit()

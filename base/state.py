@@ -1,9 +1,6 @@
 import os
-
 from enum import Enum
-
 from base.definitions.functions import LOCATOR
-from base.definitions.types import State
 from util.logging import logger
 from util.env import envar
 

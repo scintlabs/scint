@@ -1,4 +1,4 @@
-import os, json, subprocess
+import os, json
 from enum import Enum
 from typing import List
 
@@ -19,7 +19,6 @@ class Processor:
         self.model = SentenceTransformer(
             "sentence-transformers/multi-qa-mpnet-base-cos-v1"
         )
-
         self.skip_filetypes = [
             ".png",
             ".jpg",

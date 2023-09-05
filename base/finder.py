@@ -1,8 +1,8 @@
-import os
+import os, math
 
 import scrapy
-from scrapy_splash import SplashRequest
 from sentence_transformers import util
+from sentence_transformers import SentenceTransformer
 
 from util.logging import logger
 
@@ -10,46 +10,15 @@ filepath = os.getcwd()
 with open(filepath, encoding="utf-8") as f:
     content = f.read()
 
-# Add Splash server URL
-SPLASH_URL = "http://localhost:8050"
 
-# Add Splash to the Downloader middlewares
-DOWNLOADER_MIDDLEWARES = {
-    "scrapy_splash.SplashCookiesMiddleware": 723,
-    "scrapy_splash.SplashMiddleware": 725,
-    "scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware": 810,
-}
-
-# Set a custom DUPEFILTER_CLASS
-DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
-
-# Specify the SPLASH cache arguments
-HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
-
-
-class AIWikipediaSpider(scrapy.Spider):
-    name = "ai_wikipedia"
-    allowed_domains = ["wikipedia.org"]
-    start_urls = ["https://en.wikipedia.org/wiki/Artificial_intelligence"]
-
-    def start_requests(self):
-        for url in self.start_urls:
-            yield SplashRequest(url, self.parse, args={"wait": 2})
-
-    def parse(self, response):
-        # Extract the main headings
-        headings = response.css("span.mw-headline::text").getall()
-        for heading in headings:
-            yield {"heading": heading}
-
-
-async def similarity_search(self, query):
+async def similarity_search(query):
     """Search files/embeddings with SentenceTransformer."""
+    model = SentenceTransformer("sentence-transformers/multi-qa-mpnet-base-cos-v1")
     logger.info(f"Searching embeddings.")
-    query_embedding = self.model.encode(query)
+    query_embedding = model.encode(query)
     results = {}
 
-    for file_path, embeddings in self.index.items():
+    for file_path, embeddings in index.items():
         for idx, embedding in enumerate(embeddings):
             similarity_score = util.cos_sim(query_embedding, embedding)
             current_file_score = results.get(file_path, {}).get("score", 0)
@@ -73,3 +42,24 @@ async def similarity_search(self, query):
         print("------")
 
         return sorted_results
+
+
+def cosine_similarity(vec_a, vec_b):
+    if not vec_a or len(vec_a) != len(vec_b):
+        raise ValueError(
+            "Vectors for cosine similarity must be non-empty and of the same size."
+        )
+
+    dot_product = 0
+    norm_a = 0
+    norm_b = 0
+    for i in range(len(vec_a)):
+        dot_product += vec_a[i] * vec_b[i]
+        norm_a += vec_a[i] ** 2
+        norm_b += vec_b[i] ** 2
+
+    return (
+        0
+        if norm_a == 0 or norm_b == 0
+        else dot_product / (math.sqrt(norm_a) * math.sqrt(norm_b))
+    )

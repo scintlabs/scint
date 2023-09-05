@@ -1,11 +1,25 @@
 from enum import Enum
-from pydantic import BaseModel
+from uuid import UUID, uuid4
+from pydantic import BaseModel, Field
 
 
-# Model Definitions
-class UserRequest(BaseModel):
-    message: str
+class Role(str, Enum):
+    system = "system"
+    user = "user"
+    assistant = "assistant"
 
 
-class SystemMessage(BaseModel):
-    message: str
+class Entity(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    name: str
+    role: Role
+
+
+class Message(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    author: Entity
+    content: str
+
+
+class Function(BaseModel):
+    pass

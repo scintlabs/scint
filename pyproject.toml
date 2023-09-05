@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "base"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.13"
 openai = "^0.27.8"
 loguru = "^0.7.0"
 rich = "^13.5.2"
@@ -29,6 +29,9 @@ sentence-transformers = "^2.2.2"
 nltk = "^3.8.1"
 scrapy = "^2.10.1"
 scrapy-splash = "^0.9.0"
+wikipedia-api = "^0.6.0"
+scipy = "^1.11.2"
+uvicorn = "^0.23.2"
 
 
 [build-system]
