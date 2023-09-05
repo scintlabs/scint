@@ -6,9 +6,9 @@ Scint is an intelligent assistant engineered to augment user productivity and au
 
 > Note: Scint is still in the early stages of development
 
-Many of Scint's features are still in development. Likewise, given the still-early stages of exploration of the capabilities of LLMs, defining its these features is stil as much an exploration as it is a design choice.
+Many of Scint's features are still in development. Likewise, given the still-early stages of exploration into the capabilities of LLMs, defining these features is still just as much exploration as it is design decisions.
 
-That said, the general premise for Scint is a personalized, semi-autonomous assistant that maintains contextual awareness and can actually *help* you accomplish tasks, not just serve as an on-demand Stack Overflow. Above all, Scint is about seamlessly blending the capability of LLMs into workflows.
+That said, the general premise of Scint is to build a personalized, semi-autonomous assistant that maintains contextual awareness and can actually *help* you accomplish tasks, not just serve as an on-demand Stack Overflow. Above all, Scint is about seamlessly blending the generative capabilities of LLMs into existing workflows.
 
 The rundown:
 
@@ -23,6 +23,6 @@ The rundown:
 
 ## Progress
 
-The foundational aspects of Scint are still under development. While the code is open source and anyone's free to poke around, use, and modify it, I'm not accepting contributions at the moment. Once the project is closer to feature-compoletion, I'll consider this and other aspects.
+The foundational aspects of Scint are still under development. While the code is open source and anyone's free to poke around, use, and modify it, I'm not accepting contributions at the moment. Once the project is closer to feature-completion, I'll consider this and other aspects.
 
 
