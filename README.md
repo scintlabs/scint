@@ -1,32 +1,28 @@
 # Scint
 
-Scint is a robust intelligent assistant framework designed to augment and enhance knowledge work. At its core, it's a conversational chat bot with writing, coding, and research capabilities.
-## Overview
+Scint is an intelligent assistant engineered to augment user productivity and automate tasks across various domains. Its functionality encompasses research and analysis, planning and management for projects and tasks, and content generation using sophisticated data pipelines. These capabilies are supported by enhanced memory and context.
 
-Scint is an AI-powered assistant designed with a Command-Line Interface (CLI) for interaction. The project showcases modularity, extensibility, and a blend of synchronous and asynchronous operations to ensure efficient multitasking.
+## Features
 
-## Key features
+> Note: Scint still in the early stages of development
 
-- Command-Line Interface (CLI): A real-time interaction medium where users can input messages, receive AI-generated responses, and execute shell commands.
-- Message Handling: Customizable message processing and formatting for tailored user interactions.
-- Content Generation: Ability to produce content based on an array of prompts, ensuring versatile and dynamic interactions.
-- State Management: Transitions between various states, such as processing, chatting, or searching, to influence behavior and responses.
-- Observer Design Pattern: A mechanism possibly designed to monitor changes in system states or external data sources.
-- Function Execution: Executes specific functions, such as Google searches or code execution, based on user requests.
-- Prompt Management: Uses prompts to guide and customize its interactions and behavior.
+Many of Scint's features are still in development. Likewise, given the still-early stages of exploration of the capabilities of LLMs, defining its these features is stil as much an exploration as it is a design choice.
 
-## Potential use cases
+That said, the general premise for Scint is a personalized, semi-autonomous assistant that maintains contextual awareness and can actually *help* you accomplish tasks, not just serve as an on-demand Stack Overflow. Above all, Scint is about seamlessly blending the capability of LLMs into workflows.
 
-- Developer assistant: Aids developers with code generation, system commands, and quick online searches
-- Content generation pipeline:
-- Task automation: Automates certain tasks, like directory or file parsing, based on user prompts
-- Educational tool: Serves as a learning assistant for coding or other domains with its content generation and query response capabilities
-- Customizable assistant: Allows users to tailor the assistant's behavior to specific needs using prompts
+The rundown:
 
-## Areas for expansion
+- Enhanced state and context management
+- Advanced content generation using prompt pipelines
+- Access to live data via APIs
+- Use via API or CLI
+- Access to a sandbox for file creation, modification, and testing
+- Project and task management and notifications
+- Built-in configuration for easy customization and personalization
+- Plugins to add or customize models or expand capabilities
 
-- Observer enhancement: Extend the observer to monitor additional data sources or system states
-- State transition: Introduce actions or behaviors associated with each state transition
-- Security measures: Implement measures to ensure safety, especially when executing code or shell commands
-- Function expansion: Broaden the range of executable functions to enhance utility
+## Progress
+
+The foundational aspects of Scint are still under development. While the code is open source and anyone's free to poke around, use, and modify it, I'm not accepting contributions at the moment. Once the project is closer to feature-compoletion, I'll consider this and other aspects.
+
 
