@@ -14,15 +14,10 @@ The rundown:
 
 - Enhanced state and context management
 - Advanced content generation using prompt pipelines
-- Access to live data via APIs
-- Use via API or CLI
+- Access to, processing, and manipulation of data
+- Access to outside data via APIs
+- Use via API, CLI, or web interface
 - Access to a sandbox for file creation, modification, and testing
 - Project and task management and notifications
 - Built-in configuration for easy customization and personalization
 - Plugins to add or customize models or expand capabilities
-
-## Progress
-
-The foundational aspects of Scint are still under development. While the code is open source and anyone's free to poke around, use, and modify it, I'm not accepting contributions at the moment. Once the project is closer to feature-completion, I'll consider this and other aspects.
-
-
