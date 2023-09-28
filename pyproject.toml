@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "scint"
 version = "0.1.0"
-description = "Stateful, collaborative intelligence"
+description = "Cllaborative intelligence"
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 license = "MIT"
 readme = "README.md"
@@ -32,6 +32,9 @@ scrapy-splash = "^0.9.0"
 wikipedia-api = "^0.6.0"
 scipy = "^1.11.2"
 uvicorn = "^0.23.2"
+pydantic = "^2.3.0"
+tiktoken = "^0.5.1"
+aioconsole = "^0.6.2"
 
 
 [build-system]

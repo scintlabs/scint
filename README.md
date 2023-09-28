@@ -21,3 +21,10 @@ The rundown:
 - Project and task management and notifications
 - Built-in configuration for easy customization and personalization
 - Plugins to add or customize models or expand capabilities
+<<<<<<< HEAD
+=======
+
+## Progress
+
+The foundational aspects of Scint are still under development. While the code is open source and anyone's free to poke around, use, and modify it, I'm not accepting contributions at the moment. Once the project is closer to feature-completion, I'll consider this and other aspects.
+>>>>>>> e0a17ea (growage)

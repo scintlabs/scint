@@ -1,5 +1,5 @@
-import requests, wikipediaapi
-
+import requests
+import wikipediaapi
 
 url = "https://example/..."
 headers = {
