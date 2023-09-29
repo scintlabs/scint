@@ -2,7 +2,7 @@ import asyncio
 from typing import List
 
 from googleapiclient.discovery import build
-from util.logging import logger
+from observability.logging import logger
 
 from base.persistence.env import envar
 

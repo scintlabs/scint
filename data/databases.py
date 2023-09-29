@@ -2,8 +2,8 @@ import os
 from uuid import uuid4
 
 import psycopg2
-from util.logging import logger
 
+from base.observability.logging import logger
 from base.persistence.env import envar
 
 

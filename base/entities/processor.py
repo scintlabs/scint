@@ -1,47 +1,9 @@
-import json, os
+import json
+import os
 
 import tiktoken
 
-from config.prompts import processor as processor_prompt
-from config.functions import processor as processor_funcs
-from base.agents import Agent
 from base.observability.logging import logger
-
-
-class Processor(Agent):
-    def __init__(self):
-        self.name = "Processor"
-        self.messages = []
-        self.functions = []
-        self.system_prompt = processor_prompt
-        self.messages.append(self.system_prompt)
-        self.functions.append(processor_funcs)
-        logger.info(f"{self.name} initialized.")
-
-
-def rolling_token_count(data):
-    prompt_tokens = 0
-    completion_tokens = 0
-    total_tokens = 0
-    prompt_tokens += data["prompt_tokens"]
-    completion_tokens += data["completion_tokens"]
-    total_tokens += data["total_tokens"]
-    return print(f"{prompt_tokens} + {completion_tokens} = {total_tokens}")
-
-
-def thread_token_count(messages):
-    encoding = tiktoken.get_encoding("cl100k_base")
-    num_tokens = 0
-    tokens_per_message = 0
-    tokens_per_name = 0
-    for message in messages:
-        num_tokens += tokens_per_message
-        for key, value in message.items():
-            num_tokens += len(encoding.encode(value))
-            if key == "name":
-                num_tokens += tokens_per_name
-    num_tokens += 3
-    return num_tokens
 
 
 def process_files(self, path="."):

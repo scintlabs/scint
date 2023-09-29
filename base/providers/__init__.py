@@ -1,18 +1,12 @@
 from typing import List, Optional
+
 from pydantic import BaseModel, Json
 
 
 class OpenAIMessage(BaseModel):
     role: str
     content: str
-    name: str | None
-
-    def to_dict(self):
-        return {
-            "role": self.role,
-            "content": self.content,
-            "name": self.name,
-        }
+    name: str
 
 
 class Choice(BaseModel):

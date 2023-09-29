@@ -1,12 +1,11 @@
-from typing import Dict
-
 from enum import Enum
+from typing import Dict
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-from base.persistence import LifeCycle
 from base import User
+from base.persistence.lifecycle import LifeCycle
 
 USER = User(
     name="Tim Kaechle",
@@ -18,16 +17,5 @@ USER = User(
     lifecycle=LifeCycle(),
 )
 
+
 logit_bias: Dict = {1102: -100, 4717: -100, 7664: -100}
-
-
-class Role(str, Enum):
-    system = "system"
-    assistant = "assistant"
-    user = "user"
-
-
-class Entity(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    role: Role
-    lifecycle: LifeCycle

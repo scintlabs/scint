@@ -2,7 +2,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-from base.persistence import LifeCycle
+from base.persistence.lifecycle import LifeCycle
 
 
 class Organization(BaseModel):
@@ -27,3 +27,8 @@ class User(BaseModel):
     team: str
     organization: str
     lifecycle: LifeCycle
+
+
+class System(BaseModel):
+    name: str = "Scint"
+    lifecycle: LifeCycle = LifeCycle()

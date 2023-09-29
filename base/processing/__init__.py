@@ -1,22 +1,22 @@
 from datetime import datetime
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, HttpUrl, Json
 
-from base.persistence import LifeCycle
+from base.persistence.lifecycle import LifeCycle
+from base.processing.prompts import SystemPrompt
+
+from typing import List
 
 
 class Tag(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    lifecycle: LifeCycle
-    name: str
+    tag: str
     description: str
 
 
 class File(BaseModel):
     id: UUID = Field(default_factory=uuid4)
-    lifecycle: LifeCycle
     name: str
     format: str
     content: str
@@ -28,42 +28,6 @@ class Link(BaseModel):
     name: str
     description: Optional[str]
     path: HttpUrl = Field(..., description="Listof valid URLs")
-
-
-class Prompt(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    name: str
-    description: str
-    prompt: str
-    role: str
-    lifecycle: LifeCycle
-
-
-class SystemPrompt(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    name: str
-    description: str
-    system_prompt: str
-    role: str = "system"
-    lifecycle: LifeCycle
-
-
-class FunctionalPrompt(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    name: str
-    description: str
-    system_prompt: str
-    role: str
-    lifecycle: LifeCycle
-
-
-class FewShotPrompt(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    name: str
-    description: str
-    system_prompt: SystemPrompt
-    additional_prompts: List[Prompt]
-    lifecycle: LifeCycle
 
 
 class Task(BaseModel):

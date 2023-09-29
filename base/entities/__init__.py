@@ -1,24 +1,31 @@
-from typing import List
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-from base.persistence import LifeCycle
+from base.persistence.lifecycle import LifeCycle
 
 
 class Entity(BaseModel):
     id: UUID = Field(default_factory=uuid4)
-    name: str
     lifecycle: LifeCycle
 
 
-class System(Entity):
+class Coordinator(Entity):
     id: UUID = Field(default_factory=uuid4)
-    name: str = "Scint"
-    lifecycle: LifeCycle = LifeCycle()
+    lifecycle: LifeCycle
+
+
+class Executor(Entity):
+    id: UUID = Field(default_factory=uuid4)
+    lifecycle: LifeCycle
 
 
 class Finder(Entity):
+    id: UUID = Field(default_factory=uuid4)
+    lifecycle: LifeCycle
+
+
+class Generator(Entity):
     id: UUID = Field(default_factory=uuid4)
     lifecycle: LifeCycle
 
@@ -28,6 +35,6 @@ class Processor(Entity):
     lifecycle: LifeCycle
 
 
-class Generator(Entity):
+class Writer(Entity):
     id: UUID = Field(default_factory=uuid4)
     lifecycle: LifeCycle

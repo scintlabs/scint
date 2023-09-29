@@ -1,10 +1,10 @@
+import json
 from typing import List
-from openai import ChatCompletion
-from base.observability.logging import logger
 
+from openai import ChatCompletion
+
+from base.observability.logging import logger
 from base.persistence.env import envar
-from base.providers import OpenAIMessage
-from base.processing.functions import OpenAIFunction
 from config import user
 
 api_key = envar("OPENAI_API_KEY")
@@ -15,6 +15,7 @@ if api_key is None:
 
 
 async def chat_completion(messages, functions):
+    logger.info(f"functions")
     data = await ChatCompletion.acreate(
         model="gpt-4-0613",
         temperature=1.7,

@@ -1,16 +1,11 @@
 from datetime import date
+from typing import Union
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
 
 class Event(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
-    date: date
-    content: str
-
-
-class Info(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     date: date
     content: str

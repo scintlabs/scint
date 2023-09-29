@@ -35,6 +35,9 @@ uvicorn = "^0.23.2"
 pydantic = "^2.3.0"
 tiktoken = "^0.5.1"
 aioconsole = "^0.6.2"
+watchdog = "^3.0.0"
+spacy = "^3.6.1"
+tree-sitter = "^0.20.2"
 
 
 [build-system]

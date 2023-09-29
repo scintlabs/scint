@@ -2,8 +2,8 @@ from rich.console import Console
 
 from base.agents.assistant import Assistant
 from base.observability.logging import logger
-from base.processing.messages import Message
-from base.persistence import LifeCycle
+from base.persistence.lifecycle import LifeCycle
+from base.processing.messaging import Message
 
 scint = Assistant()
 console = Console()
@@ -25,4 +25,4 @@ async def run_cli():
         message = Message(
             role="user", content=message_content, name="Tim", lifecycle=LifeCycle()
         )
-        await scint.generate_message(message)
+        await scint.send_message(message)

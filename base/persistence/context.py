@@ -1,9 +1,8 @@
-from typing import List
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-from base.persistence import LifeCycle
+from base.persistence.lifecycle import LifeCycle
 
 
 class Context(BaseModel):

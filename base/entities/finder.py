@@ -1,14 +1,11 @@
 import math
 import os
 
-from base.agents import Agent
 from providers.openai import chat_completion
+
+from base.agents import Agent
 from base.observability.logging import logger
-from base.persistence import LifeCycle
-from base.processing import serialize
-from config.functions import assistant as assistant_funcs
-from config.prompts import assistant as assistant_prompt
-from config.prompts import finder
+from base.processing.prompts import finder
 
 filepath = os.getcwd()
 
