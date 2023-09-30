@@ -2,32 +2,12 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
+from data.models.functions import (ModelFunction, Parameters, Properties,
+                                   Property)
+
 
 async def eval_model_function(function_call):
     pass
-
-
-class Property(BaseModel):
-    type: str
-    description: str
-    enum: List[str] = Field(default_factory=list)
-
-
-class Properties(BaseModel):
-    task: Property
-    entity: Property
-
-
-class Parameters(BaseModel):
-    type: str
-    properties: Properties
-
-
-class ModelFunction(BaseModel):
-    name: str
-    description: str
-    parameters: Parameters
-    required: List[str]
 
 
 initialize_entity = ModelFunction(
@@ -114,7 +94,7 @@ functions = [
 #         },
 #         required=["coordinator"],
 #     ),
-#     lifecycle=LifeCycle(),
+#     lifecycle=Lifecycle(),
 # )
 
 # coordinator = Function(
@@ -134,7 +114,7 @@ functions = [
 #         },
 #         required=["summary", "keyword"],
 #     ),
-#     lifecycle=LifeCycle(),
+#     lifecycle=Lifecycle(),
 # )
 
 # finder = Function(
@@ -162,7 +142,7 @@ functions = [
 #             "user_response",
 #         ],
 #     ),
-#     lifecycle=LifeCycle(),
+#     lifecycle=Lifecycle(),
 # )
 
 # processor = Function(
@@ -189,7 +169,7 @@ functions = [
 #             "data",
 #         ],
 #     ),
-#     lifecycle=LifeCycle(),
+#     lifecycle=Lifecycle(),
 # )
 
 # Generator = Function(
@@ -216,7 +196,7 @@ functions = [
 #             "data",
 #         ],
 #     ),
-#     lifecycle=LifeCycle(),
+#     lifecycle=Lifecycle(),
 # )
 
 # generate_prose = {

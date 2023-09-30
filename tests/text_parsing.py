@@ -1,4 +1,5 @@
 import unittest
+
 from base.parsing.text import TextParser
 
 

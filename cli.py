@@ -2,8 +2,8 @@ from rich.console import Console
 
 from base.agents.assistant import Assistant
 from base.observability.logging import logger
-from base.persistence.lifecycle import LifeCycle
 from base.processing.messaging import Message
+from data.models.lifecycle import Lifecycle
 
 scint = Assistant()
 console = Console()
@@ -23,6 +23,6 @@ async def run_cli():
             continue
 
         message = Message(
-            role="user", content=message_content, name="Tim", lifecycle=LifeCycle()
+            role="user", content=message_content, name="Tim", lifecycle=Lifecycle()
         )
         await scint.send_message(message)

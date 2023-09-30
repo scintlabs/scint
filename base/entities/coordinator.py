@@ -1,5 +1,5 @@
 from base.observability.logging import logger
-from base.persistence.lifecycle import LifeCycle
+from data.models.lifecycle import Lifecycle
 
 
 class Coordinator:
@@ -7,4 +7,4 @@ class Coordinator:
 
     def __init__(self):
         logger.info(f"Initializing {self.name}.")
-        self.lifecycle = LifeCycle()
+        self.lifecycle = Lifecycle()

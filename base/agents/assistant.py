@@ -1,23 +1,23 @@
 from base.observability.logging import logger
-from base.persistence.lifecycle import LifeCycle
-from base.processing.functions import initialize_entity
 from base.processing.messaging import (Message, deserialize_thread,
                                        serialize_response)
-from base.processing.prompts import assistant as assistant_prompt
 from base.providers.openai import chat_completion
+from data.functions.functions import initialize_entity
+from data.models.lifecycle import Lifecycle
+from data.prompts.prompts import assistant as assistant_prompt
 
 
 class Assistant:
     def __init__(self):
         self.name = "Scint Assistant"
-        self.lifecycle = LifeCycle()
+        self.lifecycle = Lifecycle()
         self.messages = []
         self.functions = []
         self.system_prompt = assistant_prompt
         self.messages.append(self.system_prompt)
         self.functions.append(initialize_entity.model_dump())
 
-    async def initialize_state(self):
+    async def initialize_context(self):
         logger.info(f"Initializing {self.name}.")
 
     async def emitter(self, event):

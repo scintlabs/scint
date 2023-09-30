@@ -1,12 +1,10 @@
 from typing import Dict, List
 
-from processing import Prompt
 from providers.openai import chat_completion
 
-from base.agents import Agent
 from base.observability.logging import logger
-from base.processing.functions import generator as generator_funcs
-from base.processing.prompts import generator as generator_prompt
+from data.models.agents import Agent
+from data.models.prompts import Prompt
 
 
 async def transform_data(message: str, prompts: List[Prompt]) -> List[Dict]:

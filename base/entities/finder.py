@@ -3,9 +3,9 @@ import os
 
 from providers.openai import chat_completion
 
-from base.agents import Agent
 from base.observability.logging import logger
-from base.processing.prompts import finder
+from data.models.agents import Agent
+from data.prompts.prompts import finder
 
 filepath = os.getcwd()
 

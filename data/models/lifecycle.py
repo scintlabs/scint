@@ -1,15 +1,16 @@
-from datetime import date
-from typing import Optional
+from datetime import date, datetime
+from typing import List, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, validator
 
+timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%S.%fZ")
 
-class LifeCycle(BaseModel):
-    started_on: date = Field(default=date.today())
-    updated_on: Optional[date] = None
-    terminate_on: Optional[date] = None
-    ended_on: Optional[date] = None
+
+class Lifecycle(BaseModel):
+    created: date = Field(default=timestamp)
+    modified: Optional[List[date]] = None
+    suspended: Optional[date] = None
 
     @validator("updated_on", pre=True, always=True, check_fields=False)
     def validate_updated_on(cls, v, values):

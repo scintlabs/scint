@@ -1,16 +1,16 @@
 from base.observability.logging import logger
-from base.persistence import LifeCycle
-from base.processing.functions import initialize_entity
 from base.processing.messaging import (Message, deserialize_thread,
                                        serialize_response)
-from base.processing.prompts import assistant as assistant_prompt
 from base.providers.openai import chat_completion
+from data.functions.functions import initialize_entity
+from data.models.lifecycle import Lifecycle
+from data.prompts.prompts import assistant as assistant_prompt
 
 
 class Sentry:
     def __init__(self):
         self.name = "Sentry"
-        self.lifecycle = LifeCycle()
+        self.lifecycle = Lifecycle()
         self.active = True
         self.messages = []
         self.functions = []

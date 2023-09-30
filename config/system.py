@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from base.entities import System
+from data.models.entities import System
 
 
 def envar(var: str) -> Optional[str]:

@@ -1,4 +1,5 @@
-import os, time
+import os
+import time
 from typing import Dict, Union
 
 import spacy
@@ -6,8 +7,8 @@ from watchdog.observers import Observer
 
 from base.observability.logging import logger
 from base.parsing.code import CodeParser
-from base.parsing.text import TextParser
 from base.parsing.handlers import EventHandler
+from base.parsing.text import TextParser
 
 nlp = spacy.load("en_core_web_sm")
 

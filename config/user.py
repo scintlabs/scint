@@ -2,10 +2,8 @@ from enum import Enum
 from typing import Dict
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
-
-from base import User
-from base.persistence.lifecycle import LifeCycle
+from data.models.entities import User
+from data.models.lifecycle import Lifecycle
 
 USER = User(
     name="Tim Kaechle",
@@ -14,7 +12,7 @@ USER = User(
     number=8675309,
     team="Scint Balls",
     organization="Scint",
-    lifecycle=LifeCycle(),
+    lifecycle=Lifecycle(),
 )
 
 
