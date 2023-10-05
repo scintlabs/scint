@@ -1,6 +1,6 @@
 import unittest
 
-from base.parsing.code import PARSER_PYTHON, CodeParser
+from base.processing.parsers import PARSER_PYTHON, CodeParser
 
 
 class TestCodeDataModel(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from base.parsing.text import TextParser
+from base.processing.parsers import TextParser
 
 
 class TestTextDataModel(unittest.TestCase):

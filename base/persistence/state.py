@@ -1,13 +1,4 @@
-from enum import Enum
+from pydantic import BaseModel
+from xdg_base_dirs import xdg_data_home
 
-
-class Agents(str, Enum):
-    assistant = "Assistant"
-    coordinator = "Coordinator"
-    sentry = "Sentry"
-
-
-class System(str, Enum):
-    finder = "Finder"
-    processor = "Processor"
-    generator = "Generator"
+from base.config.logging import logger
