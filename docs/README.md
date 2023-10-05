@@ -28,7 +28,7 @@ While Scint is in its infancy, and the exploration of LLMs capabilities continue
 
 Scint enables developers to rapidly prototype intelligent applications by providing a structured and modular framework for composing various functionalities. Leveraging the composable nature of Scint, prototypes of intelligent assistants or other AI-driven applications can be quickly assembled, tested, and iterated upon.
 
-### Key Advantages for Prototyping:
+Some of the advantages:
 
 - **Modular Design:** Quickly assemble prototypes by combining predefined modules and capabilities, allowing for fast creation and testing of various intelligent functionalities.
 - **Configurable Intelligence:** Easily tailor the behavior, responses, and capabilities of your prototypes by modifying configurations, ensuring that the intelligence aligns with the intended application and user experience.

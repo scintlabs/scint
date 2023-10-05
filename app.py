@@ -6,8 +6,8 @@ from typing import Any
 from fastapi import Body, FastAPI
 from pydantic import ValidationError
 
-from base.config.logging import logger
-from base.processing.handlers import message_handler
+from base.system.logging import logger
+from base.handlers.message import message_handler
 
 
 app = FastAPI()

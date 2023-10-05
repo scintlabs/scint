@@ -4,8 +4,8 @@ import os
 
 import dotenv
 from typing import List, Dict, Optional
-from base.config.logging import logger
-from base.config.system import envar
+from base.system.logging import logger
+from base.system.settings import envar
 
 dotenv.load_dotenv()
 GOOGLE_API_KEY = envar("GOOGLE_API_KEY")

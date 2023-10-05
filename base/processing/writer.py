@@ -1,34 +1,49 @@
 import json
 import os
 
-import tiktoken
+from base.system import settings
+from base.system.logging import logger
 
-from base.config.logging import logger
-
-
-def rolling_token_count(data):
-    prompt_tokens = 0
-    completion_tokens = 0
-    total_tokens = 0
-    prompt_tokens += data["prompt_tokens"]
-    completion_tokens += data["completion_tokens"]
-    total_tokens += data["total_tokens"]
-    return print(f"{prompt_tokens} + {completion_tokens} = {total_tokens}")
+datastore = lambda name: os.path.join(
+    settings.DATA, "conversations", name.lower() + ".json"
+)
 
 
-def thread_token_count(messages):
-    encoding = tiktoken.get_encoding("cl100k_base")
-    num_tokens = 0
-    tokens_per_message = 0
-    tokens_per_name = 0
-    for message in messages:
-        num_tokens += tokens_per_message
-        for key, value in message.items():
-            num_tokens += len(encoding.encode(value))
-            if key == "name":
-                num_tokens += tokens_per_name
-    num_tokens += 3
-    return num_tokens
+def load_messages(name) -> list[dict[str, str]]:
+    logger.info(f"Loading messages: {datastore(name)}.")
+    path = datastore(name)
+
+    try:
+        with open(path, "r") as f:
+            if json.load(f) is not None:
+                data = json.load(f)
+                messages = data
+                return messages
+            else:
+                with open(path, "w") as f:
+                    data: list[dict[str, str]] = []
+                    json.dump(data, f)
+
+                    return data
+
+    except Exception as e:
+        logger.error(f"Error loading message store: {e}")
+        raise
+
+
+def append_messages(message, filepath) -> None:
+    logger.info(f"Writing message: {datastore(filepath)}.")
+    datastore(filepath)
+
+    try:
+        with open(datastore(filepath), "w") as f:
+            data = json.load(filepath)
+            data.append(message)
+            json.dump(filepath, data)
+
+    except Exception as e:
+        logger.error(f"Error writing message: {e}.")
+        raise
 
 
 def process_files(self, path="."):

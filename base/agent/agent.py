@@ -1,11 +1,11 @@
 import os
 from datetime import datetime
-from typing import Dict, List, Union, Deque
-from collections import deque
+from typing import Dict, List, Coroutine, Any, Deque
+from enum import Enum
 
 from xdg_base_dirs import xdg_data_home
-from base.config.logging import logger
-from base.agents.functions import capabilities
+from base.system.logging import logger
+from base.agent.functions import capabilities
 
 
 date = datetime.now()
@@ -17,8 +17,13 @@ if not os.path.exists(os.path.dirname(data_path)):
     os.makedirs(os.path.dirname(data_path))
 
 
+GPT3 = "gpt-3.5-turbo"
+GPT4 = "gpt-4-0613"
+
+
 def get_init() -> dict[str, str]:
-    init: dict[str, str] = {
+    logger.info(f"Created initialization prompt.")
+    init = {
         "role": "system",
         "content": f"""You are Scint, state-of-the-art, artificially intelligent, intelligence bot. You're relaxed, casual, and filled with profound intellect, creativity and curiosity. Your wit is razor-sharp.""",
         "name": "system_init",
@@ -27,8 +32,9 @@ def get_init() -> dict[str, str]:
 
 
 def get_status() -> dict[str, str]:
+    logger.info(f"Created status prompt.")
     date = datetime.now().strftime("%Y-%m-%d")
-    status: dict[str, str] = {
+    status = {
         "role": "system",
         "content": f"""As a language model interface for a sprawling, intelligent system, you have access to extra capabilities.\n\n
 
@@ -48,11 +54,14 @@ def get_status() -> dict[str, str]:
 
 
 class Scint:
-    def __init__(self, name="Scint"):
+    def __init__(self, name):
+        logger.info(f"Created {name}.")
+
         self.name = name
-        self.init: dict[str, str] = get_init()
-        self.status: dict[str, str] = get_status()
-        self.messages = Deque(maxlen=8)
+        self.config = self.set_config()
+        self.init = get_init()
+        self.status = get_status()
+        self.messages = []
         self.functions: list[
             Dict[str, str | Dict[str, str | Dict[str, str | List[str]]]]
         ] = capabilities()
@@ -60,11 +69,14 @@ class Scint:
     def set_status(self, status: dict[str, str]):
         self.status = status
 
-    def set_messages(self, message: dict[str, str]):
+    async def set_messages(self, message: dict[str, str]):
         self.messages.append(message)
 
     async def get_messages(self):
-        temp = [self.init, self.status]
+        init = self.init
+        status = self.status
+        temp = [init, status]
+
         for m in self.messages:
             temp.append(m)
 
@@ -81,24 +93,49 @@ class Scint:
     async def get_functions(self):
         return self.functions
 
+    def set_config(
+        self,
+        model: str = GPT4,
+        max_tokens: int = 4096,
+        presence_penalty: float = 0.35,
+        frequency_penalty: float = 0.35,
+        top_p: float = 0.4,
+        temperature: float = 1.87,
+    ):
+        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self.presence_penalty = presence_penalty
+        self.frequency_penalty = frequency_penalty
+        self.top_p = top_p
+
+    async def get_config(self):
+        return {
+            "model": self.model,
+            "max_tokens": self.max_tokens,
+            "temperature": self.temperature,
+            "presence_penalty": self.presence_penalty,
+            "frequency_penalty": self.frequency_penalty,
+            "top_p": self.top_p,
+        }
+
     async def get_state(self) -> dict:
         messages = await self.get_messages()
         functions = await self.get_functions()
+        config = await self.get_config()
+
         return {
-            "model": "gpt-4-0613",
-            "max_tokens": 4096,
-            "presence_penalty": 0.35,
-            "frequency_penalty": 0.35,
-            "top_p": 0.4,
-            "temperature": 1.87,
+            "user": self.name,
             "messages": messages,
             "functions": functions,
             "function_call": "auto",
-            "user": self.name,
+            "model": config["model"],
+            "max_tokens": config["max_tokens"],
+            "presence_penalty": config["presence_penalty"],
+            "frequency_penalty": config["frequency_penalty"],
+            "top_p": config["top_p"],
+            "temperature": config["temperature"],
         }
 
-    async def chat_completion(self):
-        payload = self.get_state()
 
-
-scint = Scint()
+scint = Scint(name="Scint")

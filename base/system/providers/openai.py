@@ -1,8 +1,8 @@
 import openai
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
-from base.config.logging import logger
-from base.config.system import envar
+from base.system.logging import logger
+from base.system.settings import envar
 
 api_key = envar("OPENAI_API_KEY")
 
@@ -18,7 +18,7 @@ async def function_call(functions):
 
 async def chat(**kwargs):
     response = await openai.ChatCompletion.acreate(
-        model=kwargs.get("model", "gpt-4-0613"),
+        model=kwargs.get("model"),
         max_tokens=kwargs.get("max_tokens", 4096),
         presence_penalty=kwargs.get("presence_penalty", 0.3),
         frequency_penalty=kwargs.get("frequency_penalty", 0.3),

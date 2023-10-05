@@ -11,7 +11,7 @@ def rolling_token_count(data):
     return print(f"{prompt_tokens} + {completion_tokens} = {total_tokens}")
 
 
-def thread_token_count(messages):
+def calculate_tokens(messages):
     encoding = tiktoken.get_encoding("cl100k_base")
     num_tokens = 0
     tokens_per_message = 0

@@ -1,11 +1,13 @@
+from typing import Dict, List, Union
 import os
 import time
-from typing import Dict, List, Union
 
-import spacy
+from tree_sitter import Language, Parser
 from watchdog.observers import Observer
+import spacy
 
-from base.config.logging import logger
+from base.system.logging import logger
+
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -17,59 +19,59 @@ class DataParser:
 
     def add_path(self, path: str) -> None:
         logger.info(f"Observing path: {path}")
-        self.observer.schedule(EventHandler(self), path=path, recursive=True)
+        # self.observer.schedule(EventHandler(self), path=path, recursive=True)
         self._process_path(path)
 
     def _process_path(self, path: str) -> None:
         for root, dirs, files in os.walk(path):
             for file in files:
                 file_path = os.path.join(root, file)
-                self.process_file(file_path)
+                process_file(file_path)
 
-    def process_file(self, file_path: str) -> None:
-        if os.path.isdir(file_path):
-            return
 
-        _, extension = os.path.splitext(file_path)
+def process_file(file_path: str) -> None:
+    if os.path.isdir(file_path):
+        return
 
-        text_extensions = [".txt", ".md"]
-        code_extensions = [
-            ".py",
-            ".js",
-            ".ts",
-            ".html",
-            ".css",
-            ".toml",
-            ".json",
-            ".yml",
-        ]
+    _, extension = os.path.splitext(file_path)
 
-        with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
-            content = file.read()
+    text_extensions = [".txt", ".md"]
+    code_extensions = [
+        ".py",
+        ".js",
+        ".ts",
+        ".html",
+        ".css",
+        ".toml",
+        ".json",
+        ".yml",
+    ]
 
-        if extension in text_extensions:
-            text_data = TextParser(content)
-            text_data.tokenize()
-            self.file_map[file_path] = text_data
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+        content = file.read()
 
-        elif extension in code_extensions:
-            code_data = CodeParser(content)
-            code_data.tokenize()
-            code_data.extract_comments()
-            self.file_map[file_path] = code_data
+    if extension in text_extensions:
+        text_data = TextParser(content)
+        text_data.tokenize()
 
-        else:
-            return
+    elif extension in code_extensions:
+        code_data = CodeParser(content)
+        code_data.tokenize()
+        code_data.extract_comments()
 
-    def run(self) -> None:
-        self.observer.start()
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            self.observer.stop()
-        self.observer.join()
-        logger.info("Observer stopped")
+    else:
+        return
+
+
+def run(self) -> None:
+    self.observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        self.observer.stop()
+    self.observer.join()
+    logger.info("Observer stopped")
 
 
 class TextParser:
@@ -90,9 +92,6 @@ class TextParser:
         return [ent.text for ent in self.doc.ents]
 
 
-import os
-
-
 def read_markdown_files_from_folder(directory_path):
     documents = []
 
@@ -105,17 +104,6 @@ def read_markdown_files_from_folder(directory_path):
 
     return documents
 
-
-directory_path = "path_to_your_directory"
-documents = read_markdown_files_from_folder(directory_path)
-
-
-from typing import List
-
-import spacy
-from tree_sitter import Language, Parser
-
-from base.config.logging import logger
 
 PARSER_PYTHON = Language("data/parsers/python.so", "python")
 

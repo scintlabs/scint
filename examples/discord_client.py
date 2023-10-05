@@ -4,8 +4,8 @@ import json
 import aiohttp
 
 from discord import Client, Intents
-from base.config.logging import logger
-from base.config.system import envar
+from base.system.logging import logger
+from base.system.settings import envar
 
 intents = Intents.default()
 intents.message_content = True

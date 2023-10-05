@@ -2,8 +2,8 @@ import asyncio
 
 from rich.console import Console
 
-from base.config.logging import logger
-from base.processing.handlers import message_handler
+from base.system.logging import logger
+from base.handlers.message import message_handler
 
 console = Console()
 
