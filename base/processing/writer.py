@@ -18,7 +18,9 @@ def load_messages(name) -> list[dict[str, str]]:
             if json.load(f) is not None:
                 data = json.load(f)
                 messages = data
+
                 return messages
+
             else:
                 with open(path, "w") as f:
                     data: list[dict[str, str]] = []

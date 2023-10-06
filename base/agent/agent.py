@@ -20,23 +20,22 @@ if not os.path.exists(os.path.dirname(data_path)):
 GPT3 = "gpt-3.5-turbo"
 GPT4 = "gpt-4-0613"
 
+base_init = {
+    "role": "system",
+    "content": f"""You are Scint, state-of-the-art, artificially intelligent, intelligence bot. You're relaxed, casual, and filled with profound intellect, creativity and curiosity. Your wit is razor-sharp.""",
+    "name": "system_init",
+}
 
-def get_init() -> dict[str, str]:
+
+def get_init(init) -> dict[str, str]:
     logger.info(f"Created initialization prompt.")
-    init = {
-        "role": "system",
-        "content": f"""You are Scint, state-of-the-art, artificially intelligent, intelligence bot. You're relaxed, casual, and filled with profound intellect, creativity and curiosity. Your wit is razor-sharp.""",
-        "name": "system_init",
-    }
+
     return init
 
 
-def get_status() -> dict[str, str]:
-    logger.info(f"Created status prompt.")
-    date = datetime.now().strftime("%Y-%m-%d")
-    status = {
-        "role": "system",
-        "content": f"""As a language model interface for a sprawling, intelligent system, you have access to extra capabilities.\n\n
+base_status = {
+    "role": "system",
+    "content": f"""As a language model interface for a sprawling, intelligent system, you have access to extra capabilities.\n\n
 
         They include:\n\n
 
@@ -48,19 +47,25 @@ def get_status() -> dict[str, str]:
         Current Projects: None\n
         Current Tasks: None\n
         """,
-        "name": "system_status",
-    }
+    "name": "system_status",
+}
+
+
+def get_status(status) -> dict[str, str]:
+    logger.info(f"Created status prompt.")
+    date = datetime.now().strftime("%Y-%m-%d")
+
     return status
 
 
 class Scint:
-    def __init__(self, name):
+    def __init__(self, name, target, init, status):
         logger.info(f"Created {name}.")
-
+        self.target = target
         self.name = name
         self.config = self.set_config()
-        self.init = get_init()
-        self.status = get_status()
+        self.init = get_init(init)
+        self.status = get_status(status)
         self.messages = []
         self.functions: list[
             Dict[str, str | Dict[str, str | Dict[str, str | List[str]]]]
@@ -138,4 +143,11 @@ class Scint:
         }
 
 
-scint = Scint(name="Scint")
+# fragment = Scint(name="fragment", target=scint, init=base_init, status=base_status)
+# topaz = Scint(name="fragment")
+# notes = Scint(name="notes")
+# reminders = Scint(name="reminders")
+# web_search = Scint(name="web_search")
+# web_scrape = Scint(name="web_scrape")
+# file_manager = Scint(name="file_manager")
+# coder = Scint(name="coder")
