@@ -8,6 +8,8 @@ Scint is a framework designed to engineer intelligent modules, which augment use
 
 ## Features
 
+Language models literally do everything. They're both data and functionality. And rather than worry about context, the solution may be to just have a whole bunch of models, each holding its own context, that communicate.
+
 ### Modular and Composable Intelligence
 
 > Note: Scint is still in the early stages of development
