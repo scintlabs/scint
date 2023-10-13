@@ -1,24 +1,18 @@
 from __future__ import annotations
+from typing import Dict
 import asyncio
-import aiohttp
-from typing import Any, Dict
 
 from pydantic import BaseModel
-from fastapi import Body, FastAPI
+from fastapi import FastAPI
 from pydantic import ValidationError
-from app.workers.worker import Worker
 
-
-from app.services.logging import logger
-from app.handlers.message import message_handler
+from services.logging import logger
+from handlers import message
+from services.cli import run_cli
 
 
 app = FastAPI()
 endpoint = "http://localhost:8000/chat"
-
-
-class Agent(BaseModel, Worker):
-    name: str
 
 
 class Payload(BaseModel):
@@ -29,7 +23,7 @@ class Payload(BaseModel):
 @app.post("/chat")
 async def chat(payload: Payload):
     try:
-        reply = await message_handler(payload.agent, payload.message)
+        reply = await message.message_handler(payload.agent, payload.message)
         return reply
 
     except ValidationError as e:

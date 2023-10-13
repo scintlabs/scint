@@ -3,9 +3,9 @@ from datetime import datetime
 from typing import Dict, List, Any, Union, Optional
 
 from xdg_base_dirs import xdg_data_home
-from app.services.logging import logger
-from app.workers.functions import capabilities
-from app.workers.prompts import base_init, base_status
+from scint.services.logging import logger
+from scint.workers.functions import capabilities
+from scint.workers.prompts import base_init, base_status
 
 date = datetime.now()
 formatted_datetime = date.strftime("%Y-%m-%d")

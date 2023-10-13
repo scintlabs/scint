@@ -1,6 +1,6 @@
 import unittest
 
-from base.processing.parser import TextParser
+from scint.processing.parser import TextParser
 
 
 class TestTextDataModel(unittest.TestCase):

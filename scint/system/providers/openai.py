@@ -1,7 +1,7 @@
 import openai
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from app.services.logging import logger
-from app.system.config import envar
+from scint.services.logging import logger
+from scint.system.config import envar
 
 api_key = envar("OPENAI_API_KEY")
 

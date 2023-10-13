@@ -2,8 +2,8 @@ import asyncio
 
 from rich.console import Console
 
-from app.services.logging import logger
-from app.handlers.message import message_handler
+from scint.services.logging import logger
+from scint.handlers.message import message_handler
 
 console = Console()
 

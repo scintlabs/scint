@@ -1,11 +1,15 @@
 # CRUD Operations:
+
 # Create: Endpoints to create resources.
 # Read: Endpoints to retrieve resources.
 # Update: Endpoints to modify resources.
 # Delete: Endpoints to remove resources.
+
 # Bulk Operations:
+
 # Consider endpoints that allow bulk create, update, and delete operations to make the API more efficient and reduce the number of API calls.
 # Authentication and User Management:
+
 # Register: Create a new user account.
 # Login: Authenticate a user.
 # Logout: End a user session.

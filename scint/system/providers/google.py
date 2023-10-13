@@ -4,8 +4,8 @@ import os
 
 import dotenv
 from typing import List, Dict, Optional
-from base.system.logging import logger
-from base.system.settings import envar
+from scint.services.logging import logger
+from scint.system.config import envar
 
 dotenv.load_dotenv()
 GOOGLE_API_KEY = envar("GOOGLE_API_KEY")

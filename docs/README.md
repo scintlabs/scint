@@ -1,3 +1,0 @@
-# Scint
-
-- [ ] Write docs

@@ -1,10 +1,7 @@
-import sys
-import os
-import time
 import pathlib
 
-from app.services.logging import logger
-from app.system.config import envar
+from scint.services.logging import logger
+from scint.system.config import envar
 
 api_key = envar("OPENAI_API_KEY")
 

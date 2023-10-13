@@ -3,9 +3,9 @@ import os
 from typing import Dict, Optional, Union
 
 import dotenv
-from xdg_base_dirs import xdg_cache_home, xdg_config_home, xdg_data_home
+from xdg_base_dirs import xdg_data_home
 
-from app.services.logging import logger
+from scint.services.logging import logger
 
 
 def envar(var: str) -> Optional[str]:

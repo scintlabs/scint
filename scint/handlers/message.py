@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from workers.worker import set_messages
-from workers.workers import team
-from app.services.logging import logger
-from system.providers.openai import chat
+from scint.workers.worker import set_messages
+from scint.workers.workers import team
+from scint.services.logging import logger
+from scint.system.providers.openai import chat
 
 
 def temporality() -> dict[str, str]:
@@ -21,7 +21,6 @@ async def message_handler(worker, message):
     """Handle messages to and from models."""
     logger.info(f"Initialized message handler with {message}")
     destination = team[worker]
-    message = message
     await set_messages(destination, temporality())
     await set_messages(destination, message)
 
@@ -37,7 +36,7 @@ async def message_handler(worker, message):
             reply: dict[str, str] = {
                 "role": role,
                 "content": content,
-                "name": str(destination),
+                "name": worker,
             }
             await set_messages(destination, reply)
             return reply["content"]

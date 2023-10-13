@@ -6,7 +6,7 @@ from tree_sitter import Language, Parser
 from watchdog.observers import Observer
 import spacy
 
-from base.system.logging import logger
+from scint.services.logging import logger
 
 
 nlp = spacy.load("en_core_web_sm")

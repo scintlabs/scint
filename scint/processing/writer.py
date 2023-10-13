@@ -1,6 +1,51 @@
-import os
 import json
-from base.system.logging import logger
+import os
+
+from scint.system import config
+from scint.services.logging import logger
+
+datastore = lambda name: os.path.join(
+    config.APPDATA, "conversations", name.lower() + ".json"
+)
+
+
+def load_messages(name) -> list[dict[str, str]]:
+    logger.info(f"Loading messages: {datastore(name)}.")
+    path = datastore(name)
+
+    try:
+        with open(path, "r") as f:
+            if json.load(f) is not None:
+                data = json.load(f)
+                messages = data
+
+                return messages
+
+            else:
+                with open(path, "w") as f:
+                    data: list[dict[str, str]] = []
+                    json.dump(data, f)
+
+                    return data
+
+    except Exception as e:
+        logger.error(f"Error loading message store: {e}")
+        raise
+
+
+def append_messages(message, filepath) -> None:
+    logger.info(f"Writing message: {datastore(filepath)}.")
+    datastore(filepath)
+
+    try:
+        with open(datastore(filepath), "w") as f:
+            data = json.load(filepath)
+            data.append(message)
+            json.dump(filepath, data)
+
+    except Exception as e:
+        logger.error(f"Error writing message: {e}.")
+        raise
 
 
 def process_files(self, path="."):
