@@ -1,7 +1,8 @@
 import openai
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from scint.services.logging import logger
-from scint.system.config import envar
+
+from scint.config import envar
+from scint.logging import logger
 
 api_key = envar("OPENAI_API_KEY")
 
@@ -29,24 +30,6 @@ async def chat(**kwargs):
         user=kwargs.get("user"),
     )
     return response
-
-
-async def chat_completion(messages):
-    logger.info(f"Sending message object to the API.")
-    data = await openai.ChatCompletion.acreate(
-        model="gpt-4-0613",
-        temperature=1.7,
-        top_p=0.5,
-        n=1,
-        stop=[],
-        max_tokens=4096,
-        presence_penalty=0.35,
-        frequency_penalty=0.35,
-        messages=messages,
-        user="ScintDiscord",
-    )
-
-    return data
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))

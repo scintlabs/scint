@@ -1,13 +1,12 @@
-from typing import Dict, List, Union
 import os
 import time
+from typing import Dict, List, Union
 
+import spacy
 from tree_sitter import Language, Parser
 from watchdog.observers import Observer
-import spacy
 
-from scint.services.logging import logger
-
+from scint.logging import logger
 
 nlp = spacy.load("en_core_web_sm")
 

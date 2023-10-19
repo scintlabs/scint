@@ -5,7 +5,7 @@ from typing import Dict, Optional, Union
 import dotenv
 from xdg_base_dirs import xdg_data_home
 
-from scint.services.logging import logger
+from scint.logging import logger
 
 
 def envar(var: str) -> Optional[str]:

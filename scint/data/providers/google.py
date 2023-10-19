@@ -1,11 +1,12 @@
 import asyncio
-import httpx
 import os
+from typing import Dict, List, Optional
 
 import dotenv
-from typing import List, Dict, Optional
-from scint.services.logging import logger
-from scint.system.config import envar
+import httpx
+
+from scint.config import envar
+from scint.logging import logger
 
 dotenv.load_dotenv()
 GOOGLE_API_KEY = envar("GOOGLE_API_KEY")

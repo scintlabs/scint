@@ -1,8 +1,8 @@
 import json
 import os
 
-from scint.system import config
-from scint.services.logging import logger
+from scint import config
+from scint.logging import logger
 
 datastore = lambda name: os.path.join(
     config.APPDATA, "conversations", name.lower() + ".json"

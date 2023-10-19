@@ -1,6 +1,7 @@
-import os
 import json
-from scint.services.logging import logger
+import os
+
+from scint.logging import logger
 
 
 def process_files(self, path="."):

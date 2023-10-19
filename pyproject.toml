@@ -47,6 +47,7 @@ edgedb = "^1.7.0"
 pandas = "^2.1.1"
 redis = "^5.0.1"
 aiohttp = "^3.8.5"
+demjson3 = "^3.0.6"
 
 
 [build-system]

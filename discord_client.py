@@ -1,9 +1,8 @@
 import aiohttp
-
 from discord import Client, Intents
-from scint.services.logging import logger
-from scint.system.config import envar
 
+from scint.config import envar
+from scint.logging import logger
 
 intents = Intents.default()
 intents.message_content = True
@@ -13,8 +12,7 @@ endpoint = "http://localhost:8000/message"
 
 def split_message(message, max_length=2000):
     """
-    Splits a message into chunks of max_length. Tries to split by line,
-    then by word, then by character if necessary.
+    Helper function which Splits a message into chunks of max_length. Tries to split by line, then by word, then by character if necessary.
     """
     if len(message) <= max_length:
         return [message]
@@ -55,6 +53,7 @@ def split_message(message, max_length=2000):
 
 
 async def chat_request(content, author, target):
+    """API chat request."""
     message = {
         "worker": target,
         "message": {"role": "user", "content": content, "name": author},
@@ -85,9 +84,9 @@ class ScintDiscordClient(Client):
         if self.user in message.mentions and message.mention_everyone is False:
             async with message.channel.typing():
                 try:
-                    author = "discord_" + str(message.author)
+                    author = str(message.author)
                     content = message.content.replace(f"<@!{self.user}>", "").strip()
-                    reply = await chat_request(content, author, target="scint")
+                    reply = await chat_request(content, author, target="chatbot")
                     logger.info(f"API Reply: {reply}")
 
                     # Split message into chunks and send each one
