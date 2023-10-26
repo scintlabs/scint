@@ -3,7 +3,7 @@ import random
 
 from xdg_base_dirs import xdg_data_home
 
-from services.util import envar
+from core.util import envar
 
 # appname
 APPNAME: str | os.PathLike = "scint"

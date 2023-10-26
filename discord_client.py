@@ -4,7 +4,7 @@ from discord import Client, Intents
 
 from services.logger import log
 from services.config import DISCORD_SCINT_TOKEN, API_CHAT_ENDPOINT
-from services.util import split_discord_message
+from core.util import split_discord_message
 
 intents = Intents.default()
 intents.message_content = True
