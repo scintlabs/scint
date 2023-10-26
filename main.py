@@ -5,33 +5,42 @@ from typing import Dict
 from fastapi import FastAPI
 from pydantic import BaseModel, ValidationError
 
-from scint.message import message_handler, worker_manager
-from scint.worker import Worker
-from scint.data.prompts import router_init, chatbot_init, status
-from scint.data.functions import router, capabilities
-
-router = Worker("router", router_init, status, router)
-chatbot = Worker("chatbot", chatbot_init, status, capabilities)
-worker_manager.add_worker(chatbot)
-worker_manager.add_worker(router)
-
+from services.logger import log
+from core.coordinator import Coordinator
+from core.worker import Worker
+from core.message import Message
+from core.prompts import chat_init
+from core.functions import base_functions
 
 app = FastAPI()
 
+chat = Worker("chat", chat_init, base_functions)
+coordinator = Coordinator()
+coordinator.add_worker(chat)
 
-class Payload(BaseModel):
+
+class Response(BaseModel):
+    pass
+
+
+class Request(BaseModel):
     worker: str
     message: Dict[str, str]
 
 
-@app.post("/message")
-async def message(payload: Payload):
+@app.post("/chat")
+async def chat_message(request: Request):
+    chat_message = Message("user", request.worker, request.message)
+
     try:
-        reply = await message_handler(payload.worker, payload.message)
-        return reply
+        chat_response = await coordinator.process_request(chat_message)
+        log.info(f"Returning chat response: {chat_response}")
+        return chat_response
 
     except ValidationError as e:
+        log.error(f"Validation Error: {e}")
         return {"error": f"{e}"}
 
     except Exception as e:
+        log.error(f"General Exception: {e}")
         return {"error": f"{e}"}
