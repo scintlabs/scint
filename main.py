@@ -9,6 +9,7 @@ from services.logger import log
 from core.coordinator import Coordinator
 from core.worker import Worker
 from core.message import Message
+from core.config import GPT4
 
 
 coordinator = Coordinator()
@@ -34,6 +35,14 @@ get_weather = Worker(
             },
         },
         "required": ["city"],
+    },
+    config={
+        "model": GPT4,
+        "temperature": 0,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "coordinate"},
     },
 )
 

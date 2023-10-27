@@ -7,78 +7,60 @@ from core.config import GPT4
 from core.message import Message
 from core.interface import ChatInterface
 from core.worker import Worker
+from core.agent import Agent
+
+coordinator_init = {
+    "role": "system",
+    "content": "You are the Coordinator module for Scint, an intelligent assistant. You're responsibile for classifying all incoming requests and assigning them to the appropriate worker.",
+    "name": "Coordinator",
+}
+
+coordinator_func = {
+    "name": "coordinate",
+    "description": "Define the task and assign it to the appropriate worker.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "worker": {
+                "type": "string",
+                "description": "Select the appropriate worker based on the task and request.",
+                "enum": ["chat", "get_weather"],
+            },
+            "task": {
+                "type": "string",
+                "description": "Based on the request, define the task the worker needs to complete. Avoid ambiguity and be specific.",
+            },
+            "classification": {
+                "type": "string",
+                "description": "Classify the type of request being made.",
+                "enum": ["general_discussion", "information_request"],
+            },
+        },
+    },
+    "required": ["worker", "task", "classification"],
+}
+
+coordinator_config = {
+    "model": GPT4,
+    "temperature": 0,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "function_call": {"name": "coordinate"},
+}
 
 
-class SingletonMeta(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class Coordinator(metaclass=SingletonMeta):
+class Coordinator(Agent):
     def __init__(self):
         log.info(f"Initializing coordinator.")
 
+        self.name = "coordinator"
+        self.system_init: Dict[str, str] = coordinator_init
+        self.messages: List[Dict[str, str]] = [self.system_init]
+        self.function: Dict[str, Any] = coordinator_func
+        self.config: Dict[str, Any] = coordinator_config
         self.interface = ChatInterface()
         self.workers: Dict[str, Worker] = {}
-        self.messages: List[Dict[str, str]] = []
-        self.system_init: Dict[str, str] = {
-            "role": "system",
-            "content": "You are the Coordinator module for Scint, an intelligent assistant. You're responsibile for classifying all incoming requests and assigning them to the appropriate worker.",
-            "name": "Coordinator",
-        }
-        self.function: List[Dict[str, Any]] = [
-            {
-                "name": "coordinate",
-                "description": "Define the task and assign it to the appropriate worker.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "worker": {
-                            "type": "string",
-                            "description": "Select the appropriate worker based on the task and request.",
-                            "enum": ["chat", "get_weather"],
-                        },
-                        "task": {
-                            "type": "string",
-                            "description": "Based on the request, define the task the worker needs to complete. Avoid ambiguity and be specific.",
-                        },
-                        "classification": {
-                            "type": "string",
-                            "description": "Classify the type of request being made.",
-                            "enum": ["general_discussion", "information_request"],
-                        },
-                    },
-                },
-                "required": ["worker", "task", "classification"],
-            }
-        ]
-        self.config: Dict[str, Any] = {
-            "model": GPT4,
-            "temperature": 0,
-            "top_p": 1,
-            "presence_penalty": 0,
-            "frequency_penalty": 0,
-            "function_call": {"name": "coordinate"},
-        }
-
-    async def state(self) -> Dict[str, Any]:
-        log.info(f"Getting coordinator state.")
-
-        return {
-            "messages": self.messages,
-            "functions": self.function,
-            "function_call": self.config.get("function_call"),
-            "model": self.config.get("model"),
-            "presence_penalty": self.config.get("presence_penalty"),
-            "frequency_penalty": self.config.get("frequency_penalty"),
-            "top_p": self.config.get("top_p"),
-            "temperature": self.config.get("temperature"),
-            "user": "Scint",
-        }
 
     async def process_request(self, request):
         log.info(f"Processing request: {request.message}")

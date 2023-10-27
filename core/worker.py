@@ -6,39 +6,18 @@ from core.config import GPT4
 from services.openai import completion
 from services.logger import log
 from core.message import Message
+from core.agent import Agent
 
 
-class Worker:
-    def __init__(self, name, system_init, function):
+class Worker(Agent):
+    def __init__(self, name, system_init, function, config):
         log.info(f"Initializing {name}.")
         self.name: str = name
         self.system_init: Dict[str, str] = system_init
         self.messages: List[Dict[str, str]] = [self.system_init]
         self.function: Dict[str, Any] = function
         self.function_call: Dict[str, str] = {"name": function.get("name")}
-        self.config: Dict[str, Any] = {}
-
-    async def state(self) -> Dict[str, Any]:
-        log.info(f"Getting current state for {self.name}.")
-        config = await self.set_config()
-        messages = []
-
-        for m in self.messages:
-            messages.append(m)
-
-        state = {
-            "messages": messages,
-            "functions": [self.function],
-            "function_call": self.function_call,
-            "model": config.get("model"),
-            "max_tokens": config.get("max_tokens"),
-            "presence_penalty": config.get("presence_penalty"),
-            "frequency_penalty": config.get("frequency_penalty"),
-            "top_p": config.get("top_p"),
-            "temperature": config.get("temperature"),
-        }
-
-        return state
+        self.config: Dict[str, Any] = config
 
     async def process_request(self, payload):
         log.info(f"Processing request.")
@@ -56,30 +35,6 @@ class Worker:
 
         if function_call is not None:
             return await self.eval_function_call(res_message)  # type: ignore
-
-    async def generate_reply(self, res_message):
-        log.info("Generating reply.")
-
-        role = res_message.get("role")
-        content = res_message.get("content")
-
-        if not role or not content:
-            log.error("Role or content missing in res_message.")
-            return
-
-        reply_message: dict[str, str] = {
-            "role": role,
-            "content": content,
-            "name": self.name,
-        }
-
-        reply = Message(
-            sender=self.name,
-            recipient="user",
-            message=reply_message,
-        )
-
-        return reply
 
     async def eval_function_call(self, res_message):
         log.info("Evaluating worker function call.")
@@ -110,21 +65,3 @@ class Worker:
             log.error(
                 f"Function name mismatch. Expected: {self.function.get('name')}, Received: {function_name}"
             )
-
-    async def set_config(
-        self,
-        model: str = GPT4,
-        max_tokens: int = 1024,
-        presence_penalty: float = 0.3,
-        frequency_penalty: float = 0.3,
-        top_p: float = 0.9,
-        temperature: float = 1.9,
-    ) -> Dict[str, Any]:
-        return {
-            "model": model,
-            "max_tokens": max_tokens,
-            "presence_penalty": presence_penalty,
-            "frequency_penalty": frequency_penalty,
-            "top_p": top_p,
-            "temperature": temperature,
-        }

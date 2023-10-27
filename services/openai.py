@@ -1,11 +1,13 @@
+from typing import List
+
 import openai
-from tenacity import retry, stop_after_attempt, wait_random_exponential
+
 
 from services.logger import log
 
 
 async def completion(**kwargs):
-    log.info(f"Sending request to language model: {kwargs}")
+    log.info(f"Sending completion request to language model.")
 
     response = await openai.ChatCompletion.acreate(
         model=kwargs.get("model"),
@@ -19,11 +21,15 @@ async def completion(**kwargs):
         function_call=kwargs.get("function_call", "auto"),
     )
 
-    log.info(f"Response received from language model: {response}")
+    log.info(f"Response received from language model.")
     return response
 
 
-@retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-async def get_embedding(text: str) -> list[float]:
+async def get_embedding(text: str) -> List[float]:
+    log.info(f"Sending embedding request to language model.")
+
     model = "text-embedding-ada-002"
-    return openai.Embedding.acreate(input=[text], model=model)["data"][0]["embedding"]  # type: ignore
+    response = await openai.Embedding.acreate(input=[text], model=model)
+
+    log.info(f"Response received from language model.")
+    return response["data"][0]["embedding"]  # type: ignore
