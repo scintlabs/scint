@@ -11,7 +11,7 @@ from core.agent import Agent
 
 class Worker(Agent):
     def __init__(self, name, system_init, function, config):
-        log.info(f"Initializing {name}.")
+        log.info(f"Initializing worker: {name}.")
         self.name: str = name
         self.system_init: Dict[str, str] = system_init
         self.messages: List[Dict[str, str]] = [self.system_init]

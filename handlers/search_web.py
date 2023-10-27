@@ -2,18 +2,12 @@ import asyncio
 import os
 from typing import Dict, List, Optional
 
-import dotenv
 import aiohttp
 
 from core.config import envar
 from services.logger import log
+from core.config import GOOGLE_API_KEY, CUSTOM_SEARCH_ID
 
-dotenv.load_dotenv()
-GOOGLE_API_KEY = envar("GOOGLE_API_KEY")
-CUSTOM_SEARCH_ID = envar("CUSTOM_SEARCH_ID")
-
-if not GOOGLE_API_KEY or not CUSTOM_SEARCH_ID:
-    raise ValueError("Google API Key and Custom Search ID must be set.")
 
 ParsedResponseItem = Dict[str, Optional[str]]
 
@@ -34,7 +28,7 @@ async def fetch_google_search_results(query: str) -> List[ParsedResponseItem]:
                         "url": item["link"],
                         "description": item.get("snippet", ""),
                     }
-                    for item in response_items
+                    for item in response_items[:5]
                 ]
 
                 return parsed_response
@@ -48,9 +42,23 @@ async def fetch_google_search_results(query: str) -> List[ParsedResponseItem]:
             raise
 
 
-async def google(query: str) -> List[ParsedResponseItem]:
+from typing import Dict
+
+
+async def search_web(query: str) -> Dict[str, str]:
     log.info("Running Google search query.")
-    return await fetch_google_search_results(query)
+    search_results = await fetch_google_search_results(query)
 
+    results_str = "\n\n".join(
+        [
+            f"Title: {item['title']}\nURL: {item['url']}\nDescription: {item['description']}"
+            for item in search_results
+        ]
+    )
 
-asyncio.run(google("openai cookbook"))
+    message_data = {
+        "role": "system",
+        "content": f"Parse these web search results for the user: {results_str}",
+        "name": "web_search",
+    }
+    return message_data

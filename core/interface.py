@@ -12,7 +12,7 @@ from core.agent import Agent
 
 class ChatInterface(Agent):
     def __init__(self):
-        log.info(f"Initializing interface.")
+        log.info(f"Initializing Scint interface.")
 
         self.name = "interface"
         self.system_init: Dict[str, str] = INTERFACE_INIT

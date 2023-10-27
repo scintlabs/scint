@@ -32,7 +32,6 @@ async def parse_url(url):
             "content": f"Here's the data for the requested URL:\n {file_contents}\n\n Summarize the data for the user.",
             "name": "parse_url",
         }
-
         return message_data
 
     except Exception as e:

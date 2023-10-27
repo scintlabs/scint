@@ -77,9 +77,40 @@ parse_url = Worker(
         "function_call": {"name": "parse_url"},
     },
 )
+search_web = Worker(
+    name="search_web",
+    system_init={
+        "role": "system",
+        "content": "You are a web search function for Scint, an intelligent assistant.",
+        "name": "search_web",
+    },
+    function={
+        "name": "search_web",
+        "description": "Use this function to search the web.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The string to search the web for.",
+                },
+            },
+        },
+        "required": ["query"],
+    },
+    config={
+        "model": GPT4,
+        "temperature": 0,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "search_web"},
+    },
+)
 
 coordinator.add_worker(get_weather)
 coordinator.add_worker(parse_url)
+coordinator.add_worker(search_web)
 
 
 class Response(BaseModel):
@@ -96,7 +127,7 @@ async def chat_message(request: Request):
 
     try:
         chat_response = await coordinator.process_request(chat_message)
-        log.info(f"Returning chat response: {chat_response.message_data}")
+        log.info(f"Returning chat response: {chat_response.message_data}")  # type: ignore
         return chat_response
 
     except ValidationError as e:

@@ -16,6 +16,8 @@ LOGS = os.path.join(APPDATA, "logs")
 OPENAI_API_KEY: str | None = envar("OPENAI_API_KEY")
 DISCORD_SCINT_TOKEN: str | None = envar("SCINT_TOKEN")
 OPENWEATHER_API_KEY = envar("OPENWEATHER_API_KEY")
+GOOGLE_API_KEY = envar("GOOGLE_API_KEY")
+CUSTOM_SEARCH_ID = envar("CUSTOM_SEARCH_ID")
 
 # openai models
 GPT4 = "gpt-4"

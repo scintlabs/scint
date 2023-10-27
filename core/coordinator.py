@@ -24,7 +24,7 @@ coordinator_func = {
             "worker": {
                 "type": "string",
                 "description": "Select the appropriate worker based on the task and request.",
-                "enum": ["chat", "parse_url", "get_weather"],
+                "enum": ["chat", "parse_url", "search_web", "get_weather"],
             },
             "task": {
                 "type": "string",
@@ -52,7 +52,7 @@ coordinator_config = {
 
 class Coordinator(Agent):
     def __init__(self):
-        log.info(f"Initializing coordinator.")
+        log.info(f"Initializing Scint coordinator.")
 
         self.name = "coordinator"
         self.system_init: Dict[str, str] = coordinator_init
@@ -103,9 +103,9 @@ class Coordinator(Agent):
                     task_message = {
                         "role": "system",
                         "content": task,
-                        "name": "Coordinator",
+                        "name": "coordinator",
                     }
-                    req = Message("Coordinator", worker_name, task_message)
+                    req = Message("coordinator", worker_name, task_message)
                     worker_res = await self.workers[worker_name].process_request(req)
                     final_res = await self.interface.process_request(worker_res)
                     return final_res

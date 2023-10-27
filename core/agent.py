@@ -10,7 +10,7 @@ from core.config import GPT4
 
 class Agent(ABC):
     def __init__(self, name, system_init, function, config):
-        log.info(f"Initializing interface.")
+        log.info(f"Initializing Scint interface.")
 
         self.name = name
         self.system_init: Dict[str, str] = system_init
