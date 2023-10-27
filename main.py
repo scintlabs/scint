@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 from typing import Dict
 
 from fastapi import FastAPI
@@ -14,6 +15,7 @@ from core.config import GPT4
 
 coordinator = Coordinator()
 app = FastAPI()
+
 
 get_weather = Worker(
     name="get_weather",
@@ -42,11 +44,42 @@ get_weather = Worker(
         "top_p": 1,
         "presence_penalty": 0,
         "frequency_penalty": 0,
-        "function_call": {"name": "coordinate"},
+        "function_call": {"name": "get_weather"},
+    },
+)
+parse_url = Worker(
+    name="parse_url",
+    system_init={
+        "role": "system",
+        "content": "You are a website parsing function for Scint, an intelligent assistant.",
+        "name": "parse_url",
+    },
+    function={
+        "name": "parse_url",
+        "description": "Use this function to get website data from the specified URL.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the website to parse.",
+                },
+            },
+        },
+        "required": ["url"],
+    },
+    config={
+        "model": GPT4,
+        "temperature": 0,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "parse_url"},
     },
 )
 
 coordinator.add_worker(get_weather)
+coordinator.add_worker(parse_url)
 
 
 class Response(BaseModel):

@@ -30,7 +30,7 @@ async def format_weather_message(response):
 
     return {
         "role": "system",
-        "content": "Parse this data into a simple message: " + parsed_data,
+        "content": f"Parse this data into a simple message: {parsed_data}",
         "name": "get_weather",
     }
 

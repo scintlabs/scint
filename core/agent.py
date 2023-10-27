@@ -49,7 +49,7 @@ class Agent(ABC):
             "top_p": config_dict.get("top_p", 1),
             "presence_penalty": config_dict.get("presence_penalty", 0.3),
             "frequency_penalty": config_dict.get("frequency_penalty", 0.3),
-            "max_tokens": config_dict.get("max_tokens", 1024),
+            "max_tokens": config_dict.get("max_tokens", 4096),
         }
 
         return config

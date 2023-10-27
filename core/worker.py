@@ -47,7 +47,7 @@ class Worker(Agent):
             function_args = json.loads(function_args)
 
         if function_name.strip() == self.function.get("name"):
-            module_name = "handlers.weather"
+            module_name = f"handlers.{function_name}"
             module = importlib.import_module(module_name)
             method_to_call = getattr(module, function_name, None)
 

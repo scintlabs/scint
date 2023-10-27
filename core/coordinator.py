@@ -24,7 +24,7 @@ coordinator_func = {
             "worker": {
                 "type": "string",
                 "description": "Select the appropriate worker based on the task and request.",
-                "enum": ["chat", "get_weather"],
+                "enum": ["chat", "parse_url", "get_weather"],
             },
             "task": {
                 "type": "string",
