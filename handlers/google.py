@@ -3,9 +3,9 @@ import os
 from typing import Dict, List, Optional
 
 import dotenv
-import httpx
+import aiohttp
 
-from services.config import envar
+from core.config import envar
 from services.logger import log
 
 dotenv.load_dotenv()
@@ -22,23 +22,24 @@ async def fetch_google_search_results(query: str) -> List[ParsedResponseItem]:
     endpoint = "https://www.googleapis.com/customsearch/v1"
     params = {"q": query, "key": GOOGLE_API_KEY, "cx": CUSTOM_SEARCH_ID}
 
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as session:
         try:
-            response = await client.get(endpoint, params=params)
-            response.raise_for_status()
-            response_items = response.json().get("items", [])
-            parsed_response = [
-                {
-                    "title": item["title"],
-                    "url": item["link"],
-                    "description": item.get("snippet", ""),
-                }
-                for item in response_items
-            ]
+            async with session.get(endpoint, params=params) as response:
+                response.raise_for_status()
+                response_data = await response.json()
+                response_items = response_data.get("items", [])
+                parsed_response = [
+                    {
+                        "title": item["title"],
+                        "url": item["link"],
+                        "description": item.get("snippet", ""),
+                    }
+                    for item in response_items
+                ]
 
-            return parsed_response
+                return parsed_response
 
-        except httpx.HTTPStatusError as e:
+        except aiohttp.ClientResponseError as e:
             log.exception(f"HTTP error occurred: {str(e)}")
             raise
 

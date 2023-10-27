@@ -3,8 +3,9 @@ from typing import List, Dict, Any
 
 from services.logger import log
 from services.openai import completion
-from services.config import GPT4
+from core.config import GPT4
 from core.message import Message
+from core.interface import ChatInterface
 from core.worker import Worker
 
 
@@ -21,6 +22,7 @@ class Coordinator(metaclass=SingletonMeta):
     def __init__(self):
         log.info(f"Initializing coordinator.")
 
+        self.interface = ChatInterface()
         self.workers: Dict[str, Worker] = {}
         self.messages: List[Dict[str, str]] = []
         self.system_init: Dict[str, str] = {
@@ -38,7 +40,7 @@ class Coordinator(metaclass=SingletonMeta):
                         "worker": {
                             "type": "string",
                             "description": "Select the appropriate worker based on the task and request.",
-                            "enum": ["chat", "weather"],
+                            "enum": ["chat", "get_weather"],
                         },
                         "task": {
                             "type": "string",
@@ -94,7 +96,7 @@ class Coordinator(metaclass=SingletonMeta):
             return response
 
     async def eval_function_call(self, res_message, original_request):
-        log.info("Evaluating function call.")
+        log.info("Evaluating coordinator function call.")
 
         function_call = res_message.get("function_call")
         function_name = function_call.get("name")
@@ -111,9 +113,20 @@ class Coordinator(metaclass=SingletonMeta):
 
                 if worker.strip() == "chat":
                     req = original_request
-                    res = await self.workers[worker].process_request(req)
-                    log.info(f"Chat worker response: {res}")
+                    res = await self.interface.process_request(req)
                     return res
+
+                else:
+                    worker_name = worker.strip()
+                    task_message = {
+                        "role": "system",
+                        "content": task,
+                        "name": "Coordinator",
+                    }
+                    req = Message("Coordinator", worker_name, task_message)
+                    worker_res = await self.workers[worker_name].process_request(req)
+                    final_res = await self.interface.process_request(worker_res)
+                    return final_res
 
             except Exception as e:
                 log.error(f"Error coordinating worker: {e}")

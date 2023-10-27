@@ -9,14 +9,35 @@ from services.logger import log
 from core.coordinator import Coordinator
 from core.worker import Worker
 from core.message import Message
-from core.prompts import chat_init
-from core.functions import base_functions
 
+
+coordinator = Coordinator()
 app = FastAPI()
 
-chat = Worker("chat", chat_init, base_functions)
-coordinator = Coordinator()
-coordinator.add_worker(chat)
+get_weather = Worker(
+    name="get_weather",
+    system_init={
+        "role": "system",
+        "content": "You are a weater retrieval function for Scint, an intelligent assistant.",
+        "name": "get_weather",
+    },
+    function={
+        "name": "get_weather",
+        "description": "Use this function to get weather data for the specified city.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "The city name.",
+                },
+            },
+        },
+        "required": ["city"],
+    },
+)
+
+coordinator.add_worker(get_weather)
 
 
 class Response(BaseModel):
@@ -24,13 +45,12 @@ class Response(BaseModel):
 
 
 class Request(BaseModel):
-    worker: str
     message: Dict[str, str]
 
 
 @app.post("/chat")
 async def chat_message(request: Request):
-    chat_message = Message("user", request.worker, request.message)
+    chat_message = Message("user", "coordinator", request.message)
 
     try:
         chat_response = await coordinator.process_request(chat_message)

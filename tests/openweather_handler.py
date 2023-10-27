@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from core.message import Message
-from services.config import envar
+from core.config import envar
 from services.logger import log
 
 

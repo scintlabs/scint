@@ -1,7 +1,7 @@
 import json
 import os
 
-from services import config
+from core import config
 from services.logger import log
 
 datastore = lambda name: os.path.join(

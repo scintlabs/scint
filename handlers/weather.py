@@ -2,41 +2,9 @@ import aiohttp
 import json
 from datetime import datetime
 
-from services.config import OPENWEATHER_API_KEY
-from services.logger import log
+from core.config import OPENWEATHER_API_KEY
 from core.message import Message
-
-
-async def eval_function_call(res_message):
-    log.info("Evaluating function call.")
-
-    function_call = res_message.get("function_call")
-    function_name = function_call.get("name")
-    function_args = function_call.get("arguments")
-    function_args = json.loads(function_args)
-
-    if not function_name or not function_args:
-        log.error("Function name or arguments missing.")
-        return
-
-    if function_name.strip() == "get_weather":
-        log.info("Proceeding to fetch weather...")
-
-        city = function_args.get("city")
-
-        if not city:
-            log.error("City argument missing for get_weather function.")
-            return
-
-        try:
-            log.info(f"Fetching weather for city: {city}")
-            response = await get_weather(city)
-            return response
-
-        except Exception as e:
-            log.error(f"Error while fetching weather: {e}")
-    else:
-        log.error("Function name is not 'get_weather'.")
+from services.logger import log
 
 
 async def format_weather_message(response):
@@ -60,14 +28,11 @@ async def format_weather_message(response):
         f"Sunset: {sunset}"
     )
 
-    message_content = {
+    return {
         "role": "system",
         "content": parsed_data,
         "name": "function_call",
     }
-    reply = Message("scint", "user", message_content)
-
-    return reply
 
 
 async def get_weather(city):
@@ -86,12 +51,13 @@ async def get_weather(city):
                 reply = await format_weather_message(data)
                 log.info(f"Formatted weather message: {reply}")
                 return reply
+
             else:
                 error_message_content = {
                     "role": "system",
                     "content": data.get("message", "Error fetching weather data"),
-                    "name": "function_call",
+                    "name": "get_weather",
                 }
-                error_reply = Message("scint", "user", error_message_content)
+                error_reply = error_message_content
                 log.error(f"Error fetching weather: {error_reply}")
                 return error_reply

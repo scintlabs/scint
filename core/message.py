@@ -1,9 +1,7 @@
-import os
 import uuid
 from datetime import datetime
 from typing import Dict, List
 
-from services.openai import completion
 from services.logger import log
 
 

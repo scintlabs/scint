@@ -3,17 +3,15 @@ import re
 from discord import Client, Intents
 
 from services.logger import log
-from services.config import DISCORD_SCINT_TOKEN, API_CHAT_ENDPOINT
+from core.config import DISCORD_SCINT_TOKEN, API_CHAT_ENDPOINT
 from core.util import split_discord_message
 
 intents = Intents.default()
 intents.message_content = True
 
 
-async def chat_request(content, author, worker):
-    """API chat request."""
+async def chat_request(content, author):
     request = {
-        "worker": worker,
         "message": {"role": "user", "content": content, "name": author},
     }
 
@@ -37,8 +35,6 @@ class ScintDiscordClient(Client):
         print(f"Logged in as {self.user}")
 
     async def on_message(self, message):
-        prefix = "!shard"
-
         if message.author == self.user:
             return
 
@@ -47,7 +43,7 @@ class ScintDiscordClient(Client):
                 try:
                     author = str(message.author)
                     content = re.sub(r"<@!?[0-9]+>", "", message.content).strip()
-                    reply = await chat_request(content, author, worker="scint")
+                    reply = await chat_request(content, author)
                     log.info(f"API Reply: {reply}")
 
                     for chunk in split_discord_message(reply):
