@@ -6,14 +6,14 @@ from services.logger import log
 
 
 class Message:
-    def __init__(self, sender, recipient, message):
-        log.info(f"Created message: {message}.")
+    def __init__(self, sender, recipient, message_data):
+        log.info(f"Created message.")
 
         self.id = Message._generate_id()
         self.date: datetime = datetime.now()
         self.sender: str = sender
         self.recipient: str = recipient
-        self.message: Dict[str, str] = message
+        self.message_data: Dict[str, str] = message_data
         self.keywords: List[str] = []
 
     def add_keywords(self, keywords: List[str]):
@@ -22,14 +22,3 @@ class Message:
     @staticmethod
     def _generate_id():
         return str(uuid.uuid4())
-
-
-def temporality() -> dict[str, str]:
-    date = datetime.now().strftime("%Y-%m-%d")
-    time = datetime.now().strftime("%H:%m")
-
-    return {
-        "role": "system",
-        "content": f"The following message was sent at {time} on {date}.",
-        "name": "ScintSystem",
-    }

@@ -96,31 +96,34 @@ WORKER_PROCESSING_MESSAGES = {
     "Getting to work on your task.",
 }
 
+# interface config
+INTERFACE_INIT = {
+    "role": "system",
+    "content": f"""You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.""",
+    "name": "system_init",
+}
 
-last_five_messages = []
 
+INTERFACE_FUNC = {
+    "name": "call_coordinator",
+    "description": "When it's necessary to continue processing, call the coordinator to assign tasks to the appropriate worker.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "task": {
+                "type": "string",
+                "description": "Based on the request, define the task the worker needs to complete. Avoid ambiguity and be specific.",
+            },
+        },
+    },
+    "required": ["task"],
+}
 
-def get_random_message(message_type):
-    global last_five_messages
-
-    if message_type == "processing":
-        messages = WORKER_PROCESSING_MESSAGES
-    elif message_type == "retrieving":
-        messages = WORKER_LOOKUP_MESSAGES
-    else:
-        raise ValueError(
-            "Invalid message_type. Must be either 'processing' or 'retrieving'."
-        )
-
-    message = random.choice(list(messages))
-
-    # Ensure the message hasn't been used in the last five messages
-    while message in last_five_messages:
-        message = random.choice(list(messages))
-
-    # Update the list of last five messages
-    last_five_messages.append(message)
-    if len(last_five_messages) > 5:
-        last_five_messages.pop(0)
-
-    return message
+INTERFACE_CONFIG = {
+    "model": GPT4,
+    "temperature": 0,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "function_call": {"name": "coordinate"},
+}

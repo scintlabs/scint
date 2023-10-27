@@ -22,7 +22,7 @@ class Worker(Agent):
     async def process_request(self, payload):
         log.info(f"Processing request.")
         self.payload: Message = payload
-        self.messages.append(payload.message)
+        self.messages.append(payload.message_data)
         state = await self.state()
         res = await completion(**state)
         res_message = res["choices"][0].get("message")  # type: ignore

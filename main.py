@@ -54,16 +54,16 @@ class Response(BaseModel):
 
 
 class Request(BaseModel):
-    message: Dict[str, str]
+    message_data: Dict[str, str]
 
 
 @app.post("/chat")
 async def chat_message(request: Request):
-    chat_message = Message("user", "coordinator", request.message)
+    chat_message = Message("user", "coordinator", request.message_data)
 
     try:
         chat_response = await coordinator.process_request(chat_message)
-        log.info(f"Returning chat response: {chat_response}")
+        log.info(f"Returning chat response: {chat_response.message_data}")
         return chat_response
 
     except ValidationError as e:

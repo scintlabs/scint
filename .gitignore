@@ -105,5 +105,7 @@ ENV/
 .vscode/
 
 # macOS
-
 .DS_Store
+
+# Other
+context.md

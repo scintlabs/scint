@@ -81,7 +81,7 @@ class Agent(ABC):
         reply = Message(
             sender=self.name,
             recipient="user",
-            message=reply_message,
+            message_data=reply_message,
         )
 
         return reply

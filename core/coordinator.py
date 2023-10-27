@@ -63,11 +63,11 @@ class Coordinator(Agent):
         self.workers: Dict[str, Worker] = {}
 
     async def process_request(self, request):
-        log.info(f"Processing request: {request.message}")
+        log.info(f"Processing request: {request.message_data}")
 
         self.request: Message = request
         self.messages = [self.system_init]
-        self.messages.append(self.request.message)
+        self.messages.append(self.request.message_data)
         state = await self.state()
         res = await completion(**state)
         res_message = res["choices"][0].get("message")  # type: ignore
