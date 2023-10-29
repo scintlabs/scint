@@ -1,33 +1,28 @@
-import json
-import importlib
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any
 
 from services.logger import log
-from core.message import Message
 from core.config import GPT4
 
 
 class Agent(ABC):
     def __init__(self, name, system_init, function, config):
-        log.info(f"Initializing Scint interface.")
-
-        self.name = name
+        self.name: str = name
         self.system_init: Dict[str, str] = system_init
-        self.messages: List[Dict[str, str]] = [self.system_init]
+        self.context: List[Dict[str, str]] = [self.system_init]
         self.function: Dict[str, Any] = function
         self.config: Dict[str, Any] = config
 
     async def state(self) -> Dict[str, Any]:
-        log.info(f"Getting interface state.")
+        log.info(f"Getting {self.name} state.")
 
         config = await self.get_config()
-        messages = []
-        for m in self.messages:
-            messages.append(m)
+        context = []
+        for item in self.context:
+            context.append(item)
 
         state = {
-            "messages": messages,
+            "messages": context,
             "functions": [self.function],
             "model": config.get("model"),
             "max_tokens": config.get("max_tokens"),
@@ -36,7 +31,6 @@ class Agent(ABC):
             "top_p": config.get("top_p"),
             "temperature": config.get("temperature"),
         }
-
         return state
 
     async def get_config(self, config_dict=None) -> Dict[str, Any]:
@@ -54,34 +48,21 @@ class Agent(ABC):
 
         return config
 
+    async def format_message(self, role, content, name) -> Dict[str, str]:
+        log.info("Formatting message.")
+
+        reply = {
+            "role": role,
+            "content": content,
+            "name": name,
+        }
+
+        return reply
+
+    @abstractmethod
+    async def process_request(self, request):
+        pass
+
     @abstractmethod
     async def eval_function_call(self, res_message):
         pass
-
-    @abstractmethod
-    async def process_request(self, payload):
-        pass
-
-    async def generate_reply(self, res_message):
-        log.info("Generating reply.")
-
-        role = res_message.get("role")
-        content = res_message.get("content")
-
-        if not role or not content:
-            log.error("Role or content missing in res_message.")
-            return
-
-        reply_message: dict[str, str] = {
-            "role": role,
-            "content": content,
-            "name": self.name,
-        }
-
-        reply = Message(
-            sender=self.name,
-            recipient="user",
-            message_data=reply_message,
-        )
-
-        return reply

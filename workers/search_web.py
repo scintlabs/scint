@@ -1,10 +1,7 @@
-import asyncio
-import os
 from typing import Dict, List, Optional
 
 import aiohttp
 
-from core.config import envar
 from services.logger import log
 from core.config import GOOGLE_API_KEY, CUSTOM_SEARCH_ID
 
@@ -56,9 +53,8 @@ async def search_web(query: str) -> Dict[str, str]:
         ]
     )
 
-    message_data = {
+    return {
         "role": "system",
-        "content": f"Parse these web search results for the user: {results_str}",
-        "name": "web_search",
+        "content": f"Parse these web search results for the user, making sure to include all links within the descriptions and not linking them in a separate list: {results_str}",
+        "name": "search_web",
     }
-    return message_data

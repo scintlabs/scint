@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from core.message import Message
 from core.config import envar
 from services.logger import log
 
@@ -29,14 +28,11 @@ async def format_weather_message(response):
         f"Sunset: {sunset}"
     )
 
-    message_content = {
+    return {
         "role": "system",
         "content": parsed_data,
         "name": "function_call",
     }
-    reply = Message("scint", "user", message_content)
-
-    return reply
 
 
 async def get_weather(city):

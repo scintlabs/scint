@@ -12,7 +12,9 @@ intents.message_content = True
 
 async def chat_request(content, author):
     request = {
-        "message_data": {"role": "user", "content": content, "name": author},
+        "role": "user",
+        "content": content,
+        "name": author,
     }
 
     async with aiohttp.ClientSession() as session:
@@ -21,7 +23,7 @@ async def chat_request(content, author):
                 log.info(await res.text())
 
             response = await res.json()
-            response_message = response.get("message_data")
+            response_message = response.get("message")
             message_content = response_message.get("content")
             return message_content
 

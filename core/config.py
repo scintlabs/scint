@@ -5,10 +5,8 @@ from xdg_base_dirs import xdg_data_home
 
 from core.util import envar
 
-# appname
-APPNAME: str | os.PathLike = "scint"
-
 # data
+APPNAME: str | os.PathLike = "scint"
 APPDATA = os.path.join(xdg_data_home(), APPNAME)
 LOGS = os.path.join(APPDATA, "logs")
 
@@ -127,5 +125,5 @@ INTERFACE_CONFIG = {
     "top_p": 1,
     "presence_penalty": 0,
     "frequency_penalty": 0,
-    "function_call": {"name": "coordinate"},
+    "function_call": {"name": "coordinator"},
 }

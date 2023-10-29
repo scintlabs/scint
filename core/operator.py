@@ -2,57 +2,49 @@ import json
 import importlib
 from typing import Dict, List, Any
 
-
 from services.logger import log
 from services.openai import completion
-from core.config import GPT4, INTERFACE_INIT, INTERFACE_FUNC, INTERFACE_CONFIG
-from core.message import Message
+from core.config import INTERFACE_INIT, INTERFACE_FUNC, INTERFACE_CONFIG
 from core.agent import Agent
 
 
-class ChatInterface(Agent):
+class Operator(Agent):
     def __init__(self):
-        log.info(f"Initializing Scint interface.")
+        log.info(f"Operator: initializing self.")
 
-        self.name = "interface"
+        self.name = "operator"
         self.system_init: Dict[str, str] = INTERFACE_INIT
         self.function: Dict[str, Any] = INTERFACE_FUNC
         self.config: Dict[str, Any] = INTERFACE_CONFIG
-        self.messages: List[Dict[str, str]] = [self.system_init]
+        self.context: List[Dict[str, str]] = [self.system_init]
 
-    async def process_request(self, payload):
-        log.info(f"Processing request.")
-        self.payload: Message = payload
-        self.messages.append(payload.message_data)
+    async def process_request(self, context: List[dict[str, str]]):
+        log.info(f"Operator: processing request.")
+
+        for item in context:
+            self.context.append(item)
+
         state = await self.state()
         res = await completion(**state)
-        res_message = res["choices"][0].get("message")  # type: ignore
 
-        if not isinstance(res_message, dict):
+        if not isinstance(res, dict):
             log.error("res_message is not a dictionary.")
             return
 
-        content = res_message.get("content")
-        function_call = res_message.get("function_call")
+        content = res.get("content")
+        function_call = res.get("function_call")
 
         if content is not None:
-            reply = await self.generate_reply(res_message)
+            reply = await self.format_message("assistant", content, self.name)
             return reply
 
         elif function_call is not None:
-            new_request = await self.eval_function_call(res_message)  # type: ignore
+            return await self.eval_function_call(res)  # type: ignore
 
-            if new_request:
-                return await self.process_request(new_request)
+    async def eval_function_call(self, res) -> Dict[str, str]:
+        log.info("Operator: evaluating function call.")
 
-            else:
-                log.error("Function call did not return a valid request.")
-                return
-
-    async def eval_function_call(self, res_message):
-        log.info("Evaluating worker function call.")
-
-        function_call = res_message.get("function_call")
+        function_call = res.get("function_call")
         function_name = function_call.get("name")
         function_args = function_call.get("arguments")
 
@@ -67,7 +59,7 @@ class ChatInterface(Agent):
             if method_to_call:
                 try:
                     result = await method_to_call(**function_args)
-                    result_message = Message(self.name, "Interface", result)
+                    result_message = self.format_message("system", result, self.name)
                     return result_message
 
                 except Exception as e:

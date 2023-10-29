@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import subprocess
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import FastAPI
 from pydantic import BaseModel, ValidationError
@@ -9,14 +8,10 @@ from pydantic import BaseModel, ValidationError
 from services.logger import log
 from core.coordinator import Coordinator
 from core.worker import Worker
-from core.message import Message
 from core.config import GPT4
 
 
 coordinator = Coordinator()
-app = FastAPI()
-
-
 get_weather = Worker(
     name="get_weather",
     system_init={
@@ -47,7 +42,7 @@ get_weather = Worker(
         "function_call": {"name": "get_weather"},
     },
 )
-parse_url = Worker(
+read_url = Worker(
     name="parse_url",
     system_init={
         "role": "system",
@@ -107,10 +102,89 @@ search_web = Worker(
         "function_call": {"name": "search_web"},
     },
 )
+generate_text = Worker(
+    name="generate_text",
+    system_init={
+        "role": "system",
+        "content": "You are a content generating function for Scint, an intelligent assistant.",
+        "name": "generate_text",
+    },
+    function={
+        "name": "generate_text",
+        "description": "Use this function to generate content.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "content_type": {
+                    "type": "string",
+                    "description": "The type of content being generated.",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The generated content.",
+                },
+            },
+        },
+        "required": ["content_type", "content"],
+    },
+    config={
+        "model": GPT4,
+        "temperature": 0,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "generate_text"},
+    },
+)
+crud_file = Worker(
+    name="crud_file",
+    system_init={
+        "role": "system",
+        "content": "You are a CRUD file function for Scint, an intelligent assistant.",
+        "name": "crud_file",
+    },
+    function={
+        "name": "crud_file",
+        "description": "Use this function to perform CRUD operations on a specified file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "filepath": {
+                    "type": "string",
+                    "description": "The complete filepath to the file.",
+                },
+                "operation": {
+                    "type": "string",
+                    "description": "The operation to run on the specified file.",
+                    "enum": ["create", "read", "update", "delete"],
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The content to create or update files with.",
+                },
+            },
+        },
+        "required": ["filename", "operation"],
+    },
+    config={
+        "model": GPT4,
+        "temperature": 0,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "crud_file"},
+    },
+)
 
-coordinator.add_worker(get_weather)
-coordinator.add_worker(parse_url)
-coordinator.add_worker(search_web)
+control_flows: Dict[str, List[Worker]] = {
+    "create_blog_post": [crud_file, search_web, generate_text, crud_file],
+    "browse_web": [search_web, read_url],
+}
+
+coordinator.add_workers(search_web, read_url, generate_text, crud_file)
+coordinator.add_control_flows(control_flows)
+
+app = FastAPI()
 
 
 class Response(BaseModel):
@@ -118,16 +192,14 @@ class Response(BaseModel):
 
 
 class Request(BaseModel):
-    message_data: Dict[str, str]
+    message: Dict[str, str]
 
 
 @app.post("/chat")
 async def chat_message(request: Request):
-    chat_message = Message("user", "coordinator", request.message_data)
-
     try:
-        chat_response = await coordinator.process_request(chat_message)
-        log.info(f"Returning chat response: {chat_response.message_data}")  # type: ignore
+        chat_response = await coordinator.process_request(request.message)
+        log.info(f"Returning chat response: {chat_response}")  # type: ignore
         return chat_response
 
     except ValidationError as e:

@@ -22,7 +22,7 @@ async def completion(**kwargs):
     )
 
     log.info(f"Response received from language model.")
-    return response
+    return response["choices"][0].get("message")
 
 
 async def get_embedding(text: str) -> List[float]:

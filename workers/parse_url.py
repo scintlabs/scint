@@ -2,7 +2,6 @@ import subprocess
 
 import asyncio
 
-from core.message import Message
 import asyncio
 
 
@@ -27,12 +26,12 @@ async def parse_url(url):
         with open(stdout_text, "r") as file:
             file_contents = file.read()
 
-        message_data = {
+        message = {
             "role": "system",
             "content": f"Here's the data for the requested URL:\n {file_contents}\n\n Summarize the data for the user.",
             "name": "parse_url",
         }
-        return message_data
+        return message
 
     except Exception as e:
         print(f"Error during subprocess execution or file reading: {e}")

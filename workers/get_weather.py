@@ -3,7 +3,6 @@ import json
 from datetime import datetime
 
 from core.config import OPENWEATHER_API_KEY
-from core.message import Message
 from services.logger import log
 
 
