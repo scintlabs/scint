@@ -3,8 +3,9 @@ from typing import List, Dict, Any
 
 from services.logger import log
 from services.openai import completion
-from core.config import GPT4
-from core.operator import Operator
+from core.config import GPT4, COORDINATOR_INIT, COORDINATOR_FUNC, COORDINATOR_CONFIG
+from core.persona import Persona
+from core.memory import MessageManager, ContextController
 from core.worker import Worker
 from core.agent import Agent
 
@@ -14,64 +15,23 @@ class Coordinator(Agent):
         log.info(f"Coordinator: initializing self.")
 
         self.name = "coordinator"
-        self.system_init: Dict[str, str] = {
-            "role": "system",
-            "content": "You are the Coordinator module for Scint, an intelligent assistant. You're responsibile for classifying all incoming requests and assigning them to the appropriate worker OR control flow process.",
-            "name": "coordinator",
-        }
+        self.system_init: Dict[str, str] = COORDINATOR_INIT
+        self.function: Dict[str, Any] = COORDINATOR_FUNC
+        self.config: Dict[str, Any] = COORDINATOR_CONFIG
         self.context: List[Dict[str, str]] = [self.system_init]
-        self.function: Dict[str, Any] = {
-            "name": "coordinator",
-            "description": "Define and classify the user's request and assign it to the appropriate worker OR control flow process. For control flow operations, choose a control flow process, otherwise choose a worker.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "task": {
-                        "type": "string",
-                        "description": "Based on the request, define a task for the worker OR the control flow process. Avoid ambiguity and be specific.",
-                    },
-                    "classification": {
-                        "type": "string",
-                        "description": "Classify the type of request being made.",
-                        "enum": [
-                            "general_discussion",
-                            "information_request",
-                            "control_flow_operation",
-                        ],
-                    },
-                    "control_flow_process": {
-                        "type": "string",
-                        "description": "Select the appropriate control flow process based on the task and request.",
-                        "enum": [],
-                    },
-                    "worker": {
-                        "type": "string",
-                        "description": "Select the appropriate worker based on the task and request. For general discussion or tasks that don't require a worker, return 'operator' for the worker.",
-                        "enum": [],
-                    },
-                },
-            },
-            "required": ["task", "classification"],
-        }
-        self.config: Dict[str, Any] = {
-            "model": GPT4,
-            "temperature": 0,
-            "top_p": 1,
-            "presence_penalty": 0,
-            "frequency_penalty": 0,
-            "function_call": {"name": "coordinator"},
-        }
         self.workers: Dict[str, Worker] = {}
         self.control_flows: Dict[str, List[Worker]] = {}
-        self.current_flows: Dict[str, int] = {}
-        self.interface = Operator()
+        self.current_control_flow: Dict[str, int] = {}
+        self.interface = Persona()
+        self.message_manager = MessageManager()
+        self.context_controller = ContextController()
 
-    async def process_request(self, request) -> Dict[str, str] | None:
+    async def process_request(self, request) -> Dict[str, str]:
         log.info(f"Coordinator: processing request: {request}")
 
         self.context = [self.system_init]
         self.context.append(request)
-        state = await self.state()
+        state = await self.get_state()
         response = await completion(**state)
         function_call = response.get("function_call")
 
@@ -90,7 +50,7 @@ class Coordinator(Agent):
         function_args = function_call.get("arguments")
         function_args = json.loads(function_args)
 
-        if function_name.strip() == "coordinator":
+        if function_name.strip() == self.name:
             task = function_args.get("task")
             classification = function_args.get("classification")
             control_flow_process = function_args.get("control_flow_process")
@@ -142,18 +102,18 @@ class Coordinator(Agent):
     def update_flow_state(self, flow_name: str):
         log.info(f"Coordinator: updating flow state for {flow_name}.")
 
-        if flow_name in self.current_flows:
-            self.current_flows[flow_name] += 1
-            if self.current_flows[flow_name] >= len(self.control_flows[flow_name]):
-                del self.current_flows[flow_name]
+        if flow_name in self.current_flow:
+            self.current_flow[flow_name] += 1
+            if self.current_flow[flow_name] >= len(self.control_flows[flow_name]):
+                del self.current_flow[flow_name]
 
     def get_next_worker_in_flow(self, flow_name: str) -> Worker:
         log.info(f"Coordinator: getting next worker for {flow_name}.")
 
-        if flow_name not in self.current_flows:
-            self.current_flows[flow_name] = 0
+        if flow_name not in self.current_flow:
+            self.current_flow[flow_name] = 0
 
-        step_index = self.current_flows[flow_name]
+        step_index = self.current_flow[flow_name]
         return self.control_flows[flow_name][step_index]
 
     def update_function_definitions(self):

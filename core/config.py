@@ -1,5 +1,4 @@
 import os
-import random
 
 from xdg_base_dirs import xdg_data_home
 
@@ -22,12 +21,105 @@ GPT4 = "gpt-4"
 GPT4_32K = "gpt-4-32k"
 GPT3 = "gpt-3.5-turbo"
 GPT3_16K = "gpt-3.5-turbo-16k"
-TEXT_EMBEDDINGS = "text-embedding-ada-002"
+ADA2 = "text-embedding-ada-002"
 
 # internal api endpoints
 API_CHAT_ENDPOINT = "http://localhost:8000/chat"
 
-# cached messages
+# interface
+DEFAULT_INIT = {
+    "role": "system",
+    "content": f"""You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.""",
+    "name": "system_init",
+}
+DEFAULT_FUNC = {}
+DEFAULT_CONFIG = {
+    "model": GPT4,
+    "temperature": 1,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "function_call": "auto",
+}
+
+# interface
+INTERFACE_INIT = {
+    "role": "system",
+    "content": f"""You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.""",
+    "name": "system_init",
+}
+INTERFACE_FUNC = {
+    "name": "call_coordinator",
+    "description": "When it's necessary to continue processing, call the coordinator to assign tasks to the appropriate worker.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "task": {
+                "type": "string",
+                "description": "Based on the request, define the task the worker needs to complete. Avoid ambiguity and be specific.",
+            },
+        },
+    },
+    "required": ["task"],
+}
+INTERFACE_CONFIG = {
+    "model": GPT4,
+    "temperature": 0,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "function_call": {"name": "coordinator"},
+}
+
+# coordinator
+COORDINATOR_INIT = {
+    "role": "system",
+    "content": "You are the Coordinator module for Scint, an intelligent assistant. You're responsibile for classifying all incoming requests and assigning them to the appropriate worker OR control flow process.",
+    "name": "coordinator",
+}
+COORDINATOR_FUNC = {
+    "name": "coordinator",
+    "description": "Define and classify the user's request and assign it to the appropriate worker OR control flow process. For control flow operations, choose a control flow process, otherwise choose a worker.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "task": {
+                "type": "string",
+                "description": "Based on the request, define a task for the worker OR the control flow process. Avoid ambiguity and be specific.",
+            },
+            "classification": {
+                "type": "string",
+                "description": "Classify the type of request being made.",
+                "enum": [
+                    "general_discussion",
+                    "information_request",
+                    "control_flow_operation",
+                ],
+            },
+            "control_flow_process": {
+                "type": "string",
+                "description": "Select the appropriate control flow process based on the task and request.",
+                "enum": [],
+            },
+            "worker": {
+                "type": "string",
+                "description": "Select the appropriate worker based on the task and request. For general discussion or tasks that don't require a worker, return 'operator' for the worker.",
+                "enum": [],
+            },
+        },
+    },
+    "required": ["task", "classification"],
+}
+COORDINATOR_CONFIG = {
+    "model": GPT4,
+    "temperature": 0,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "function_call": {"name": "coordinator"},
+}
+
+# pre-baked responses
 WORKER_LOOKUP_MESSAGES = {
     "Sure thing, let me look that up for you.",
     "Sure, one sec while I look it up.",
@@ -62,7 +154,6 @@ WORKER_LOOKUP_MESSAGES = {
     "Sure, I'm on it. Please hold.",
     "Alright, let me get that for you.",
 }
-
 WORKER_PROCESSING_MESSAGES = {
     "Working on it, this'll just take a moment.",
     "Processing your request now.",
@@ -94,36 +185,4 @@ WORKER_PROCESSING_MESSAGES = {
     "Hold tight, processing your request.",
     "On it, just a moment.",
     "Getting to work on your task.",
-}
-
-# interface config
-INTERFACE_INIT = {
-    "role": "system",
-    "content": f"""You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.""",
-    "name": "system_init",
-}
-
-
-INTERFACE_FUNC = {
-    "name": "call_coordinator",
-    "description": "When it's necessary to continue processing, call the coordinator to assign tasks to the appropriate worker.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "task": {
-                "type": "string",
-                "description": "Based on the request, define the task the worker needs to complete. Avoid ambiguity and be specific.",
-            },
-        },
-    },
-    "required": ["task"],
-}
-
-INTERFACE_CONFIG = {
-    "model": GPT4,
-    "temperature": 0,
-    "top_p": 1,
-    "presence_penalty": 0,
-    "frequency_penalty": 0,
-    "function_call": {"name": "coordinator"},
 }

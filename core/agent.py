@@ -2,23 +2,27 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Any
 
 from services.logger import log
-from core.config import GPT4
+from core.config import GPT4, DEFAULT_INIT, DEFAULT_FUNC, DEFAULT_CONFIG
+from core.memory import MemoryManager, ContextController
 
 
 class Agent(ABC):
+    # TODO: Split the OpenAI API call out into a service?
+
     def __init__(self, name, system_init, function, config):
         self.name: str = name
-        self.system_init: Dict[str, str] = system_init
-        self.context: List[Dict[str, str]] = [self.system_init]
-        self.function: Dict[str, Any] = function
-        self.config: Dict[str, Any] = config
+        self.system_init: Dict[str, str] = system_init | DEFAULT_INIT
+        self.function: Dict[str, Any] = function | DEFAULT_FUNC
+        self.config: Dict[str, Any] = config | DEFAULT_CONFIG
+        self.state: List[Dict[str, str]] = [self.system_init]
+        self.context_controller = ContextController()
 
-    async def state(self) -> Dict[str, Any]:
+    async def get_state(self) -> Dict[str, Any]:
         log.info(f"Getting {self.name} state.")
 
         config = await self.get_config()
         context = []
-        for item in self.context:
+        for item in self.state:
             context.append(item)
 
         state = {

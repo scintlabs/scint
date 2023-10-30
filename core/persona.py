@@ -8,7 +8,7 @@ from core.config import INTERFACE_INIT, INTERFACE_FUNC, INTERFACE_CONFIG
 from core.agent import Agent
 
 
-class Operator(Agent):
+class Persona(Agent):
     def __init__(self):
         log.info(f"Operator: initializing self.")
 
@@ -24,7 +24,7 @@ class Operator(Agent):
         for item in context:
             self.context.append(item)
 
-        state = await self.state()
+        state = await self.get_state()
         res = await completion(**state)
 
         if not isinstance(res, dict):

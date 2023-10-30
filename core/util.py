@@ -1,5 +1,5 @@
 import os
-import difflib
+import uuid
 import json
 import random
 from datetime import datetime
@@ -10,6 +10,19 @@ import numpy as np
 import tiktoken
 
 from services.logger import log
+
+
+def envar(var: str) -> Optional[str]:
+    dotenv.load_dotenv()
+    return os.environ.get(var)
+
+
+def generate_timestamp():
+    return datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+
+
+def generate_uuid4():
+    return str(uuid.uuid4())
 
 
 def get_random_message(message_type, message_dict):
@@ -27,11 +40,6 @@ def get_random_message(message_type, message_dict):
         last_five_messages.pop(0)
 
     return message
-
-
-def envar(var: str) -> Optional[str]:
-    dotenv.load_dotenv()
-    return os.environ.get(var)
 
 
 def load_config(dir) -> Union[Dict, None]:

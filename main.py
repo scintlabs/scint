@@ -178,6 +178,7 @@ crud_file = Worker(
 
 control_flows: Dict[str, List[Worker]] = {
     "create_blog_post": [crud_file, search_web, generate_text, crud_file],
+    "make_website": [],
     "browse_web": [search_web, read_url],
 }
 

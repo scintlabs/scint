@@ -25,7 +25,7 @@ async def completion(**kwargs):
     return response["choices"][0].get("message")
 
 
-async def get_embedding(text: str) -> List[float]:
+async def embedding(text: str) -> List[float]:
     log.info(f"Sending embedding request to language model.")
 
     model = "text-embedding-ada-002"

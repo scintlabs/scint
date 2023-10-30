@@ -22,7 +22,7 @@ class Worker(Agent):
         log.info(f"Processing request.")
 
         self.context.append(request)
-        state = await self.state()
+        state = await self.get_state()
         res = await completion(**state)
 
         function_call = res.get("function_call")
