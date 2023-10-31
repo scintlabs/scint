@@ -125,32 +125,36 @@ example_context_three = [
 ]
 
 
-class GenerateMemory(Agent):
-    def __init__(self, messages):
-        log.info(f"Generating memory from messages.")
-
-
-class GenerateHeuristic(Agent):
-    def __init__(self, messages):
-        log.info(f"Generating embedding from messages.")
-
-
 class MemoryManager:
     def __init__(self):
         log.info(f"MemoryManager: initializing self.")
 
-        self.buffered_messages: List[Dict[str, str]] = []
+        self.messages: List[Dict[str, str]] = []
 
-    async def generate_message_metadata(self, message):
+    async def generate_embedding(self, content):
+        pass
+
+    async def process_message(self, message):
         log.info(f"MessageManager: generating message metadata.")
+
+        role: str = message.get("role")
+        content: str = message.get("content")
+        name: str = message.get("name")
+
+        if role == "user":
+            embedding = await self.generate_embedding(content)
+
+        else:
+            embedding = None
 
         return (
             {
                 "id": generate_uuid4(),
                 "timestamp": generate_timestamp(),
-                "role": message.get("role"),
-                "content": message.get("content"),
-                "name": message.get("name"),
+                "role": role,
+                "content": content,
+                "name": name,
+                "embedding": embedding,
             },
         )
 
@@ -165,14 +169,6 @@ class MemoryManager:
                 "summary": message.get("role"),
             },
         )
-
-    async def store_message(self, message, message_summary):
-        log.info(f"MessageManager: storing message in database.")
-        pass
-
-    async def process_message(self, message):
-        await self.generate_message_metadata(message)
-        await self.store_message(message)
 
 
 class ContextController:

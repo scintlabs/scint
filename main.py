@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
+import asyncio
 from typing import Dict, List
 
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ValidationError
 
 from services.logger import log
@@ -196,17 +199,22 @@ class Request(BaseModel):
     message: Dict[str, str]
 
 
-@app.post("/chat")
-async def chat_message(request: Request):
+async def stream_response(request_message):
     try:
-        chat_response = await coordinator.process_request(request.message)
-        log.info(f"Returning chat response: {chat_response}")  # type: ignore
-        return chat_response
+        async for chunk in coordinator.process_request(request_message):
+            yield json.dumps(chunk) + "\n"
 
     except ValidationError as e:
         log.error(f"Validation Error: {e}")
-        return {"error": f"{e}"}
+        yield json.dumps({"error": f"{e}"}) + "\n"
 
     except Exception as e:
         log.error(f"General Exception: {e}")
-        return {"error": f"{e}"}
+        yield json.dumps({"error": f"{e}"}) + "\n"
+
+
+@app.post("/chat")
+async def chat_message(request: Request):
+    return StreamingResponse(
+        stream_response(request.message), media_type="application/json"
+    )

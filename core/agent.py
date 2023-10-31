@@ -3,7 +3,6 @@ from typing import Dict, List, Any
 
 from services.logger import log
 from core.config import GPT4, DEFAULT_INIT, DEFAULT_FUNC, DEFAULT_CONFIG
-from core.memory import MemoryManager, ContextController
 
 
 class Agent(ABC):
@@ -12,22 +11,21 @@ class Agent(ABC):
     def __init__(self, name, system_init, function, config):
         self.name: str = name
         self.system_init: Dict[str, str] = system_init | DEFAULT_INIT
-        self.function: Dict[str, Any] = function | DEFAULT_FUNC
         self.config: Dict[str, Any] = config | DEFAULT_CONFIG
-        self.state: List[Dict[str, str]] = [self.system_init]
-        self.context_controller = ContextController()
+        self.function: Dict[str, Any] | None
+        self.context: List[Dict[str, str]] = [self.system_init]
 
     async def get_state(self) -> Dict[str, Any]:
         log.info(f"Getting {self.name} state.")
 
         config = await self.get_config()
         context = []
-        for item in self.state:
-            context.append(item)
+
+        for message in self.context:
+            context.append(message)
 
         state = {
             "messages": context,
-            "functions": [self.function],
             "model": config.get("model"),
             "max_tokens": config.get("max_tokens"),
             "presence_penalty": config.get("presence_penalty"),
@@ -35,6 +33,11 @@ class Agent(ABC):
             "top_p": config.get("top_p"),
             "temperature": config.get("temperature"),
         }
+
+        if self.function is not None:
+            state["functions"] = [self.function]
+            state["function_call"] = {"name": self.name}
+
         return state
 
     async def get_config(self, config_dict=None) -> Dict[str, Any]:
@@ -65,8 +68,4 @@ class Agent(ABC):
 
     @abstractmethod
     async def process_request(self, request):
-        pass
-
-    @abstractmethod
-    async def eval_function_call(self, res_message):
         pass

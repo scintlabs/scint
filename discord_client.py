@@ -1,5 +1,6 @@
 import aiohttp
 import re
+import json
 from discord import Client, Intents
 
 from services.logger import log
@@ -12,20 +13,31 @@ intents.message_content = True
 
 async def chat_request(content, author):
     request = {
-        "role": "user",
-        "content": content,
-        "name": author,
+        "message": {
+            "role": "user",
+            "content": content,
+            "name": author,
+        }
     }
 
     async with aiohttp.ClientSession() as session:
         async with session.post(API_CHAT_ENDPOINT, json=request) as res:
             if res.status != 200:
                 log.info(await res.text())
+                return
 
-            response = await res.json()
-            response_message = response.get("message")
-            message_content = response_message.get("content")
-            return message_content
+            while True:
+                response_line = await res.content.readline()
+                if not response_line:
+                    break
+
+                response = json.loads(response_line.decode("utf-8"))
+                response_message = response.get("content")
+
+                if response_message:
+                    yield response_message
+                else:
+                    log.error("Response does not contain a content key.")
 
 
 class ScintDiscordClient(Client):
@@ -45,11 +57,10 @@ class ScintDiscordClient(Client):
                 try:
                     author = str(message.author)
                     content = re.sub(r"<@!?[0-9]+>", "", message.content).strip()
-                    reply = await chat_request(content, author)
-                    log.info(f"API Reply: {reply}")
-
-                    for chunk in split_discord_message(reply):
-                        await message.channel.send(chunk)
+                    async for reply in chat_request(content, author):
+                        log.info(f"API Reply: {reply}")
+                        for chunk in split_discord_message(reply):
+                            await message.channel.send(chunk)
 
                 except Exception as e:
                     log.exception(f"Error: {e}")
