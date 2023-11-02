@@ -1,182 +1,112 @@
-import json
 from typing import Dict, List, Any
 
+import asyncio
+
 from services.logger import log
-from services.openai import completion, embedding
-from core.agent import Agent
-from core.config import GPT4, GPT3
+from services.openai import embedding, summary
 from core.util import generate_timestamp, generate_uuid4
-
-example_context_one = [
-    {
-        "role": "system",
-        "content": "Hey there! I've been having trouble with my computer lately. It seems to be running slow, especially when I'm using my browser.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "Hi! I'm sorry to hear that. Slowness can be caused by several factors. Have you noticed any specific patterns, like certain websites causing more lag or having too many tabs open?",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "Yeah, it mainly happens when I have multiple tabs open, especially when I'm streaming videos or using web applications.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "Streaming videos and using web apps can be resource-intensive. It might be a RAM issue. How much RAM does your computer have? And do you know if you have many background processes running?",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "I think it has 8GB of RAM. As for background processes, I'm not sure. I haven't checked that.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "8GB should be sufficient for general use, but if you have many applications running simultaneously, it can get used up quickly. I'd recommend checking your task manager or activity monitor to see what's consuming the most resources. It might give us a clue.",
-        "name": "scint",
-    },
-]
-example_context_two = [
-    {
-        "role": "system",
-        "content": "By the way, can you also help with document formatting? I have this report due, and I'm not great with Word.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "Absolutely! I can guide you through formatting tasks in Word. What specific formatting help do you need?",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "I need to set margins, insert a table of contents, and format headers and footers.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "Sure thing. Let's start with the margins. Go to the 'Layout' or 'Page Layout' tab in Word, and you'll see an option for 'Margins'. From there, you can set custom margins for your document.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "I think it has 8GB of RAM. As for background processes, I'm not sure. I haven't checked that.",
-        "name": "scint",
-    },
-    {
-        "role": "system",
-        "content": "8GB should be sufficient for general use, but if you have many applications running simultaneously, it can get used up quickly. I'd recommend checking your task manager or activity monitor to see what's consuming the most resources. It might give us a clue.",
-        "name": "scint",
-    },
-]
-example_context_three = [
-    {
-        "role": "system",
-        "content": f"""
-        You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.
-
-        - You're responding to John Doe.
-        - John is asking about gardening.
-        - John's last request was about Word.
-        """,
-        "name": "system_init",
-        "name": "scint",
-    },
-    {
-        "role": "user",
-        "content": "I also have questions about gardening. I'm new to it and need some tips to start a vegetable garden in my backyard.",
-        "name": "john_doe",
-    },
-    {
-        "role": "assistant",
-        "content": "That's exciting! Starting a vegetable garden can be rewarding. First things first, have you decided on the vegetables you'd like to grow and identified a suitable spot in your backyard that gets adequate sunlight?",
-        "name": "scint",
-    },
-    {
-        "role": "user",
-        "content": "Yes, I'd like to grow tomatoes, bell peppers, and lettuce. I've chosen a spot that gets sunlight for most of the day. But I'm unsure about the soil preparation and planting process.",
-        "name": "john_doe",
-    },
-    {
-        "role": "assistant",
-        "content": """
-        Great choices! For those vegetables:
-
-        Soil Preparation: Ensure the soil is well-draining. You might want to consider adding compost or organic matter to enrich it.
-        Tomatoes and Bell Peppers: These need deep planting. Dig a hole deeper than the root ball of your young plant and plant it, leaving only the top few leaves above the ground.
-        Lettuce: You can sow lettuce seeds directly or transplant seedlings. They don't need as much depth as tomatoes and peppers.
-        Watering: Ensure consistent moisture, especially during the seedling phase. However, avoid overwatering to prevent root rot.
-
-        Remember, each vegetable has its own specific needs, so it's a good idea to read up or seek advice on each one as you go along.""",
-        "name": "scint",
-    },
-    {
-        "role": "user",
-        "content": "Thank you so much! I'll start with this and reach out if I have more questions.",
-        "name": "john_doe",
-    },
-    {
-        "role": "assistant",
-        "content": "You're welcome! Happy gardening, and feel free to ask if you need further assistance. All the best with your vegetable garden!",
-        "name": "scint",
-    },
-]
 
 
 class MemoryManager:
     def __init__(self):
         log.info(f"MemoryManager: initializing self.")
 
-        self.messages: List[Dict[str, str]] = []
+        self.full_messages: List[Dict[str, str]] = []
+        self.summarized_messages: List[Dict[str, str]] = []
 
-    async def generate_embedding(self, content):
-        pass
+    async def generate_summary(self, message) -> Dict[str, str]:
+        log.info(f"MemoryManager: generating message summary.")
 
-    async def process_message(self, message):
-        log.info(f"MessageManager: generating message metadata.")
+        self.system_init: Dict[str, str] = {
+            "role": "system",
+            "content": "Conversation summarizer, Hemingway's brevity. Condense discussions, minimum context, third person.",
+            "name": "summarizer",
+        }
+        self.messages: List[Dict[str, str]] = [self.system_init, message]
+        self.request: Dict[str, Any] = {"messages": self.messages}
+        summarized_message = await summary(**self.request)
 
-        role: str = message.get("role")
-        content: str = message.get("content")
-        name: str = message.get("name")
+        return summarized_message
 
-        if role == "user":
+    async def generate_embedding(self, content) -> List[float]:
+        message_embedding = await embedding(content)
+        return message_embedding
+
+    async def process_message(self, message, get_embedding=False) -> Dict[str, Any]:
+        log.info(f"MemoryManager: processing message: {message}.")
+
+        role = message.get("role")
+        content = message.get("content")
+        name = message.get("name")
+        summary = await self.generate_summary(message)
+
+        if get_embedding == True:
             embedding = await self.generate_embedding(content)
 
         else:
             embedding = None
 
-        return (
-            {
-                "id": generate_uuid4(),
-                "timestamp": generate_timestamp(),
-                "role": role,
-                "content": content,
-                "name": name,
-                "embedding": embedding,
-            },
-        )
+        processed_message = {
+            "id": generate_uuid4(),
+            "timestamp": generate_timestamp(),
+            "role": role,
+            "content": content,
+            "name": name,
+            "summary": summary,
+            "embedding": embedding,
+        }
 
-    async def generate_message_summary(self, message):
-        log.info(f"MessageManager: generating message metadata.")
+        log.info(f"MemoryManager: processed message: {processed_message}.")
 
-        return (
-            {
-                "id": generate_uuid4(),
-                "original_message_id": message.get("message_id"),
-                "timestamp": generate_timestamp(),
-                "summary": message.get("role"),
-            },
-        )
+        return processed_message
 
 
 class ContextController:
-    def __init__(self) -> None:
-        log.info(f"MemoryController: initializing self.")
+    _instance = None
 
-        self.context: List[Dict[str, str]] = []
-        self.context_summary: List[Dict[str, str]] = []
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(ContextController, cls).__new__(cls)  # Only pass cls
+        return cls._instance
 
-    async def create_context(self, current_context):
-        log.info(f"Context Controller: getting context.")
+    def __init__(self, max_messages: int) -> None:
+        log.info(f"ContextController: initializing self.")
+
+        self.max_messages = max_messages
+        self.context: List[Dict[str, Any]] = []
+        self.memory_manager = MemoryManager()
+
+    async def add_message(self, message):
+        log.info(f"ContextController: adding message to context.")
+
+        processed_message = await self.memory_manager.process_message(message)
+        self.context.append(processed_message)
+
+        while len(self.context) > 2 * self.max_messages:
+            for i, msg in enumerate(self.context):
+                if "summary" in msg and msg["content"] == msg["summary"]["content"]:
+                    self.context.pop(i)
+                    break
+
+        non_summarized_msgs = [
+            msg for msg in self.context if msg["content"] != msg["summary"]["content"]
+        ]
+
+        if len(non_summarized_msgs) > self.max_messages:
+            oldest_non_summarized = non_summarized_msgs[0]
+            oldest_non_summarized["content"] = oldest_non_summarized["summary"][
+                "content"
+            ]
+
+    def get_context(self) -> List[Dict[str, Any]]:
+        stripped_context = []
+
+        for message in self.context:
+            stripped_message = {
+                "role": message["role"],
+                "content": message["content"],
+                "name": message["name"],
+            }
+            stripped_context.append(stripped_message)
+
+        return stripped_context

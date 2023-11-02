@@ -2,12 +2,12 @@ import json
 import importlib
 from typing import Dict, List, Any
 
-from core.agent import Agent
+from core.agents import Actor
 from services.openai import completion
 from services.logger import log
 
 
-class Worker(Agent):
+class Worker(Actor):
     def __init__(self, name, system_init, function, config):
         log.info(f"Worker: initializing {name}.")
 
@@ -18,19 +18,22 @@ class Worker(Agent):
         self.function_call: Dict[str, str] = {"name": function.get("name")}
         self.config: Dict[str, Any] = config
 
-    async def process_request(self, request) -> Dict[str, str] | None:
-        log.info(f"Processing request.")
+    async def generate_response(self, request) -> Dict[str, str] | None:
+        log.info(f"Coordinator: processing request: {request}")
 
-        self.context.append(request)
+        await self.context_controller.add_message(request)
         state = await self.get_state()
-        res = await completion(**state)
-
-        function_call = res.get("function_call")
+        response = await completion(**state)
+        function_call = response.get("function_call")
 
         if function_call is not None:
-            return await self.eval_function_call(res)  # type: ignore
+            async for chunk in self.call_function(response, request):
+                yield chunk
 
-    async def eval_function_call(self, res: dict) -> Dict[str, str] | None:
+        else:
+            yield response
+
+    async def call_function(self, res: dict) -> Dict[str, str] | None:
         log.info("Evaluating worker function call.")
 
         function_call = res.get("function_call")

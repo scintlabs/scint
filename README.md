@@ -34,7 +34,7 @@ Scint stands at the forefront of a new era in artificial intelligence frameworks
 
 > Note: Scint is still in the early stages of development
 
-In the evolving landscape of artificial intelligence, LLMs have emerged as versatile juggernauts, seamlessly blending the roles of data reservoirs and functional powerhouses. However, the prevailing paradigm for harnessing LLM outputs has been centered around the 'agent' model—a design that revolves around personifying the system prompt, complete with memory and persona. While intuitive on the surface, this persona-centric approach tends to introduce layers of complexity, especially as tasks become more intricate.
+In the evolving landscape of artificial intelligence, LLMs have emerged as versatile juggernauts, seamlessly blending the roles of data reservoirs and functional powerhouses. However, the prevailing paradigm for harnessing LLM outputs has been centered around the 'agent' model—a design that revolves around personifying the system prompt, complete with memory and operator. While intuitive on the surface, this operator-centric approach tends to introduce layers of complexity, especially as tasks become more intricate.
 
 Scint takes a divergent path. Instead of anchoring the architecture around an identity-laden agent, Scint champions the 'Worker' approach. Imagine the precision of a factory assembly line, where each worker specializes in a specific task, undistracted by the broader intricacies of the product's life story. In Scint's universe, each LLM-generated response assumes the role of such a Worker, singularly focused on the task at hand, unburdened by the complexities of state or identity.
 
