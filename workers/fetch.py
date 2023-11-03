@@ -1,15 +1,15 @@
 from core.config import GPT4
 from core.worker import Worker
 
-get_weather = Worker(
-    name="get_weather",
+fetch_weather = Worker(
+    name="fetch_weather",
     system_init={
         "role": "system",
-        "content": "You are a weater retrieval function for Scint, an intelligent assistant.",
-        "name": "get_weather",
+        "content": "You are a weather retrieval function for Scint, an intelligent assistant.",
+        "name": "fetch_weather",
     },
     function={
-        "name": "get_weather",
+        "name": "fetch_weather",
         "description": "Use this function to get weather data for the specified city.",
         "parameters": {
             "type": "object",
@@ -28,18 +28,52 @@ get_weather = Worker(
         "top_p": 1,
         "presence_penalty": 0,
         "frequency_penalty": 0,
-        "function_call": {"name": "get_weather"},
+        "function_call": {"name": "fetch_weather"},
     },
 )
-read_url = Worker(
-    name="parse_url",
+fetch_files = Worker(
+    name="fetch_files",
+    system_init={
+        "role": "system",
+        "content": "You are a file retrieval function for Scint, an intelligent assistant.",
+        "name": "fetch_files",
+    },
+    function={
+        "name": "fetch_files",
+        "description": "Use this function to access a file or directory within the Scint system.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "directory": {
+                    "type": "string",
+                    "description": "The directory to access.",
+                },
+                "filename": {
+                    "type": "string",
+                    "description": "The filename to access. If no filename is given, the function returns a list of files in the given directory.",
+                },
+            },
+        },
+        "required": ["directory"],
+    },
+    config={
+        "model": GPT4,
+        "temperature": 0,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "fetch_files"},
+    },
+)
+fetch_website = Worker(
+    name="fetch_website",
     system_init={
         "role": "system",
         "content": "You are a website parsing function for Scint, an intelligent assistant.",
-        "name": "parse_url",
+        "name": "fetch_website",
     },
     function={
-        "name": "parse_url",
+        "name": "fetch_website",
         "description": "Use this function to get website data from the specified URL.",
         "parameters": {
             "type": "object",
@@ -58,36 +92,6 @@ read_url = Worker(
         "top_p": 1,
         "presence_penalty": 0,
         "frequency_penalty": 0,
-        "function_call": {"name": "parse_url"},
-    },
-)
-search_web = Worker(
-    name="search_web",
-    system_init={
-        "role": "system",
-        "content": "You are a web search function for Scint, an intelligent assistant.",
-        "name": "search_web",
-    },
-    function={
-        "name": "search_web",
-        "description": "Use this function to search the web.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "The string to search the web for.",
-                },
-            },
-        },
-        "required": ["query"],
-    },
-    config={
-        "model": GPT4,
-        "temperature": 0,
-        "top_p": 1,
-        "presence_penalty": 0,
-        "frequency_penalty": 0,
-        "function_call": {"name": "search_web"},
+        "function_call": {"name": "fetch_website"},
     },
 )

@@ -5,7 +5,7 @@ import asyncio
 import asyncio
 
 
-async def parse_url(url):
+async def fetch_website(url):
     try:
         cmd = ["bunx", "percollate", "md", url]
 

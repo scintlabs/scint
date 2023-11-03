@@ -1,6 +1,8 @@
-from typing import Dict, List, Any
-
+import os
 import asyncio
+import threading
+from collections import deque
+from typing import Dict, List, Any
 
 from services.logger import log
 from services.openai import embedding, summary
@@ -9,8 +11,6 @@ from core.util import generate_timestamp, generate_uuid4
 
 class MemoryManager:
     def __init__(self):
-        log.info(f"MemoryManager: initializing self.")
-
         self.full_messages: List[Dict[str, str]] = []
         self.summarized_messages: List[Dict[str, str]] = []
 
@@ -63,50 +63,42 @@ class MemoryManager:
 
 class ContextController:
     _instance = None
+    _lock = threading.Lock()
 
     def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(ContextController, cls).__new__(cls)  # Only pass cls
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super(ContextController, cls).__new__(cls)
+                log.info(f"ContextController: initializing self.")
+
         return cls._instance
 
     def __init__(self, max_messages: int) -> None:
-        log.info(f"ContextController: initializing self.")
-
         self.max_messages = max_messages
-        self.context: List[Dict[str, Any]] = []
+        self.context = deque(maxlen=max_messages)
         self.memory_manager = MemoryManager()
 
+    def add_message_sync(self, message):
+        log.info(f"ContextController: adding message to context synchronously.")
+        self.context.append(message)
+
+        if len(self.context) == self.max_messages:
+            self.summarize_oldest_message()
+
     async def add_message(self, message):
-        log.info(f"ContextController: adding message to context.")
+        log.info(f"ContextController: adding message to context asynchronously.")
+        await asyncio.to_thread(self.add_message_sync, message)
 
-        processed_message = await self.memory_manager.process_message(message)
-        self.context.append(processed_message)
+    def summarize_oldest_message(self):
+        log.info(f"ContextController: starting message summarization in background.")
 
-        while len(self.context) > 2 * self.max_messages:
-            for i, msg in enumerate(self.context):
-                if "summary" in msg and msg["content"] == msg["summary"]["content"]:
-                    self.context.pop(i)
-                    break
+        oldest_message = self.context[-1]
 
-        non_summarized_msgs = [
-            msg for msg in self.context if msg["content"] != msg["summary"]["content"]
-        ]
+        def summarize_and_update():
+            summary = asyncio.run(self.memory_manager.generate_summary(oldest_message))
+            self.context[-1] = summary
 
-        if len(non_summarized_msgs) > self.max_messages:
-            oldest_non_summarized = non_summarized_msgs[0]
-            oldest_non_summarized["content"] = oldest_non_summarized["summary"][
-                "content"
-            ]
+        threading.Thread(target=summarize_and_update).start()
 
     def get_context(self) -> List[Dict[str, Any]]:
-        stripped_context = []
-
-        for message in self.context:
-            stripped_message = {
-                "role": message["role"],
-                "content": message["content"],
-                "name": message["name"],
-            }
-            stripped_context.append(stripped_message)
-
-        return stripped_context
+        return list(self.context)

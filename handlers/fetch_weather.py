@@ -34,7 +34,7 @@ async def format_weather_message(response):
     }
 
 
-async def get_weather(city):
+async def fetch_weather(city):
     log.info(f"Calling OpenWeather API.")
     base_url = "http://api.openweathermap.org/data/2.5/weather"
     params = {"q": city, "appid": OPENWEATHER_API_KEY, "units": "metric"}

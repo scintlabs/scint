@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "scint"
-version = "0.3.2"
-description = "Structured Composable Intelligence"
+version = "0.3.3"
+description = "Structured, composable intelligence"
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 license = "MIT"
 readme = "README.md"
@@ -30,6 +30,7 @@ aiohttp = "^3.8.5"
 python-dotenv = "^1.0.0"
 sqlalchemy = "^2.0.22"
 psycopg2 = "^2.9.9"
+aiofiles = "^23.2.1"
 
 
 [build-system]

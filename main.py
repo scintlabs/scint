@@ -9,11 +9,12 @@ from pydantic import BaseModel, ValidationError
 
 from services.logger import log
 from core.coordinator import Coordinator
-from workers.fetch import search_web, read_url, get_weather
+from workers.search import search_web
+from workers.fetch import fetch_website, fetch_weather, fetch_files
 
 
 coordinator = Coordinator()
-coordinator.add_workers(search_web, read_url, get_weather)
+coordinator.add_workers(search_web, fetch_files, fetch_website, fetch_weather)
 
 app = FastAPI()
 
@@ -28,7 +29,7 @@ class Request(BaseModel):
 
 async def stream_response(request_message):
     try:
-        async for chunk in coordinator.generate_response(request_message):
+        async for chunk in coordinator.process_request(request_message):
             yield json.dumps(chunk) + "\n"
 
     except ValidationError as e:
@@ -45,3 +46,13 @@ async def chat_message(request: Request):
     return StreamingResponse(
         stream_response(request.message), media_type="application/json"
     )
+
+
+@app.get("/context")
+def get_context():
+    try:
+        return json.dumps(coordinator.context_controller.get_context())
+
+    except Exception as e:
+        log.error(f"Error retrieving context: {e}")
+        return {"error": str(e)}

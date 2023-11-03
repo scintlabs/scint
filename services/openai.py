@@ -17,12 +17,10 @@ async def summary(**kwargs):
 
     parameters = {
         "model": kwargs.get("model", GPT4),
-        "max_tokens": kwargs.get("max_tokens", 4096),
-        "temperature": kwargs.get("temperature", 1),
-        "top_p": kwargs.get("top_p", 1),
+        "temperature": kwargs.get("temperature", 1.5),
+        "top_p": kwargs.get("top_p", 0.5),
         "presence_penalty": kwargs.get("presence_penalty", 0.3),
         "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
-        "logit_bias": {"25797": -100},
         "messages": kwargs.get("messages"),
     }
 
@@ -32,7 +30,6 @@ async def summary(**kwargs):
 
     response = await openai.ChatCompletion.acreate(**parameters)
     response_message = response["choices"][0].get("message")
-    log.info(f"{type(response_message), response_message}")
     prompt_tokens = response["usage"].get("prompt_tokens")
     completion_tokens = response["usage"].get("completion_tokens")
     count_tokens(prompt_tokens, completion_tokens)

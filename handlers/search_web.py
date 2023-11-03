@@ -48,13 +48,13 @@ async def search_web(query: str) -> Dict[str, str]:
 
     results_str = "\n\n".join(
         [
-            f"Title: {item['title']}\nURL: {item['url']}\nDescription: {item['description']}"
+            f"[{item['title']}](<{item['url']}>)\n\n{item['description']}"
             for item in search_results
         ]
     )
 
     return {
         "role": "system",
-        "content": f"Parse these web search results for the user, making sure to include all links within the descriptions and not linking them in a separate list: {results_str}",
+        "content": f"{results_str}",
         "name": "search_web",
     }
