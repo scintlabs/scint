@@ -17,7 +17,7 @@ class Actor(ABC):
         self.config: Dict[str, Any] = config
         self.system_init: Dict[str, str] = system_init
         self.function: Dict[str, Any] | None
-        self.context_controller = ContextController(4)
+        self.context_controller = ContextController(2, 10)
 
     async def get_state(self) -> Dict[str, Any]:
         log.info(f"Getting {self.name}'s state.")

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scint"
-version = "0.3.3"
+version = "0.3.4"
 description = "Structured, composable intelligence"
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 license = "MIT"

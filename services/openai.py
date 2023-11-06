@@ -13,7 +13,7 @@ def count_tokens(prompt_tokens, completion_tokens):
 
 
 async def summary(**kwargs):
-    log.info(f"Sending request to language model.")
+    log.info(f"OpenAI Service: sending request to language model.")
 
     parameters = {
         "model": kwargs.get("model", GPT4),
@@ -34,13 +34,13 @@ async def summary(**kwargs):
     completion_tokens = response["usage"].get("completion_tokens")
     count_tokens(prompt_tokens, completion_tokens)
 
-    log.info(f"Response received from language model.")
+    log.info(f"OpenAI Service: response received from language model.")
 
     return response_message
 
 
 async def completion(**kwargs):
-    log.info(f"Request to language model: {kwargs['messages'][0].get('content')}")
+    log.info(f"OpenAI Service: sending request to language model.")
 
     parameters = {
         "model": kwargs.get("model", GPT4),
@@ -62,7 +62,7 @@ async def completion(**kwargs):
     completion_tokens = response["usage"].get("completion_tokens")
     count_tokens(prompt_tokens, completion_tokens)
 
-    log.info(f"Response from language model: {response_message.get('content')}")
+    log.info(f"OpenAI Service: response received from language model.")
 
     return response_message
 

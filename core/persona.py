@@ -16,11 +16,9 @@ class Persona(Actor):
         log.info(f"Persona: processing request.")
 
         state = await self.get_state()
-        log.info(f"{self.state}")
         response_message = await completion(**state)
         response_content = response_message.get("content")
 
         if response_content is not None:
             res = format_message("assistant", response_content, self.name)
-
             return res

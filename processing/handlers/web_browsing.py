@@ -1,6 +1,8 @@
 from typing import Dict, List, Optional
+import asyncio
 
 import aiohttp
+import wikipediaapi
 
 from services.logger import log
 from core.config import GOOGLE_API_KEY, CUSTOM_SEARCH_ID
@@ -39,10 +41,7 @@ async def fetch_google_search_results(query: str) -> List[ParsedResponseItem]:
             raise
 
 
-from typing import Dict
-
-
-async def search_web(query: str) -> Dict[str, str]:
+async def get_links(query: str) -> Dict[str, str]:
     log.info("Running Google search query.")
     search_results = await fetch_google_search_results(query)
 
@@ -56,5 +55,38 @@ async def search_web(query: str) -> Dict[str, str]:
     return {
         "role": "system",
         "content": f"{results_str}",
-        "name": "search_web",
+        "name": "get_links",
     }
+
+
+async def load_website(url):
+    try:
+        cmd = ["bunx", "percollate", "md", url]
+
+        process = await asyncio.create_subprocess_exec(
+            *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+
+        stdout, stderr = await process.communicate()
+
+        stdout_text = stdout.decode("utf-8")
+        stderr_text = stderr.decode("utf-8")
+
+        if process.returncode != 0:
+            print(f"Command failed with error: {stderr_text}")
+            return None
+
+        # Assuming the command returns the filename, read the file contents
+        with open(stdout_text, "r") as file:
+            file_contents = file.read()
+
+        message = {
+            "role": "system",
+            "content": f"Here's the data for the requested URL:\n {file_contents}\n\n Summarize the data for the user.",
+            "name": "load_website",
+        }
+        return message
+
+    except Exception as e:
+        print(f"Error during subprocess execution or file reading: {e}")
+        return None

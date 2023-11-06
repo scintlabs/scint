@@ -1,7 +1,4 @@
-import os
 import asyncio
-import threading
-from collections import deque
 from typing import Dict, List, Any
 
 from services.logger import log
@@ -9,96 +6,124 @@ from services.openai import embedding, summary
 from core.util import generate_timestamp, generate_uuid4
 
 
-class MemoryManager:
-    def __init__(self):
-        self.full_messages: List[Dict[str, str]] = []
-        self.summarized_messages: List[Dict[str, str]] = []
+async def generate_summary(message) -> Dict[str, str]:
+    log.info(f"ContextController: generating message summary.")
 
-    async def generate_summary(self, message) -> Dict[str, str]:
-        log.info(f"MemoryManager: generating message summary.")
+    system_init: Dict[str, str] = {
+        "role": "system",
+        "content": "You are a compression algorithm for Scint, a state-of-the-art intelligent assistant. For every message, remove unnecessary content and compress the message for minimal contextual understanding using shorthand language. Use first person for assistant assistant messages and third person for user messages.",
+        "name": "compression",
+    }
+    messages: List[Dict[str, str]] = [system_init, message]
+    request: Dict[str, Any] = {"messages": messages}
+    await asyncio.sleep(20)
+    summarized_message = await summary(**request)
 
-        self.system_init: Dict[str, str] = {
-            "role": "system",
-            "content": "Conversation summarizer, Hemingway's brevity. Condense discussions, minimum context, third person.",
-            "name": "summarizer",
-        }
-        self.messages: List[Dict[str, str]] = [self.system_init, message]
-        self.request: Dict[str, Any] = {"messages": self.messages}
-        summarized_message = await summary(**self.request)
+    return summarized_message
 
-        return summarized_message
 
-    async def generate_embedding(self, content) -> List[float]:
-        message_embedding = await embedding(content)
-        return message_embedding
+async def generate_embedding(content) -> List[float]:
+    message_embedding = await embedding(content)
 
-    async def process_message(self, message, get_embedding=False) -> Dict[str, Any]:
-        log.info(f"MemoryManager: processing message: {message}.")
+    return message_embedding
 
-        role = message.get("role")
-        content = message.get("content")
-        name = message.get("name")
-        summary = await self.generate_summary(message)
 
-        if get_embedding == True:
-            embedding = await self.generate_embedding(content)
-
-        else:
-            embedding = None
-
+async def process_message(message, get_embedding=False) -> Dict[str, Any]:
+    try:
         processed_message = {
             "id": generate_uuid4(),
             "timestamp": generate_timestamp(),
-            "role": role,
-            "content": content,
-            "name": name,
-            "summary": summary,
-            "embedding": embedding,
+            "role": message.get("role"),
+            "content": message.get("content"),
+            "name": message.get("name"),
+            "summary": await generate_summary(message),
         }
 
-        log.info(f"MemoryManager: processed message: {processed_message}.")
+        if get_embedding == True:
+            processed_message["embedding"] = await generate_embedding(
+                message.get("content")
+            )
+
+        else:
+            processed_message["embedding"] = None
 
         return processed_message
 
+    except KeyError as e:
+        log.error(f"KeyError encountered in process_message: {e}")
+        raise
 
-class ContextController:
-    _instance = None
-    _lock = threading.Lock()
 
-    def __new__(cls, *args, **kwargs):
-        with cls._lock:
-            if not cls._instance:
-                cls._instance = super(ContextController, cls).__new__(cls)
-                log.info(f"ContextController: initializing self.")
+class SingletonMeta(type):
+    _instances = {}
 
-        return cls._instance
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
 
-    def __init__(self, max_messages: int) -> None:
-        self.max_messages = max_messages
-        self.context = deque(maxlen=max_messages)
-        self.memory_manager = MemoryManager()
 
-    def add_message_sync(self, message):
-        log.info(f"ContextController: adding message to context synchronously.")
-        self.context.append(message)
+class ContextController(metaclass=SingletonMeta):
+    def __init__(self, max_full, max_summary):
+        if not hasattr(self, "initialized"):
+            self.messages: List[Dict[str, Any]] = []
+            self.context: List[Dict[str, Any]] = []
+            self.max_full: int = max_full
+            self.max_summary: int = max_summary
+            self.initialized = True
 
-        if len(self.context) == self.max_messages:
-            self.summarize_oldest_message()
+    async def process_message(self, message):
+        log.info("ContextController: processing and updating message.")
 
-    async def add_message(self, message):
-        log.info(f"ContextController: adding message to context asynchronously.")
-        await asyncio.to_thread(self.add_message_sync, message)
+        processed_message = await process_message(message)
+        self.messages.append(processed_message)
+        self.build_context()
 
-    def summarize_oldest_message(self):
-        log.info(f"ContextController: starting message summarization in background.")
+    def build_context(self):
+        log.info(f"ContextController: building context from messages.")
 
-        oldest_message = self.context[-1]
+        new_context = []
+        summary_start_index = max(len(self.messages) - self.max_summary, 0)
+        full_start_index = max(len(self.messages) - self.max_full, summary_start_index)
 
-        def summarize_and_update():
-            summary = asyncio.run(self.memory_manager.generate_summary(oldest_message))
-            self.context[-1] = summary
+        for message in reversed(self.messages[full_start_index:]):
+            new_context.append(
+                {
+                    "role": message["role"],
+                    "content": message["content"],
+                    "name": message["name"],
+                }
+            )
 
-        threading.Thread(target=summarize_and_update).start()
+        for message in reversed(self.messages[summary_start_index:full_start_index]):
+            new_context.append(
+                {
+                    "role": message["role"],
+                    "content": message["summary"]["content"]
+                    if "summary" in message
+                    else message["content"],
+                    "name": message["name"],
+                }
+            )
+
+        self.context = new_context
+        log.info("ContextController: built new context.")
+
+        return self.context
 
     def get_context(self) -> List[Dict[str, Any]]:
+        log.info(f"ContextController: getting context.")
+
         return list(self.context)
+
+    def get_messages(self) -> List[Dict[str, Any]]:
+        log.info(f"ContextController: getting messages.")
+
+        return list(self.messages)
+
+    def add_message(self, message):
+        log.info("ContextController: adding message to context.")
+
+        self.context.append(message)
+        asyncio.create_task(self.process_message(message))

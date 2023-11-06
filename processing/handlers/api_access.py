@@ -1,6 +1,7 @@
-import aiohttp
-import json
 from datetime import datetime
+
+import aiohttp
+import wikipediaapi
 
 from core.config import OPENWEATHER_API_KEY
 from services.logger import log
@@ -34,7 +35,7 @@ async def format_weather_message(response):
     }
 
 
-async def fetch_weather(city):
+async def get_weather(city):
     log.info(f"Calling OpenWeather API.")
     base_url = "http://api.openweathermap.org/data/2.5/weather"
     params = {"q": city, "appid": OPENWEATHER_API_KEY, "units": "metric"}
@@ -60,3 +61,23 @@ async def fetch_weather(city):
                 error_reply = error_message_content
                 log.error(f"Error fetching weather: {error_reply}")
                 return error_reply
+
+
+url = "https://example/..."
+headers = {
+    "User-Agent": "CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)"
+}
+
+
+wiki_wiki = wikipediaapi.Wikipedia("MyProjectName (merlin@example.com)", "en")
+page_py = wiki_wiki.page("Python_(programming_language)")
+
+print("Page - Exists: %s" % page_py.exists())
+
+page_missing = wiki_wiki.page("NonExistingPageWithStrangeName")
+
+print("Page - Exists: %s" % page_missing.exists())
+
+page_py = wiki_wiki.page("Python_(programming_language)")
+
+print(page_py.fullurl)
