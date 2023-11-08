@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 import openai
@@ -6,10 +5,35 @@ import openai
 from services.logger import log
 from core.config import GPT4
 
+# client = openai.OpenAI
+
 
 def count_tokens(prompt_tokens, completion_tokens):
     log.info(f"Token usage: {prompt_tokens} prompt, {completion_tokens} completion.")
     # TODO: Calculate token usage
+
+
+async def assistant(**kwargs):
+    log.info(f"OpenAI Service: sending request to language model.")
+
+    parameters = {
+        "name": kwargs.get("name"),
+        "instructions": kwargs.get("instructions"),
+        "tools": kwargs.get("tools"),
+        "model": kwargs.get("model", GPT4),
+        "temperature": kwargs.get("temperature", 1.5),
+        "top_p": kwargs.get("top_p", 0.5),
+        "presence_penalty": kwargs.get("presence_penalty", 0.3),
+        "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
+        "thread": kwargs.get("thread"),
+    }
+
+    if kwargs.get("functions"):
+        parameters["functions"] = kwargs.get("functions")
+        parameters["function_call"] = kwargs.get("function_call", "auto")
+
+    assistant = openai.beta.assistants.create(**parameters)
+    return assistant
 
 
 async def summary(**kwargs):
@@ -23,10 +47,6 @@ async def summary(**kwargs):
         "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
         "messages": kwargs.get("messages"),
     }
-
-    if kwargs.get("functions"):
-        parameters["functions"] = kwargs.get("functions")
-        parameters["function_call"] = kwargs.get("function_call", "auto")
 
     response = await openai.ChatCompletion.acreate(**parameters)
     response_message = response["choices"][0].get("message")

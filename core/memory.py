@@ -7,19 +7,22 @@ from core.util import generate_timestamp, generate_uuid4
 
 
 async def generate_summary(message) -> Dict[str, str]:
-    log.info(f"ContextController: generating message summary.")
+    # log.info(f"ContextController: generating message summary.")
 
-    system_init: Dict[str, str] = {
-        "role": "system",
-        "content": "You are a compression algorithm for Scint, a state-of-the-art intelligent assistant. For every message, remove unnecessary content and compress the message for minimal contextual understanding using shorthand language. Use first person for assistant assistant messages and third person for user messages.",
-        "name": "compression",
-    }
-    messages: List[Dict[str, str]] = [system_init, message]
-    request: Dict[str, Any] = {"messages": messages}
-    await asyncio.sleep(20)
-    summarized_message = await summary(**request)
+    if len(message) > 100:
+        system_init: Dict[str, str] = {
+            "role": "system",
+            "content": "You are a compression algorithm for Scint, a state-of-the-art intelligent assistant. For every message, remove unnecessary content and compress the message for minimal contextual understanding using shorthand language. Use first person for assistant assistant messages and third person for user messages.",
+            "name": "compression",
+        }
+        messages: List[Dict[str, str]] = [system_init, message]
+        request: Dict[str, Any] = {"messages": messages}
+        summarized_message = await summary(**request)
 
-    return summarized_message
+        return summarized_message
+
+    else:
+        return message
 
 
 async def generate_embedding(content) -> List[float]:
@@ -74,14 +77,14 @@ class ContextController(metaclass=SingletonMeta):
             self.initialized = True
 
     async def process_message(self, message):
-        log.info("ContextController: processing and updating message.")
+        # log.info("ContextController: processing and updating message.")
 
         processed_message = await process_message(message)
         self.messages.append(processed_message)
         self.build_context()
 
     def build_context(self):
-        log.info(f"ContextController: building context from messages.")
+        # log.info(f"ContextController: building context from messages.")
 
         new_context = []
         summary_start_index = max(len(self.messages) - self.max_summary, 0)
@@ -108,22 +111,22 @@ class ContextController(metaclass=SingletonMeta):
             )
 
         self.context = new_context
-        log.info("ContextController: built new context.")
+        # log.info("ContextController: built new context.")
 
         return self.context
 
     def get_context(self) -> List[Dict[str, Any]]:
-        log.info(f"ContextController: getting context.")
+        # log.info(f"ContextController: getting context.")
 
         return list(self.context)
 
     def get_messages(self) -> List[Dict[str, Any]]:
-        log.info(f"ContextController: getting messages.")
+        # log.info(f"ContextController: getting messages.")
 
         return list(self.messages)
 
     def add_message(self, message):
-        log.info("ContextController: adding message to context.")
+        # log.info("ContextController: adding message to context.")
 
         self.context.append(message)
         asyncio.create_task(self.process_message(message))

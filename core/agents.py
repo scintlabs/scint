@@ -40,6 +40,7 @@ class Actor(ABC):
 
         if self.function is not None:
             self.state["functions"] = [self.function]
-            self.state["function_call"] = {"name": self.name}
+            self.state["function_call"] = "auto"
+            # {"name": self.name}
 
         return self.state

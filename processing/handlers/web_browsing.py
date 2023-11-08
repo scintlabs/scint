@@ -41,7 +41,7 @@ async def fetch_google_search_results(query: str) -> List[ParsedResponseItem]:
             raise
 
 
-async def get_links(query: str) -> Dict[str, str]:
+async def search_web(query: str) -> Dict[str, str]:
     log.info("Running Google search query.")
     search_results = await fetch_google_search_results(query)
 
@@ -55,7 +55,7 @@ async def get_links(query: str) -> Dict[str, str]:
     return {
         "role": "system",
         "content": f"{results_str}",
-        "name": "get_links",
+        "name": "web_search",
     }
 
 

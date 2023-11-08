@@ -58,14 +58,16 @@ class Coordinator(Actor):
         )
 
         if response_message is not None:
-            self.context_controller.add_message(response_message)
-            yield response_message
+            persona_response, loop = response_message
+            self.context_controller.add_message(persona_response)
+            log.info(f"{persona_response}")
+            log.info(f"{loop}")
+            yield persona_response
 
         if response_function.get("function_call") is not None:
             async for chunk in self.call_function(response_function):
                 self.context_controller.add_message(chunk)
-                func_assistant_message = await self.persona.generate_response()
-                yield func_assistant_message
+                yield
 
     async def call_function(self, response):
         log.info(f"Coordinator: evaluating function call.")

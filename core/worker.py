@@ -1,5 +1,4 @@
 import json
-import asyncio
 import importlib
 from typing import Dict, Any
 
@@ -7,11 +6,10 @@ from core.agents import Actor
 from core.config import DEFAULT_CONFIG, DEFAULT_INIT
 from services.openai import completion
 from services.logger import log
-import processing.handlers.web_browsing as web
 
 
 FUNCTION_TO_MODULE_MAP = {
-    "get_links": "web_browsing",
+    "search_web": "web_browsing",
     "load_website": "web_browsing",
     "file_operations": "file_operations",
     "get_weather": "api_access",
@@ -84,11 +82,3 @@ class Worker(Actor):
             except Exception as e:
                 log.error(f"Error during function call: {e}")
                 yield {"error": f"Error during function call: {e}"}
-
-        # else:
-        #     log.error(
-        #         f"Function name mismatch. Expected: {expected_function_name}, Received: {function_name}"
-        #     )
-        #     yield {
-        #         "error": f"Function name mismatch. Expected: {expected_function_name}, Received: {function_name}"
-        #     }

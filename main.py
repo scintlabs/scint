@@ -9,7 +9,7 @@ from pydantic import BaseModel, ValidationError
 
 from services.logger import log
 from core.coordinator import Coordinator
-from workers.web_browsing import get_links, load_website
+from workers.web_browsing import search_web, load_website
 from workers.data_access import query_database, get_weather
 from workers.file_operations import file_operations
 
@@ -17,7 +17,7 @@ coordinator = Coordinator()
 coordinator.add_workers(
     file_operations,
     get_weather,
-    get_links,
+    search_web,
     load_website,
 )
 app = FastAPI()

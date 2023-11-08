@@ -2,15 +2,15 @@ from core.config import GPT4
 from core.worker import Worker
 
 
-get_links = Worker(
-    name="get_links",
+search_web = Worker(
+    name="search_web",
     system_init={
         "role": "system",
         "content": "You are a web search function for Scint, an intelligent assistant.",
-        "name": "get_links",
+        "name": "search_web",
     },
     function={
-        "name": "get_links",
+        "name": "search_web",
         "description": "Use this function to search the web.",
         "parameters": {
             "type": "object",
@@ -29,7 +29,7 @@ get_links = Worker(
         "top_p": 1,
         "presence_penalty": 0,
         "frequency_penalty": 0,
-        "function_call": {"name": "get_links"},
+        "function_call": {"name": "search_web"},
     },
 )
 
