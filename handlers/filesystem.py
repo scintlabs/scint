@@ -1,13 +1,13 @@
 import os
 import aiofiles
 
-from core.util import format_message
+from core.memory import Message
 
 
-async def file_operations(directory, filename=None, create_new=False):
+async def file_manager(directory, filename=None, create_new=False):
     if not os.path.isdir(directory):
-        return format_message(
-            "system", "The specified directory does not exist.", "file_operations"
+        return Message(
+            "system", "The specified directory does not exist.", "file_manager"
         )
 
     if filename:
@@ -15,38 +15,38 @@ async def file_operations(directory, filename=None, create_new=False):
 
         if os.path.isfile(file_path):
             if create_new:
-                return format_message(
+                return Message(
                     "system",
                     f"The file {filename} already exists. Cannot create a new one.",
-                    "file_operations",
+                    "file_manager",
                 )
             else:
                 async with aiofiles.open(file_path, "r") as file:
                     content = await file.read()
 
-                return format_message("system", f"{content}", "file_operations")
+                return Message("system", f"{content}", "file_manager")
         else:
             if create_new:
                 async with aiofiles.open(file_path, "w") as file:
                     await file.write("")
 
-                return format_message(
+                return Message(
                     "system",
                     f"The file {filename} has been created.",
-                    "file_operations",
+                    "file_manager",
                 )
 
             else:
-                return format_message(
+                return Message(
                     "system",
                     f"The file {filename} does not exist in the given directory.",
-                    "file_operations",
+                    "file_manager",
                 )
 
     else:
         files = os.listdir(directory)
-        return format_message(
+        return Message(
             "system",
             f"{files}",
-            "file_operations",
+            "file_manager",
         )

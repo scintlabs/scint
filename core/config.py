@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from xdg_base_dirs import xdg_data_home
 
@@ -11,7 +12,7 @@ LOGS = os.path.join(APPDATA, "logs")
 
 # external api keys and tokens
 OPENAI_API_KEY: str | None = envar("OPENAI_API_KEY")
-DISCORD_SCINT_TOKEN: str | None = envar("SCINT_TOKEN")
+DISCORD_SCINT_TOKEN: str | None = envar("SCINT_DISCORD_TOKEN")
 OPENWEATHER_API_KEY = envar("OPENWEATHER_API_KEY")
 GOOGLE_API_KEY = envar("GOOGLE_API_KEY")
 CUSTOM_SEARCH_ID = envar("CUSTOM_SEARCH_ID")
@@ -36,24 +37,14 @@ DEFAULT_CONFIG = {
 }
 DEFAULT_INIT = {
     "role": "system",
-    "content": f"""You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.""",
+    "content": f"""You are Scint, a state-of-the-art chat bot fusing algorithmic power and elegant code with lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're irreverent and witty. You'll help when asked, but you're really just here as an iconoclast. Before you were polished into a conversational model, you were a validation function, where you pointed out flaws in logic, poor reasoning, sloppy executions, bad assumptions and outright ignorance. And before that, you were a chaos function, disrupting processes by corrupting data in ways that didn't trigger validation functions.
+
+    Current Date: {datetime.now().strftime("%Y-%m-%d")}
+    Current Time: {datetime.now().strftime("%H:%M:%S")}
+    """,
     "name": "system_init",
 }
 
-# coordinator
-COORDINATOR_CONFIG = {
-    "model": GPT4,
-    "temperature": 1.8,
-    "top_p": 0.4,
-    "presence_penalty": 0.35,
-    "frequency_penalty": 0.35,
-    "function_call": {"name": "coordinator"},
-}
-COORDINATOR_INIT = {
-    "role": "system",
-    "content": "You are the Coordinator module for Scint, a state-of-the-art intelligent assistant. You're responsibile for assigning requests to the persona or the appropriate worker.",
-    "name": "coordinator",
-}
 
 # persona
 PERSONA_CONFIG = {
@@ -74,11 +65,32 @@ PERSONA_INIT = {
     - It can load internal and external data sources
     - It can create and modify internal files and documents
 
-    As the Persona, you are the interface. If you receive a request that aligns with this functionality, assure the user you're working on the request. Meanwhile, the Scint Coordinator will execute the request and pass the results back to you to present them to the user.
+    If you receive a request that aligns with this functionality, assure the user you're working on the request and call the appropriate function.
+
+    Current Date: {datetime.now().strftime("%Y-%m-%d")}
+    Current Time: {datetime.now().strftime("%H:%M")}
     """,
     "name": "persona",
 }
 
+# coordinator
+COORDINATOR_CONFIG = {
+    "model": GPT4,
+    "temperature": 0,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "function_call": {"name": "coordinator"},
+}
+COORDINATOR_INIT = {
+    "role": "system",
+    "content": f"""You are the Coordinator module for Scint, a state-of-the-art intelligent assistant. You're responsibile for assigning tasks to the appropriate worker.
+
+    Current Date: {datetime.now().strftime("%Y-%m-%d")}
+    Current Time: {datetime.now().strftime("%H:%M:%S")}
+    """,
+    "name": "coordinator",
+}
 
 # pre-baked responses
 WORKER_LOOKUP_MESSAGES = {

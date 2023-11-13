@@ -1,7 +1,6 @@
 import os
 import uuid
 import json
-import random
 from datetime import datetime
 from typing import Optional, Dict, Union
 
@@ -23,23 +22,6 @@ def generate_timestamp():
 
 def generate_uuid4():
     return str(uuid.uuid4())
-
-
-def get_random_message(message_type, message_dict):
-    last_five_messages = []
-
-    message = random.choice(list(message_dict))
-
-    # Ensure the message hasn't been used in the last five messages
-    while message in last_five_messages:
-        message = random.choice(list(message_dict))
-
-    # Update the list of last five messages
-    last_five_messages.append(message)
-    if len(last_five_messages) > 5:
-        last_five_messages.pop(0)
-
-    return message
 
 
 def load_config(dir) -> Union[Dict, None]:
@@ -138,3 +120,37 @@ def split_discord_message(message, max_length=2000):
         chunks.append(current_chunk)
 
     return chunks
+
+
+def read_file_content(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.read()
+
+    except (UnicodeDecodeError, FileNotFoundError, PermissionError):
+        return None
+
+
+def build_directory_mapping(path):
+    directory_mapping = {
+        "directory": os.path.basename(path) if os.path.basename(path) else path,
+        "data": {"directories": [], "files": []},
+    }
+
+    for entry in os.scandir(path):
+        if entry.is_dir(follow_symlinks=False):
+            if entry.name in {".git", "__pycache__", ".DS_Store"}:
+                continue
+            directory_mapping["data"]["directories"].append(
+                build_directory_mapping(entry.path)
+            )
+
+        elif entry.is_file():
+            if entry.name.endswith((".txt", ".md", ".py", ".json", ".xml")):
+                content = read_file_content(entry.path)
+                if content is not None:  # Only include text files that could be read
+                    directory_mapping["data"]["files"].append(
+                        {"name": entry.name, "content": content}
+                    )
+
+    return directory_mapping

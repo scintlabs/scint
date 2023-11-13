@@ -1,8 +1,7 @@
 from typing import Dict, List, Optional
-import asyncio
 
+import asyncio
 import aiohttp
-import wikipediaapi
 
 from services.logger import log
 from core.config import GOOGLE_API_KEY, CUSTOM_SEARCH_ID

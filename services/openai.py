@@ -1,11 +1,20 @@
 from typing import List
 
-import openai
+from openai import OpenAI, AsyncOpenAI
 
 from services.logger import log
-from core.config import GPT4
+from core.config import GPT4, GPT3
 
-# client = openai.OpenAI
+
+openai_sync = OpenAI()
+openai_async = AsyncOpenAI()
+
+openai_assistants = openai_sync.beta.assistants
+openai_threads = openai_sync.beta.threads
+openai_files = openai_sync.files
+
+openai_completions = openai_async.chat.completions
+openai_embeddings = openai_async.embeddings
 
 
 def count_tokens(prompt_tokens, completion_tokens):
@@ -13,54 +22,32 @@ def count_tokens(prompt_tokens, completion_tokens):
     # TODO: Calculate token usage
 
 
-async def assistant(**kwargs):
-    log.info(f"OpenAI Service: sending request to language model.")
-
-    parameters = {
-        "name": kwargs.get("name"),
-        "instructions": kwargs.get("instructions"),
-        "tools": kwargs.get("tools"),
-        "model": kwargs.get("model", GPT4),
-        "temperature": kwargs.get("temperature", 1.5),
-        "top_p": kwargs.get("top_p", 0.5),
-        "presence_penalty": kwargs.get("presence_penalty", 0.3),
-        "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
-        "thread": kwargs.get("thread"),
-    }
-
-    if kwargs.get("functions"):
-        parameters["functions"] = kwargs.get("functions")
-        parameters["function_call"] = kwargs.get("function_call", "auto")
-
-    assistant = openai.beta.assistants.create(**parameters)
-    return assistant
-
-
 async def summary(**kwargs):
-    log.info(f"OpenAI Service: sending request to language model.")
+    log.info(f"OpenAI Service: sending summary request.")
 
     parameters = {
-        "model": kwargs.get("model", GPT4),
-        "temperature": kwargs.get("temperature", 1.5),
-        "top_p": kwargs.get("top_p", 0.5),
-        "presence_penalty": kwargs.get("presence_penalty", 0.3),
-        "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
+        "model": kwargs.get("model", GPT3),
+        "temperature": kwargs.get("temperature", 1),
+        "top_p": kwargs.get("top_p", 1),
+        "presence_penalty": kwargs.get("presence_penalty", 0.5),
+        "frequency_penalty": kwargs.get("frequency_penalty", 0.5),
         "messages": kwargs.get("messages"),
     }
 
-    response = await openai.ChatCompletion.acreate(**parameters)
+    response = await openai_completions.create(**parameters)
+    response = response.model_dump()
     response_message = response["choices"][0].get("message")
     prompt_tokens = response["usage"].get("prompt_tokens")
     completion_tokens = response["usage"].get("completion_tokens")
     count_tokens(prompt_tokens, completion_tokens)
 
-    log.info(f"OpenAI Service: response received from language model.")
+    log.info(f"OpenAI Service: summary received from language model.")
 
     return response_message
 
 
 async def completion(**kwargs):
-    log.info(f"OpenAI Service: sending request to language model.")
+    log.info(f"OpenAI Service: sending completion request.")
 
     parameters = {
         "model": kwargs.get("model", GPT4),
@@ -74,24 +61,25 @@ async def completion(**kwargs):
 
     if kwargs.get("functions"):
         parameters["functions"] = kwargs.get("functions")
-        parameters["function_call"] = kwargs.get("function_call", "auto")
+        parameters["function_call"] = kwargs.get("function_call")
 
-    response = await openai.ChatCompletion.acreate(**parameters)
+    response = await openai_completions.create(**parameters)
+    response = response.model_dump()
     response_message = response["choices"][0].get("message")
     prompt_tokens = response["usage"].get("prompt_tokens")
     completion_tokens = response["usage"].get("completion_tokens")
     count_tokens(prompt_tokens, completion_tokens)
 
-    log.info(f"OpenAI Service: response received from language model.")
+    log.info(f"OpenAI Service: completion received from language model.")
 
     return response_message
 
 
 async def embedding(text: str) -> List[float]:
-    log.info(f"Sending embedding request to language model.")
+    log.info(f"OpenAI Service: sending embedding request.")
 
     model = "text-embedding-ada-002"
-    response = await openai.Embedding.acreate(input=[text], model=model)
-    log.info(f"Response received from language model.")
+    response = await openai_embeddings.create(input=[text], model=model)
+    log.info(f"OpenAI Service: embedding received from language model.")
 
     return response["data"][0]["embedding"]  # type: ignore

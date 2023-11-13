@@ -1,5 +1,5 @@
 import json
-import asyncio
+from uuid import UUID
 from typing import Dict, Any
 
 from services.logger import log
@@ -7,8 +7,18 @@ from services.openai import completion
 from core.config import COORDINATOR_INIT, COORDINATOR_CONFIG
 from core.worker import Worker
 from core.agents import Actor
-from core.persona import Persona
-from core.util import format_message
+from core.memory import ContextController, Message
+from core.util import generate_uuid4, generate_timestamp
+
+
+class Process:
+    def __init__(self) -> None:
+        self.id: UUID = generate_uuid4()
+        self.started: str = generate_timestamp()
+        self.workers: Dict[str, Worker] = {}
+
+    def status(self):
+        pass
 
 
 class Coordinator(Actor):
@@ -18,98 +28,78 @@ class Coordinator(Actor):
 
         self.function: Dict[str, Any] = {
             "name": "coordinator",
-            "description": "Summarize and classify the user request and define a task for responding to it. If the user requests a task that corresponds with an available worker, assign the task to that worker. Otherwise, do not assign a task.",
+            "description": "Use this function to create a task and coordinate one of the available workers to process it.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "task": {
                         "type": "string",
-                        "description": "Define a task for the worker. Avoid ambiguity and be specific.",
-                    },
-                    "classification": {
-                        "type": "string",
-                        "description": "Classify the type of request being made.",
-                        "enum": [
-                            "information_request",
-                            "task_completion",
-                            "miscellaneous",
-                        ],
+                        "description": "Provide task details for the worker. Be specific.",
                     },
                     "worker": {
                         "type": "string",
-                        "description": "Select the appropriate worker based on the task and request.",
+                        "description": "Choose from an available worker to process the task. You MUST choose from a worker within the enum.",
                         "enum": [],
                     },
                 },
             },
-            "required": ["task", "classification"],
+            "required": ["worker"],
         }
         self.workers: Dict[str, Worker] = {}
-        self.persona = Persona()
+        self.context_controller = ContextController(10, 20)
 
     async def process_request(self, request):
         log.info(f"Coordinator: processing request.")
 
         self.context_controller.add_message(request)
         state = await self.get_state()
-        response_function, response_message = await asyncio.gather(
-            completion(**state),
-            self.persona.generate_response(),
-        )
+        response = await completion(**state)
+        response_content = response.get("content")
+        response_function = response.get("function_call")
 
-        if response_message is not None:
-            persona_response, loop = response_message
-            self.context_controller.add_message(persona_response)
-            log.info(f"{persona_response}")
-            log.info(f"{loop}")
-            yield persona_response
+        if response_content is not None:
+            self.context_controller.add_message(response_content)
+            yield response_content
 
-        if response_function.get("function_call") is not None:
-            async for chunk in self.call_function(response_function):
+        if response_function is not None:
+            async for chunk in self.eval_function_call(response_function):
                 self.context_controller.add_message(chunk)
-                yield
+                yield chunk
 
-    async def call_function(self, response):
+    async def eval_function_call(self, response_function):
         log.info(f"Coordinator: evaluating function call.")
 
-        function_call = response.get("function_call")
-        function_name = function_call.get("name")
-        function_args = function_call.get("arguments")
+        function_name = response_function.get("name")
+        function_args = response_function.get("arguments")
         function_args = json.loads(function_args)
 
-        if function_name.strip() == self.name:
+        if function_name.strip() == "coordinator":
+            worker = function_args.get("worker")
             task = function_args.get("task")
-            worker = function_args.get("worker").strip()
+            task = Message("system", task, self.name)
 
             try:
-                task = format_message("system", task, self.name)
-
-                async for chunk in self.workers[worker].process_request(task):
-                    yield chunk
+                async for result in self.workers[worker].process_request(task):
+                    yield result
 
             except Exception as e:
                 log.error(f"Coordinator: error coordinating worker: {e}")
-                yield format_message(
-                    "system", f"Error coordinating worker: {e}", self.name
-                )
-
-        else:
-            log.error("Coordinator: function name is not 'coordinator'.")
-            yield format_message("system", "No function initialized.", self.name)
+                yield
 
     def add_workers(self, *workers: Worker):
+        worker_keys = []
         for worker in workers:
             log.info(f"Coordinator: adding {worker.name} worker.")
+
             self.workers[worker.name] = worker
 
-        self.update_function_definitions()
+        for worker_key in list(self.workers.keys()):
+            worker_keys.append(worker_key)
+
+        self.function["parameters"]["properties"]["worker"]["enum"] = worker_keys
 
     def update_function_definitions(self):
         log.info(f"Coordinator: updating function definitions.")
 
-        workers = []
-
-        for worker in list(self.workers.keys()):
-            workers.append(worker)
-
-        self.function["parameters"]["properties"]["worker"]["enum"] = workers
+    def create_process(self):
+        pass

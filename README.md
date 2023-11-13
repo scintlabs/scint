@@ -1,103 +1,193 @@
 # Scint
 
-Imagine you're building a complex machine to help people with a variety of tasks. Each part of this machine has a specific job, like gears in a watch. We're creating a digital helper that can understand and handle different types of tasks. This helper isn't just one big machine; it's made up of several smaller specialized machines (or "workers") that each handle a specific type of job.
+Scint is a framework designed for building modular intelligent assistants using GPT-4. It excels in providing a vast array of functionalities through specialized workers, demonstrating the robust capabilities of distributed AI systems in managing complex tasks with unparalleled efficiency.
 
-## Why Multiple Workers?
+## Structured, Composable Intelligence
 
-Think of it like a factory assembly line. Instead of one worker trying to assemble an entire product alone, we have multiple workers each doing one specific part. This makes the whole process faster and more efficient.
-Each worker in our digital helper has its own "memory space" to think and operate. This means they can focus on their specific task without getting overwhelmed.
+At the heart of Scint's philosophy is the creation of intelligent worker modules. These modules are engineered to boost user productivity and automate tasks in various domains. Unlike traditional frameworks that are often limited in scope, Scint bridges the gap:
 
-## How Does It Work?
+- Chat-based Assistants: Typically centered around human operators, these assistants possess toolchains for web access and data retrieval but face inherent functional limitations.
+- Autonomous Agents: Positioned at the other end of the spectrum, these AI applications autonomously evaluate and execute tasks. Despite their potential, they often yield suboptimal results without consistent human oversight.
 
-1. When you ask the digital helper a question, the first worker decides which specific worker is best suited to handle your request.
-2. The task then gets passed from one worker to the next, like a relay race, until it's complete.
-3. Each worker adds a bit of information or makes some progress on the task before handing it over to the next.
+Scint strikes a balance by acknowledging the limitations of LLMs (Large Language Models) and harnessing their strengths. It positions the human operator at the forefront, supplemented by composable, agent-like toolchains adept at solving real-world problems and enhancing productivity.
 
-## The Challenge & Solution
+Scint empowers developers and organizations to construct and coordinate intelligence in a modular manner, allowing the creation of customized intelligent applications through the integration of diverse capabilities.
 
-There's a limit to how much each worker can "remember" at once. To work around this, we've designed the system so that workers can pass on the most important bits of information to the next worker. It's like giving them a brief summary or "notes" to work from.
-By doing this, we ensure that no important details are lost, even though each worker has limited memory.
-
-## Why Is This Revolutionary?
-
-Traditional digital helpers can only do one thing at a time and might forget details if the task is too big. Our system, with its multiple specialized workers, can handle complex tasks efficiently by breaking them down into manageable parts. This means our digital helper can assist with a wider range of requests, from answering questions to generating code or even analyzing data.
-
-## In Conclusion
-
-We've built a smart digital assistant that's like a team of experts working together. Each expert has their own specialty, and they collaborate seamlessly to get the job done. It's a new way of approaching problems, making the most of the technology we have to offer better solutions.
-
-## Structured Composable Intelligence
-
-Scint stands at the forefront of a new era in artificial intelligence frameworks, designed specifically to harness and streamline the immense capabilities of Large Language Models (LLMs) such as GPT-4. At its core, Scint's philosophy revolves around engineering intelligent modules that augment user productivity and automate tasks across a plethora of domains. Through Scint, developers and organizations can craft and orchestrate intelligence in a modular fashion, weaving together diverse capabilities to sculpt bespoke intelligent applications.
-
-## The Vision Behind Scint
+## How Scint Works
 
 > Note: Scint is still in the early stages of development
 
-In the evolving landscape of artificial intelligence, LLMs have emerged as versatile juggernauts, seamlessly blending the roles of data reservoirs and functional powerhouses. However, the prevailing paradigm for harnessing LLM outputs has been centered around the 'agent' model—a design that revolves around personifying the system prompt, complete with memory and operator. While intuitive on the surface, this operator-centric approach tends to introduce layers of complexity, especially as tasks become more intricate.
+./docs/architecture.png
 
-Scint takes a divergent path. Instead of anchoring the architecture around an identity-laden agent, Scint champions the 'Worker' approach. Imagine the precision of a factory assembly line, where each worker specializes in a specific task, undistracted by the broader intricacies of the product's life story. In Scint's universe, each LLM-generated response assumes the role of such a Worker, singularly focused on the task at hand, unburdened by the complexities of state or identity.
+While Scint functions as a typical AI-powered chatbot for standard interactions, it is cognizant of its extended capabilities. When needed, it can delegate tasks and establish pipelines for efficient execution. Key modules in Scint include:
 
-This distinction isn't just semantic. The Worker approach paves the way for high-level control flows between Workers, offering users an unmatched level of granularity and precision in their interactions. No longer bound by the need to navigate the intricacies of a virtual 'agent', users can directly orchestrate how prompts intertwine, where outputs are channeled, and how different workers collaborate.
+- Persona: The user-facing module of Scint, the Persona is designed to streamline user interactions and maintain a consistent AI personality. It understands Scint's capabilities and knows when to engage with the Coordinator.
+- Coordinator: This module orchestrates the tasks relayed by the Persona. It comprehends each Worker's role but not the specifics of their operation.
+- Worker: Workers are the backbone of Scint’s functionality, each tasked with specific roles. They work in a relay-like manner, passing context and progressively working towards completing complex tasks.
 
-## A Deeper Insight into Language Models
+## Getting Started
 
-Language models, especially titans like GPT-4, have reshaped our understanding of artificial intelligence. These models are not just passive repositories of data; they are dynamic entities teeming with functionality. Their training on vast data terrains equips them with a dynamic knowledge base, enabling them to generate content, provide insights, and adapt their outputs based on the prompts they receive.
+Scint is equipped with core workers that enable functionalities like web search, data parsing and summarization, weather data retrieval, and local filesystem access. Initially bundled with a simple Discord client, Scint plans to introduce a web client interface shortly.
 
-Yet, the challenge with such behemoths often lies in context management. Traditional methodologies that seek to amplify a single model's context-handling might hit computational and efficiency roadblocks. Scint's solution? A distributed approach. By fostering a collaborative network of models, each maintaining its unique context, Scint ensures both depth and precision in individual responses and breadth and comprehensiveness in collective outputs.
+### Setup
 
-## Language Models: Data, Functionality, and Contextual Communication
+To start with Scint:
 
-Language models, particularly those of the scale and complexity of GPT-4 and its successors, have ushered in a paradigm shift in the world of artificial intelligence. Their capabilities can be broadly categorized into two primary domains: data and functionality.
+1. Clone the repository.
+2. Install dependencies using poetry install.
+3. Rename .env.example to .env and fill in the environment variables.
 
-### Language Models as Data
+You will need API keys for OpenAI and Discord, and a configured Discord bot. Once set up, use poetry run python app.py to launch Scint. Alternatively, interact with Scint’s API using curl commands.
 
-Modern language models are trained on vast amounts of data, encompassing a diverse range of topics and knowledge domains. As a result:
+### Adding Custom Workers
 
-- Vast Knowledge Base: They inherently possess a vast repository of information, making them akin to dynamic, interactive encyclopedias.
-- Generative Capabilities: Beyond merely regurgitating stored information, they can generate new content based on patterns they've recognized during training.
-- Dynamic Responses: Their ability to provide information isn't static. Instead, it's influenced by the prompts they receive, allowing for contextually relevant data extraction.
+To create custom Workers, create a module in the `workers` directory with an appropriate name. Import whatever libraries you need for your new Worker, then import the Worker and Messages classes and instantiate a new Worker:
 
-### Language Models as Functionality
+```python
+import os
+import aiofiles
 
-Language models are not merely passive data repositories. They're dynamic systems capable of performing tasks:
+from core.worker import Worker
+from core.memory import Message
 
-- Versatility: From answering questions and generating content to more complex tasks like code generation or problem-solving, their range of capabilities is vast.
-- Adaptability: They can adjust their outputs based on nuanced instructions, allowing for a wide range of custom functionalities.
-- Interactivity: Their iterative engagement capabilities mean they can be part of multi-step processes, refining outputs based on feedback or additional data.
+file_manager(name="file_operations",system_init={},function={})
+```
 
-### The Challenge of Context
+Next, pass an OpenAI system message describing the Worker’s functionality as a parameter:
 
-One of the challenges with such expansive models is maintaining and managing context, especially over extended interactions or complex tasks. The traditional approach focuses on extending the model's innate context-handling capabilities, but there are limits to this, both in terms of computational efficiency and the risk of context drift.
+```python
+from core.worker import Worker
 
-### A Distributed Contextual Approach:
+file_manager(
+    name="file_manager", 
+    system_init={
+        "role": "system",
+        "content": "You are a file retrieval function for Scint, an intelligent assistant.",
+        "name": "file_manager",
+    },
+    function={},
+)
+```
 
-Rather than burdening a single model instance with the entire responsibility of maintaining context, a more distributed approach can be adopted:
+Then define an OpenAI function for the `function`, which you’ll later map to a Python function:
 
-- Multiple Model Instances: Envision multiple instances of the model, each specializing in a particular domain or task. These instances maintain their individual contexts, ensuring deeper expertise and more focused responses.
-- Inter-model Communication: These specialized models can communicate with each other. For example, a model specializing in physics can consult with one focused on chemistry, ensuring comprehensive and accurate responses.
-- Efficiency: Distributing the context among multiple models can lead to more efficient processing, as each model instance only needs to manage a subset of the broader context.
-- Flexibility: This approach allows for dynamic allocation and reallocation of tasks among models, ensuring optimal performance and resource utilization.
+```python
+from core.worker import Worker
 
-In essence, the vision is to move from a monolithic, singular model handling all tasks to a more distributed, collaborative network of models. Each model in this network holds its context, ensuring depth and precision, while collectively they communicate and collaborate, guaranteeing breadth and comprehensiveness.
+file_manager = Worker(
+    name="file_manager",
+    system_init={ … },
+    function={
+        "name": "file_manager",
+        "description": "Use this function to access a file or directory within the Scint system.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "directory": {
+                    "type": "string",
+                    "description": "The directory to access.",
+                },
+                "filename": {
+                    "type": "string",
+                    "description": "The filename to access. If no filename is given, the function returns a list of files in the given directory.",
+                },
+            },
+        },
+        "required": ["directory"],
+    },
+)
+```
 
-## The Worker Advantage
+And the config parameter, taking note of the `function_call` key, which forces the model to use the function:
 
-The Worker approach brings a slew of advantages to the table:
+```python
+file_manager = Worker(
+    name="file_operations",
+    system_init={ … },
+    function={ … }
+    config={
+        "model": GPT4,
+        "temperature": 1,
+        "top_p": 1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "function_call": {"name": "file_manager"},
+    },
+```
 
-- Modularity: By treating each Worker as a standalone unit, the architecture becomes inherently modular, simplifying testing, debugging, and maintenance.
-- Precision & Flexibility: Free from the constraints of state and identity, Workers offer a level of precision in task execution, while the overall architecture grants the flexibility to design intricate workflows.
-- Scalability: The distributed nature of the Worker approach, especially when combined with cloud-based or distributed systems, promises enhanced scalability.
-- Simplicity: By removing the overhead of managing state or identity, the Worker approach is both intuitive and efficient.
+Now you can implement a Python function mapped to your OpenAI function. Make sure the worker instance, worker name, and the python function name are all the same:
 
-## Development & Contribution
+```python
+async def file_manager(directory, filename=None):
+    if not os.path.isdir(directory):
+        return Message(
+            "system", "The specified directory does not exist.", "file_operations"
+        )
 
-While Scint is actively evolving, its foundational tenets remain open source, available for exploration, use, and adaptation. We're currently focused on refining and expanding its core capabilities. As the project matures, we look forward to opening avenues for community contributions and collaborations.
+    if filename:
+        file_path = os.path.join(directory, filename)
 
-Join us on this exciting journey, and stay attuned for updates and advancements in the realm of structured and composable intelligence with Scint.
+        if os.path.isfile(file_path):
+            async with aiofiles.open(file_path, "r") as file:
+                content = await file.read()
+
+            return Message("system", f"{content}", "file_operations")
+    else:
+        files = os.listdir(directory)
+        return Message(
+            "system",
+            f"{files}",
+            "file_manager",
+        )
+```
+
+Finally, add your new `file_manager` worker to `app_setup.py`:
+
+```python
+from core.assistant import Assistant
+from core.persona import Persona
+from workers.web_browser import search_web, load_website
+from workers.api_parser import get_weather
+from workers.file_manager import file_manager
+from workers.event_manager import event_manager
 
 
+assistant = Assistant()
+persona = Persona()
+persona.coordinator.add_workers(\
+    search_web,
+    load_website,
+    get_weather,
+    file_manager,
+)
+```
 
+And that’s it—the Coordinator handles the rest. Restart Scint and test your new worker:
 
+./docs/profit.png
+
+## Development and Contribution
+
+Scint is an open-source project that thrives on community contributions. We welcome developers, researchers, and enthusiasts to help us enhance and expand the capabilities of Scint. Whether you have a knack for coding, a passion for AI, or simply an interest in intelligent assistants, your contributions are valuable.
+
+### How to Contribute
+
+1. **Understand the Project:** Begin by exploring the Scint GitHub repository. Get a feel for the code, identify current features, and consider where you might want to contribute.
+2. **Engage with the Community:** Join the conversation on GitHub, where you can discuss issues, suggest enhancements, and give feedback. Your insights and opinions can help shape the direction of the project.
+3. **Make Your Contribution:** If you're ready to contribute code, documentation, or other resources, start by forking the repository. Follow our contribution guidelines for submitting pull requests.
+4. **Stay Informed:** Keep up to date with the latest developments in the project by following our updates and participating in community discussions.
+
+### Guidelines for Contributors
+
+We encourage a collaborative and respectful contribution environment. To ensure this, we ask that you:
+
+- **Adhere to Coding Standards:** Write clear, maintainable code and follow the coding conventions and standards of the project.
+- Test Thoroughly: Ensure that your contributions are well-tested and do not introduce new bugs.
+- **Be Respectful and Constructive:** Whether you're giving feedback or receiving it, always approach interactions with respect and a constructive attitude.
+- **Seek Clarifications:** If something is unclear or you need help, feel free to ask questions. Our community is here to support each other.
+
+### Join Our Effort
+
+Contributing to Scint is about more than just code; it's about participating in a collaborative effort to improve and innovate in the field of AI assistants. Every contribution, big or small, is valued as we work together towards a common goal.
 
 

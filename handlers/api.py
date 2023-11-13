@@ -1,9 +1,9 @@
 from datetime import datetime
 
 import aiohttp
-import wikipediaapi
 
 from core.config import OPENWEATHER_API_KEY
+from core.memory import Message
 from services.logger import log
 
 
@@ -28,11 +28,7 @@ async def format_weather_message(response):
         f"Sunset: {sunset}"
     )
 
-    return {
-        "role": "system",
-        "content": f"Parse this data into a simple message: {parsed_data}",
-        "name": "get_weather",
-    }
+    return Message(role="system", content=parsed_data, name="get_weather")
 
 
 async def get_weather(city):
@@ -49,35 +45,8 @@ async def get_weather(city):
 
             if response.status == 200:
                 reply = await format_weather_message(data)
-                log.info(f"Formatted weather message: {reply}")
                 return reply
 
             else:
-                error_message_content = {
-                    "role": "system",
-                    "content": data.get("message", "Error fetching weather data"),
-                    "name": "get_weather",
-                }
-                error_reply = error_message_content
-                log.error(f"Error fetching weather: {error_reply}")
-                return error_reply
-
-
-url = "https://example/..."
-headers = {
-    "User-Agent": "CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)"
-}
-
-
-wiki_wiki = wikipediaapi.Wikipedia("MyProjectName (merlin@example.com)", "en")
-page_py = wiki_wiki.page("Python_(programming_language)")
-
-print("Page - Exists: %s" % page_py.exists())
-
-page_missing = wiki_wiki.page("NonExistingPageWithStrangeName")
-
-print("Page - Exists: %s" % page_missing.exists())
-
-page_py = wiki_wiki.page("Python_(programming_language)")
-
-print(page_py.fullurl)
+                log.error(f"Error fetching weather.")
+                return

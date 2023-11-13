@@ -9,59 +9,52 @@ from services.logger import log
 
 
 FUNCTION_TO_MODULE_MAP = {
-    "search_web": "web_browsing",
-    "load_website": "web_browsing",
-    "file_operations": "file_operations",
-    "get_weather": "api_access",
+    "search_web": "web",
+    "load_website": "web",
+    "file_manager": "filesystem",
+    "get_weather": "api",
 }
 
 
 class Worker(Actor):
     def __init__(self, name, function, config=DEFAULT_CONFIG, system_init=DEFAULT_INIT):
         super().__init__(name, config, system_init)
-        self.name: str = name
-        self.system_init: Dict[str, str] = system_init
         self.function: Dict[str, Any] = function
         self.function_call: Dict[str, str] = {"name": function.get("name")}
-        self.config: Dict[str, Any] = config
 
-    async def process_request(self, request) -> Dict[str, str] | None:
-        log.info(f"Worker: processing request: {request}")
+    async def process_request(self, request):
+        log.info(f"Worker: processing request.")
 
+        self.context_controller.add_message(request)
         state = await self.get_state()
         response = await completion(**state)
-        function_call = response.get("function_call")
+        response_content = response.get("content")
+        response_function = response.get("function_call")
 
-        if function_call is not None:
-            try:
-                async for chunk in self.call_function(response):
-                    yield chunk
+        if response_content is not None:
+            self.context_controller.add_message(response_content)
+            yield response_content
 
-            except Exception as e:
-                log.error(f"Error coordinating worker: {e}")
-                yield {"error": f"Error coordinating worker: {e}"}
+        if response_function is not None:
+            async for chunk in self.eval_function_call(response_function):
+                self.context_controller.add_message(chunk)
+                yield chunk
 
-        else:
-            yield response
+    async def eval_function_call(self, response_function):
+        log.info(f"Worker: evaluating function call.")
 
-    async def call_function(self, response):
-        log.info("Worker: evaluating function call.")
+        function_name = response_function.get("name")
+        function_args = response_function.get("arguments")
+        function_args = json.loads(function_args)
 
-        function_call = response.get("function_call")
-        function_name = function_call.get("name")
-        function_args = function_call.get("arguments")
-
-        if isinstance(function_args, str):
-            function_args = json.loads(function_args)
-
-        if function_name.strip() == self.function.get("name"):
+        if function_name.strip() == self.name:
             module_name = FUNCTION_TO_MODULE_MAP.get(function_name)
 
             if not module_name:
                 log.error(f"No module found for function {function_name}.")
-                return
+                yield
 
-            module_path = f"processing.handlers.{module_name}"
+            module_path = f"handlers.{module_name}"
 
             try:
                 module = importlib.import_module(module_path)
@@ -69,7 +62,6 @@ class Worker(Actor):
 
                 if method_to_call:
                     result = await method_to_call(**function_args)
-                    log.info(f"Worker: {result}")
                     yield result
 
                 else:
@@ -77,8 +69,8 @@ class Worker(Actor):
 
             except ImportError as e:
                 log.error(f"Module {module_path} could not be imported: {e}")
-                yield {"error": f"Module {module_path} could not be imported: {e}"}
+                yield
 
             except Exception as e:
                 log.error(f"Error during function call: {e}")
-                yield {"error": f"Error during function call: {e}"}
+                yield

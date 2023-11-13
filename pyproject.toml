@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scint"
-version = "0.3.4"
+version = "0.3.5"
 description = "Structured, composable intelligence"
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 license = "MIT"
@@ -9,28 +9,18 @@ packages = [{include = "scint"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-openai = "^0.27.8"
-loguru = "^0.7.0"
-tenacity = "^8.2.3"
+openai = "^1.2.1"
 asyncio = "^3.4.3"
-env = "^0.1.0"
-google-api-python-client = "^2.97.0"
-fastapi = "^0.101.1"
-pytest = "^7.4.1"
-wikipedia-api = "^0.6.0"
-uvicorn = "^0.23.2"
-pydantic = "^2.3.0"
-tiktoken = "^0.5.1"
-aioconsole = "^0.6.2"
-spacy = "^3.6.1"
-tree-sitter = "^0.20.2"
-discord = "^2.3.2"
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0.post1"
+loguru = "^0.7.2"
 xdg-base-dirs = "^6.0.1"
-aiohttp = "^3.8.5"
 python-dotenv = "^1.0.0"
-sqlalchemy = "^2.0.22"
-psycopg2 = "^2.9.9"
-aiofiles = "^23.2.1"
+tiktoken = "^0.5.1"
+numpy = "^1.26.1"
+aiohttp = ">=3.8.0,<3.8.6"
+discord = "^2.3.2"
+apscheduler = "^3.10.4"
 
 
 [build-system]

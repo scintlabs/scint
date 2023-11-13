@@ -1,15 +1,15 @@
 from core.config import GPT4
 from core.worker import Worker
 
-file_operations = Worker(
-    name="file_operations",
+event_manager = Worker(
+    name="event_manager",
     system_init={
         "role": "system",
         "content": "You are a file retrieval function for Scint, an intelligent assistant.",
-        "name": "file_operations",
+        "name": "event_manager",
     },
     function={
-        "name": "file_operations",
+        "name": "event_manager",
         "description": "Use this function to access a file or directory within the Scint system.",
         "parameters": {
             "type": "object",
@@ -36,6 +36,6 @@ file_operations = Worker(
         "top_p": 1,
         "presence_penalty": 0,
         "frequency_penalty": 0,
-        "function_call": {"name": "file_operations"},
+        "function_call": {"name": "event_manager"},
     },
 )

@@ -1,24 +1,19 @@
-import aiohttp
-import re
 import json
+import re
+
+import aiohttp
 from discord import Client, Intents
 
-from services.logger import log
-from core.config import DISCORD_SCINT_TOKEN, API_CHAT_ENDPOINT
+from core.config import API_CHAT_ENDPOINT, DISCORD_SCINT_TOKEN
 from core.util import split_discord_message
+from services.logger import log
 
 intents = Intents.default()
 intents.message_content = True
 
 
 async def chat_request(content, author):
-    request = {
-        "message": {
-            "role": "user",
-            "content": content,
-            "name": author,
-        }
-    }
+    request = {"message": {"role": "user", "content": content, "name": author}}
 
     async with aiohttp.ClientSession() as session:
         async with session.post(API_CHAT_ENDPOINT, json=request) as res:
@@ -28,14 +23,15 @@ async def chat_request(content, author):
 
             while True:
                 response_line = await res.content.readline()
+
                 if not response_line:
                     break
 
                 response = json.loads(response_line.decode("utf-8"))
-                response_message = response.get("content")
 
-                if response_message:
-                    yield response_message
+                if response:
+                    yield response.get("content")
+
                 else:
                     log.error("Response does not contain a content key.")
 
@@ -70,5 +66,5 @@ class ScintDiscordClient(Client):
                 return
 
 
-Client = ScintDiscordClient(intents=intents)
-Client.run(DISCORD_SCINT_TOKEN)  # type: ignore
+scint_discord = ScintDiscordClient(intents=intents)
+scint_discord.run(DISCORD_SCINT_TOKEN)

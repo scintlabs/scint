@@ -4,18 +4,13 @@ from typing import Dict
 from pydantic import BaseModel, ValidationError
 
 
-class Request(BaseModel):
-    worker: str
-    message: Dict[str, str]
-
-
 class Response(BaseModel):
     pass
 
 
-class Message(BaseModel):
-    pass
+class Request(BaseModel):
+    message: Dict[str, str]
 
 
-class File(BaseModel):
+class ScheduleTaskRequest(BaseModel):
     pass
