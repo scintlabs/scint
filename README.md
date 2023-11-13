@@ -17,7 +17,7 @@ Scint empowers developers and organizations to construct and coordinate intellig
 
 > Note: Scint is still in the early stages of development
 
-![Scint's high-level architecture](https://github.com/scintessence/scint/blob/main/docs/architecture.png)
+![Scint's high-level architecture](https://github.com/scint-labs/scint/blob/main/docs/architecture.png)
 
 While Scint functions as a typical AI-powered chatbot for standard interactions, it is cognizant of its extended capabilities. When needed, it can delegate tasks and establish pipelines for efficient execution. Key modules in Scint include:
 
@@ -164,7 +164,7 @@ persona.coordinator.add_workers(\
 
 And that’s it—the Coordinator handles the rest. Restart Scint and test your new worker:
 
-![Scint reading a markdown document](https://github.com/scintessence/scint/blob/main/docs/profit.png)
+![Scint reading a markdown document](https://github.com/scint-labs/scint/blob/main/docs/profit.png)
 
 ## Development and Contribution
 
