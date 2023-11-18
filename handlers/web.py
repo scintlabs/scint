@@ -4,6 +4,7 @@ import asyncio
 import aiohttp
 
 from services.logger import log
+from core.memory import Message
 from core.config import GOOGLE_API_KEY, CUSTOM_SEARCH_ID
 
 
@@ -42,8 +43,8 @@ async def fetch_google_search_results(query: str) -> List[ParsedResponseItem]:
 
 async def search_web(query: str) -> Dict[str, str]:
     log.info("Running Google search query.")
-    search_results = await fetch_google_search_results(query)
 
+    search_results = await fetch_google_search_results(query)
     results_str = "\n\n".join(
         [
             f"[{item['title']}](<{item['url']}>)\n\n{item['description']}"
@@ -51,23 +52,16 @@ async def search_web(query: str) -> Dict[str, str]:
         ]
     )
 
-    return {
-        "role": "system",
-        "content": f"{results_str}",
-        "name": "web_search",
-    }
+    return Message("system", f"{results_str}", "web_search")
 
 
 async def load_website(url):
     try:
         cmd = ["bunx", "percollate", "md", url]
-
         process = await asyncio.create_subprocess_exec(
             *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
-
         stdout, stderr = await process.communicate()
-
         stdout_text = stdout.decode("utf-8")
         stderr_text = stderr.decode("utf-8")
 
@@ -75,17 +69,15 @@ async def load_website(url):
             print(f"Command failed with error: {stderr_text}")
             return None
 
-        # Assuming the command returns the filename, read the file contents
         with open(stdout_text, "r") as file:
             file_contents = file.read()
 
-        message = {
-            "role": "system",
-            "content": f"Here's the data for the requested URL:\n {file_contents}\n\n Summarize the data for the user.",
-            "name": "load_website",
-        }
-        return message
+        return Message(
+            "system",
+            f"Here's the data for the requested URL:\n {file_contents}\n\n Summarize the data for the user.",
+            "load_website",
+        )
 
     except Exception as e:
-        print(f"Error during subprocess execution or file reading: {e}")
+        log.info(f"Error during subprocess execution or file reading: {e}")
         return None
