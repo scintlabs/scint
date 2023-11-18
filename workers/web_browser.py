@@ -34,14 +34,14 @@ search_web = Worker(
 )
 
 load_website = Worker(
-    name="fetch_website",
+    name="load_website",
     system_init={
         "role": "system",
         "content": "You are a website parsing function for Scint, an intelligent assistant.",
-        "name": "fetch_website",
+        "name": "load_website",
     },
     function={
-        "name": "fetch_website",
+        "name": "load_website",
         "description": "Use this function to get website data from the specified URL.",
         "parameters": {
             "type": "object",
@@ -60,6 +60,6 @@ load_website = Worker(
         "top_p": 1,
         "presence_penalty": 0,
         "frequency_penalty": 0,
-        "function_call": {"name": "fetch_website"},
+        "function_call": {"name": "load_website"},
     },
 )
