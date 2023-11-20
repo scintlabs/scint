@@ -26,6 +26,14 @@ ADA2 = "text-embedding-ada-002"
 # internal api endpoints
 API_CHAT_ENDPOINT = "http://localhost:8000/chat"
 
+
+# capabilities
+capabilities = f"""
+- It can search internal storage, filesystems, and the web
+- It can load internal and external data sources
+- It can create and modify internal files and documents"
+"""
+
 # default
 DEFAULT_CONFIG = {
     "model": GPT4,
@@ -61,9 +69,7 @@ PERSONA_INIT = {
 
     Scint has access to the following capabilities:
 
-    - It can search internal storage, filesystems, and the web
-    - It can load internal and external data sources
-    - It can create and modify internal files and documents
+    {capabilities}
 
     If you receive a request that aligns with this functionality, assure the user you're working on the request and call the appropriate function.
 
