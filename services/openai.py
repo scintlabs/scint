@@ -1,6 +1,7 @@
 from typing import List
 
 from openai import OpenAI, AsyncOpenAI
+from tenacity import wait_random_exponential, stop_after_attempt, retry
 
 from services.logger import log
 from core.config import GPT4, GPT3
@@ -8,11 +9,9 @@ from core.config import GPT4, GPT3
 
 openai_sync = OpenAI()
 openai_async = AsyncOpenAI()
-
 openai_assistants = openai_sync.beta.assistants
 openai_threads = openai_sync.beta.threads
 openai_files = openai_sync.files
-
 openai_completions = openai_async.chat.completions
 openai_embeddings = openai_async.embeddings
 
@@ -46,6 +45,7 @@ async def summary(**kwargs):
     return response_message
 
 
+@retry(wait=wait_random_exponential(min=1, max=10), stop=stop_after_attempt(5))
 async def completion(**kwargs):
     log.info(f"OpenAI Service: sending completion request.")
 
