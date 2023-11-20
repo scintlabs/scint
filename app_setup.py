@@ -9,8 +9,6 @@ from workers.event_manager import event_manager
 assistant = Assistant()
 persona = Persona()
 persona.coordinator.add_workers(
-    event_manager,
-    file_manager,
     search_web,
     load_website,
     get_weather,

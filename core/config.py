@@ -24,7 +24,7 @@ GPT3_16K = "gpt-3.5-turbo-16k"
 ADA2 = "text-embedding-ada-002"
 
 # internal api endpoints
-API_CHAT_ENDPOINT = "http://localhost:8000/chat"
+API_CHAT_ENDPOINT = "http://localhost:8080/chat"
 
 
 # capabilities
