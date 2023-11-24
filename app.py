@@ -10,7 +10,7 @@ from api.routes import setup_routes
 app = FastAPI()
 
 origins = [
-    "https://scint.com",
+    "https://scint.co",
     "https://assistant.scint.co",
     "http://localhost:8000",
     "http://localhost:8080",
