@@ -9,7 +9,12 @@ from api.routes import setup_routes
 
 app = FastAPI()
 
-origins = ["https://scint.com", "https://assistant.scint.co", "http://localhost:8000"]
+origins = [
+    "https://scint.com",
+    "https://assistant.scint.co",
+    "http://localhost:8000",
+    "http://localhost:8080",
+]
 
 app.add_middleware(
     CORSMiddleware,
