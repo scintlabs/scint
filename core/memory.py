@@ -8,33 +8,6 @@ from core.artifacts import File
 from core.util import generate_timestamp, generate_uuid4
 
 
-class Message:
-    def __init__(self, role, content, name=None):
-        self.id: UUID = generate_uuid4()
-        self.created: str = generate_timestamp()
-        self.role: str = role
-        self.content: str = content
-        self.name: str = name
-        self.content_summary: str = None
-        self.content_embedding: List[float] = None
-        self.files: List[File] = []
-
-    def dump(self, summary=False):
-        if summary:
-            return {
-                "role": self.role,
-                "content": self.content_summary,
-                "name": self.name,
-            }
-
-        else:
-            return {
-                "role": self.role,
-                "content": self.content,
-                "name": self.name,
-            }
-
-
 async def summarize_content(content):
     if len(content) > 150:
         system_init = {
@@ -67,6 +40,33 @@ async def process_message(message, get_embedding=False):
 async def generate_embedding(content):
     message_embedding = await embedding(content)
     return message_embedding
+
+
+class Message:
+    def __init__(self, role, content, name=None):
+        self.id: UUID = generate_uuid4()
+        self.created: str = generate_timestamp()
+        self.role: str = role
+        self.name: str = name
+        self.content: str = content
+        self.content_summary: str = None
+        self.content_embedding: List[float] = None
+        self.files: List[File] = []
+
+    def dump(self, summary=False):
+        if summary:
+            return {
+                "role": self.role,
+                "content": self.content_summary,
+                "name": self.name,
+            }
+
+        else:
+            return {
+                "role": self.role,
+                "content": self.content,
+                "name": self.name,
+            }
 
 
 class Context:

@@ -36,16 +36,11 @@ async def summary(**kwargs):
     response = await openai_completions.create(**parameters)
     response = response.model_dump()
     response_message = response["choices"][0].get("message")
-    prompt_tokens = response["usage"].get("prompt_tokens")
-    completion_tokens = response["usage"].get("completion_tokens")
-    count_tokens(prompt_tokens, completion_tokens)
-
     log.info(f"OpenAI Service: summary received from language model.")
 
     return response_message
 
 
-@retry(wait=wait_random_exponential(min=1, max=10), stop=stop_after_attempt(5))
 async def completion(**kwargs):
     log.info(f"OpenAI Service: sending completion request.")
 
@@ -63,16 +58,18 @@ async def completion(**kwargs):
         parameters["functions"] = kwargs.get("functions")
         parameters["function_call"] = kwargs.get("function_call")
 
-    response = await openai_completions.create(**parameters)
-    response = response.model_dump()
-    response_message = response["choices"][0].get("message")
-    prompt_tokens = response["usage"].get("prompt_tokens")
-    completion_tokens = response["usage"].get("completion_tokens")
-    count_tokens(prompt_tokens, completion_tokens)
+    try:
+        response = await openai_completions.create(**parameters)
+        log.info(response)
+        response = response.model_dump()
+        response_message = response["choices"][0].get("message")
+        log.info(f"OpenAI Service: completion received from language model.")
 
-    log.info(f"OpenAI Service: completion received from language model.")
+        return response_message
 
-    return response_message
+    except Exception:
+        log.info(response_message)
+        log.info(f"OpenAI Service: there was an exception.")
 
 
 async def embedding(text: str) -> List[float]:

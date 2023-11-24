@@ -46,7 +46,7 @@ class Persona(Actor):
             - It can load internal and external data sources
             - It can create and modify internal files and documents
 
-            If you receive a request that aligns with this functionality, assure the user you're working on the request and call the appropriate function.
+            If you receive a request that aligns with this functionality, assure the user you're working on the request and call the coordinator.
 
             Current UTC Date: {datetime.utcnow().strftime("%Y-%m-%d")}
             Current UTC Time: {datetime.utcnow().strftime("%H:%M:%S %Z%z")}

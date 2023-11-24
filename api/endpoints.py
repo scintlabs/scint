@@ -6,19 +6,7 @@ from pydantic import ValidationError
 
 from api.models import Request
 from services.logger import log
-from app_setup import assistant, persona
-
-
-async def stream_assistant_response(request_message):
-    try:
-        result = assistant.process_request(request_message)
-        yield json.dumps(result) + "\n"
-
-    except ValidationError as e:
-        log.error(f"Validation Error: {e}")
-
-    except Exception as e:
-        log.error(f"General Exception: {e}")
+from app_setup import persona
 
 
 async def stream_chat_response(request_message):
@@ -36,13 +24,6 @@ async def stream_chat_response(request_message):
 async def chat_message(request: Request):
     return StreamingResponse(
         stream_chat_response(request.message),
-        media_type="application/json",
-    )
-
-
-async def assistant_message(request: Request):
-    return StreamingResponse(
-        stream_assistant_response(request.message),
         media_type="application/json",
     )
 
