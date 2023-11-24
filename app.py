@@ -8,16 +8,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes import setup_routes
 
 app = FastAPI()
-setup_routes(app)
 
+origins = ["https://scint.com", "http://localhost:8080" "http://localhost:8000"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+setup_routes(app)
 
 
 async def start():
