@@ -30,15 +30,19 @@ async def chat_message(request: Request):
 
 def get_context():
     try:
-        return json.dumps(persona.context_controller.get_context())
+        context = persona.context_controller.get_context()
+        return json.dumps(context)
 
     except Exception as e:
         log.error(f"Error retrieving context: {e}")
+        return json.dumps({"error": str(e)})
 
 
 def get_messages():
     try:
-        return json.dumps(persona.context_controller.get_messages())
+        messages = persona.context_controller.get_messages()
+        return json.dumps([message.data_dump() for message in messages])
 
     except Exception as e:
-        log.error(f"Error retrieving context: {e}")
+        log.error(f"Error retrieving messages: {e}")
+        return json.dumps({"error": str(e)})

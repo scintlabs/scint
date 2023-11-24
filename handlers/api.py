@@ -40,9 +40,6 @@ async def get_weather(city):
         async with session.get(base_url, params=params) as response:
             data = await response.json()
 
-            log.info(f"OpenWeather API response status: {response.status}")
-            log.info(f"OpenWeather API response data: {data}")
-
             if response.status == 200:
                 reply = await format_weather_message(data)
                 return reply

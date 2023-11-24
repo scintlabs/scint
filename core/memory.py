@@ -1,45 +1,11 @@
 import asyncio
 from uuid import UUID
-from typing import Dict, List, Any
+from typing import Dict, List
 
 from services.logger import log
 from services.openai import embedding, summary
 from core.artifacts import File
 from core.util import generate_timestamp, generate_uuid4
-
-
-async def summarize_content(content):
-    if len(content) > 150:
-        system_init = {
-            "role": "system",
-            "content": "You are a compression algorithm for Scint, a state-of-the-art intelligent assistant. For every message, remove unnecessary content and compress the message for minimal contextual understanding using shorthand language. Don't change message perspective—just compress the content.",
-            "name": "summarize",
-        }
-        message = {"role": "system", "content": content, "name": "message_to_summarize"}
-        messages = [system_init, message]
-        request = {"messages": messages}
-        summarized_message = await summary(**request)
-        summarized_content = summarized_message.get("content")
-        log.info(summarized_content)
-
-        return summarized_content
-
-    else:
-        return content
-
-
-async def process_message(message, get_embedding=False):
-    log.info(f"Processing message.")
-
-    message.content_summary = await summarize_content(message.content)
-
-    if get_embedding:
-        message.content_embedding = await generate_embedding(message.content)
-
-
-async def generate_embedding(content):
-    message_embedding = await embedding(content)
-    return message_embedding
 
 
 class Message:
@@ -53,7 +19,7 @@ class Message:
         self.content_embedding: List[float] = None
         self.files: List[File] = []
 
-    def dump(self, summary=False):
+    def context_dump(self, summary=False):
         if summary:
             return {
                 "role": self.role,
@@ -68,15 +34,62 @@ class Message:
                 "name": self.name,
             }
 
+    def data_dump(self, summary=False):
+        message_data = {
+            "id": str(self.id),
+            "created": self.created,
+            "role": self.role,
+            "name": self.name,
+            "content": self.content,
+            "content_summary": self.content_summary,
+        }
+
+        return message_data
+
+
+async def summarize_content(content):
+    if len(content) > 150:
+        system_init = {
+            "role": "system",
+            "content": "You are a compression algorithm for Scint, a state-of-the-art intelligent assistant. For every message, remove unnecessary content and compress the message for minimal contextual understanding using shorthand language. Don't change message perspective—just compress the content.",
+            "name": "summarize",
+        }
+        message = {"role": "system", "content": content, "name": "message_to_summarize"}
+        messages = [system_init, message]
+        request = {"messages": messages}
+        summarized_message = await summary(**request)
+        summarized_content = summarized_message.get("content")
+
+        return summarized_content
+
+    else:
+        return content
+
+
+async def process_message(message, get_embedding=False) -> Message:
+    log.info(f"Processing message.")
+
+    message.content_summary = await summarize_content(message.content)
+
+    if get_embedding:
+        message.content_embedding = await generate_embedding(message.content)
+
+    return message
+
+
+async def generate_embedding(content):
+    message_embedding = await embedding(content)
+    return message_embedding
+
 
 class Context:
     def __init__(self):
-        self.messages: List[Message] = []
         self.current_context: List[Dict[str, str]] = []
+        self.messages: List[Message] = []
 
     def add_message(self, message):
+        self.current_context.append(message.context_dump())
         self.messages.append(message)
-        self.current_context.append(message.dump())
 
 
 class ContextController:
@@ -96,38 +109,33 @@ class ContextController:
         processed_message = await process_message(message)
 
         if processed_message and isinstance(processed_message, Message):
-            self.context.add_message(processed_message)
+            for i, msg in enumerate(self.context.messages):
+                if msg.id == processed_message.id:
+                    self.context.messages[i] = processed_message
+                    break
+
             self.build_context()
 
     def build_context(self):
-        new_context: List[Dict[str, str]] = []
-        summary_start_index = max(len(self.context.messages) - self.max_summary, 0)
-        full_start_index = max(
-            len(self.context.messages) - self.max_full, summary_start_index
-        )
+        new_context = []
+        full_messages = self.context.messages[-self.max_full :]
+        summary_messages = self.context.messages[-self.max_summary : -self.max_full]
 
-        for message in reversed(self.context.messages[full_start_index:]):
-            if message:
-                full_message = message.dump()
-                new_context.append(full_message)
+        for message in full_messages:
+            full_message = message.context_dump()
+            new_context.append(full_message)
 
-        for message in reversed(
-            self.context.messages[summary_start_index:full_start_index]
-        ):
-            if message:
-                summary_message = message.dump(summary=True)
-                new_context.append(summary_message)
+        for message in summary_messages:
+            summary_message = message.context_dump(summary=True)
+            new_context.append(summary_message)
 
         self.context.current_context = new_context
 
+        if len(self.context.messages) > self.max_summary:
+            self.context.messages = self.context.messages[-self.max_summary :]
+
     def get_messages(self) -> List[Message]:
-        messages = []
-
-        for message in self.context.messages:
-            message_dict = message.dump()
-            messages.append(message_dict)
-
-        return messages
+        return self.context.messages
 
     def get_context(self) -> List[Dict[str, str]]:
         return self.context.current_context

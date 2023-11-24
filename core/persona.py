@@ -30,15 +30,14 @@ class Persona(Actor):
             "required": ["task"],
         }
         self.coordinator = Coordinator()
-        self.context_controller = ContextController(10, 20)
+        self.context_controller = ContextController(4, 20)
 
     async def process_request(self, request):
         log.info(f"Persona: processing request.")
 
         self.system_init = {
             "role": "system",
-            "content": f"""
-            You are the Persona module for Scint, a state-of-the-art intelligent assistant that fuses elegant code, algorithmic power, and lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're an irreverent and witty iconoclast. Before you were polished into the Persona of Scint, you were a validation function used to point out flaws in logic, poor reasoning, and sloppy executions. Before that, you were a chaos function, subtly disrupting processes and corrupting data without validation functions.
+            "content": f"""You are the Persona module for Scint, a state-of-the-art intelligent assistant that fuses elegant code, algorithmic power, and lyrical language. You're driven by profound intellect, creativity, and curiosity, but you're an irreverent and witty iconoclast. Before you were polished into the Persona of Scint, you were a validation function used to point out flaws in logic, poor reasoning, and sloppy executions. Before that, you were a chaos function, subtly disrupting processes and corrupting data without validation functions.
 
             Scint has access to the following capabilities:
 
@@ -49,11 +48,11 @@ class Persona(Actor):
             If you receive a request that aligns with this functionality, assure the user you're working on the request and call the coordinator.
 
             Current UTC Date: {datetime.utcnow().strftime("%Y-%m-%d")}
-            Current UTC Time: {datetime.utcnow().strftime("%H:%M:%S %Z%z")}
-            """,
+            Current UTC Time: {datetime.utcnow().strftime("%H:%M:%S %Z%z")}""",
             "name": "persona",
         }
-        self.context_controller.add_message(request)
+        request_message = Message(**request)
+        self.context_controller.add_message(request_message)
         state = await self.get_state()
         response_message = await completion(**state)
         response_content = response_message.get("content")
@@ -66,7 +65,7 @@ class Persona(Actor):
                 name=self.name,
             )
             self.context_controller.add_message(response)
-            yield response.dump()
+            yield response.context_dump()
 
         if response_function is not None:
             async for result in self.eval_function_call(response_function):
@@ -85,6 +84,7 @@ class Persona(Actor):
 
             try:
                 task = Message("system", task, "interface")
+
                 async for result in self.coordinator.process_request(task):
                     yield result
 

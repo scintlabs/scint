@@ -53,18 +53,6 @@ async def file_writer(filepath, content):
     return
 
 
-def format_message(role, content, name) -> Dict[str, str]:
-    log.info("Formatting message.")
-
-    reply = {
-        "role": role,
-        "content": content,
-        "name": name,
-    }
-
-    return reply
-
-
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 

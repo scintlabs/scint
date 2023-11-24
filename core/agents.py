@@ -1,4 +1,3 @@
-import time
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
@@ -18,13 +17,13 @@ class Actor(ABC):
     async def get_state(self) -> Dict[str, Any]:
         log.info(f"Getting {self.name}'s state.")
 
-        self.messages = [self.system_init]
+        messages = [self.system_init]
 
         for message in self.context_controller.context.current_context:
-            self.messages.append(message)
+            messages.append(message)
 
         self.state = {
-            "messages": self.messages,
+            "messages": messages,
             "model": self.config.get("model"),
             "max_tokens": self.config.get("max_tokens"),
             "presence_penalty": self.config.get("presence_penalty"),

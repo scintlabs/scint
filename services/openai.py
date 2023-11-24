@@ -60,16 +60,14 @@ async def completion(**kwargs):
 
     try:
         response = await openai_completions.create(**parameters)
-        log.info(response)
         response = response.model_dump()
         response_message = response["choices"][0].get("message")
         log.info(f"OpenAI Service: completion received from language model.")
 
         return response_message
 
-    except Exception:
-        log.info(response_message)
-        log.info(f"OpenAI Service: there was an exception.")
+    except Exception as e:
+        log.info(f"OpenAI Service: there was an exception: {e}")
 
 
 async def embedding(text: str) -> List[float]:
@@ -79,4 +77,4 @@ async def embedding(text: str) -> List[float]:
     response = await openai_embeddings.create(input=[text], model=model)
     log.info(f"OpenAI Service: embedding received from language model.")
 
-    return response["data"][0]["embedding"]  # type: ignore
+    return response["data"][0]["embedding"]

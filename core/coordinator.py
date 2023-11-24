@@ -46,7 +46,7 @@ class Coordinator(Actor):
             "required": ["worker"],
         }
         self.workers: Dict[str, Worker] = {}
-        self.context_controller = ContextController(10, 20)
+        self.context_controller = ContextController(2, 8)
 
     async def process_request(self, request):
         log.info(f"Coordinator: processing request.")
@@ -58,8 +58,13 @@ class Coordinator(Actor):
         response_function = response.get("function_call")
 
         if response_content is not None:
-            self.context_controller.add_message(response_content)
-            yield response_content
+            response = Message(
+                role="assistant",
+                content=response_content,
+                name=self.name,
+            )
+            self.context_controller.add_message(response)
+            yield response.context_dump()
 
         if response_function is not None:
             async for chunk in self.eval_function_call(response_function):

@@ -54,14 +54,13 @@ class ScintDiscordClient(Client):
                     author = str(message.author)
                     content = re.sub(r"<@!?[0-9]+>", "", message.content).strip()
                     async for reply in chat_request(content, author):
-                        log.info(f"API Reply: {reply}")
                         for chunk in split_discord_message(reply):
                             await message.channel.send(chunk)
 
                 except Exception as e:
                     log.exception(f"Error: {e}")
                     await message.channel.send(
-                        "An error occurred while processing your request."
+                        f"An error occurred while processing your request: {e}"
                     )
                 return
 
