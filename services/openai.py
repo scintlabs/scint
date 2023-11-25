@@ -1,17 +1,12 @@
 from typing import List
 
-from openai import OpenAI, AsyncOpenAI
-from tenacity import wait_random_exponential, stop_after_attempt, retry
+from openai import AsyncOpenAI
+from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 from services.logger import log
 from core.config import GPT4, GPT3
 
-
-openai_sync = OpenAI()
 openai_async = AsyncOpenAI()
-openai_assistants = openai_sync.beta.assistants
-openai_threads = openai_sync.beta.threads
-openai_files = openai_sync.files
 openai_completions = openai_async.chat.completions
 openai_embeddings = openai_async.embeddings
 
@@ -21,27 +16,8 @@ def count_tokens(prompt_tokens, completion_tokens):
     # TODO: Calculate token usage
 
 
-async def summary(**kwargs):
-    log.info(f"OpenAI Service: sending summary request.")
-
-    parameters = {
-        "model": kwargs.get("model", GPT3),
-        "temperature": kwargs.get("temperature", 1),
-        "top_p": kwargs.get("top_p", 1),
-        "presence_penalty": kwargs.get("presence_penalty", 0.5),
-        "frequency_penalty": kwargs.get("frequency_penalty", 0.5),
-        "messages": kwargs.get("messages"),
-    }
-
-    response = await openai_completions.create(**parameters)
-    response = response.model_dump()
-    response_message = response["choices"][0].get("message")
-    log.info(f"OpenAI Service: summary received from language model.")
-
-    return response_message
-
-
-async def completion(**kwargs):
+@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+async def generate_completion(**kwargs):
     log.info(f"OpenAI Service: sending completion request.")
 
     parameters = {
@@ -52,11 +28,10 @@ async def completion(**kwargs):
         "presence_penalty": kwargs.get("presence_penalty", 0.3),
         "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
         "messages": kwargs.get("messages"),
+        "functions": kwargs.get("functions"),
     }
 
-    if kwargs.get("functions"):
-        parameters["functions"] = kwargs.get("functions")
-        parameters["function_call"] = kwargs.get("function_call")
+    log.info(parameters)
 
     try:
         response = await openai_completions.create(**parameters)
@@ -68,9 +43,40 @@ async def completion(**kwargs):
 
     except Exception as e:
         log.info(f"OpenAI Service: there was an exception: {e}")
+        raise
 
 
-async def embedding(text: str) -> List[float]:
+async def generate_summary(content: str) -> str:
+    log.info(f"OpenAI Service: sending summary request.")
+
+    parameters = {
+        "model": GPT3,
+        "temperature": 1,
+        "top_p": 1,
+        "presence_penalty": 0.5,
+        "frequency_penalty": 0.5,
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a compression algorithm. For every message, summarize content using shorthand language. Maintan original author's perspective.",
+            },
+            {"role": "system", "content": content},
+        ],
+    }
+
+    try:
+        response = await openai_completions.create(**parameters)
+        response = response.model_dump()
+        summarized_content = response["choices"][0]["message"].get("content")
+        log.info(f"OpenAI Service: summary received from language model.")
+
+        return summarized_content
+
+    except Exception as e:
+        log.info(f"OpenAI Service: there was an exception: {e}")
+
+
+async def generate_embedding(text: str) -> List[float]:
     log.info(f"OpenAI Service: sending embedding request.")
 
     model = "text-embedding-ada-002"

@@ -1,10 +1,12 @@
 import json
 import importlib
+from datetime import datetime
 from typing import Dict, Any
 
-from core.agents import Actor
-from core.config import DEFAULT_CONFIG, DEFAULT_INIT
-from services.openai import completion
+from core.agents import Agent, AgentMatrix, AgentFunction
+from core.memory import ContextController, Message
+from core.config import WORKER_CONFIG
+from services.openai import generate_completion
 from services.logger import log
 
 
@@ -16,38 +18,43 @@ FUNCTION_TO_MODULE_MAP = {
 }
 
 
-class Worker(Actor):
-    def __init__(self, name, function, config=DEFAULT_CONFIG, system_init=DEFAULT_INIT):
-        super().__init__(name, config, system_init)
-        self.function: Dict[str, Any] = function
-        self.function_call: Dict[str, str] = {"name": function.get("name")}
+class Worker(Agent):
+    def __init__(self, name, purpose, description, params, req):
+        super().__init__(WORKER_CONFIG)
+
+        self.matrix = AgentMatrix(name=name, personality=purpose)
+        self.function = AgentFunction(
+            name=name, desc=description, params=params, req=req
+        )
+        self.context = ContextController(2, 4)
 
     async def process_request(self, request):
         log.info(f"Worker: processing request.")
 
-        self.context_controller.add_message(request)
+        self.context.add_message(request)
         state = await self.get_state()
-        response = await completion(**state)
-        response_content = response.get("content")
-        response_function = response.get("function_call")
+        response_message = await generate_completion(**state)
+        response_content = response_message.get("content")
+        response_function = response_message.get("function_call")
 
         if response_content is not None:
-            self.context_controller.add_message(response_content)
-            yield response_content
+            response = Message(role="system", content=response_content)
+            self.context.add_message(response)
+            yield response
 
         if response_function is not None:
-            async for chunk in self.eval_function_call(response_function):
-                self.context_controller.add_message(chunk)
+            async for chunk in self.eval_function(response_function):
+                self.context.add_message(chunk)
                 yield chunk
 
-    async def eval_function_call(self, response_function):
+    async def eval_function(self, response_function):
         log.info(f"Worker: evaluating function call.")
 
         function_name = response_function.get("name")
         function_args = response_function.get("arguments")
         function_args = json.loads(function_args)
 
-        if function_name.strip() == self.name:
+        if function_name.strip() == self.function.name:
             module_name = FUNCTION_TO_MODULE_MAP.get(function_name)
 
             if not module_name:

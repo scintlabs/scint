@@ -13,7 +13,7 @@ intents.message_content = True
 
 
 async def chat_request(content, author):
-    request = {"message": {"role": "user", "content": content, "name": author}}
+    request = {"message": {"role": "user", "content": f"{author}: {content}"}}
 
     async with aiohttp.ClientSession() as session:
         async with session.post(API_CHAT_ENDPOINT, json=request) as res:

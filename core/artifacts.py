@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import Dict, List, Any
 
 from services.logger import log
-from services.openai import embedding, summary
+from services.openai import generate_embedding, summary
 from core.util import generate_timestamp, generate_uuid4
 
 

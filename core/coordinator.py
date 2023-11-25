@@ -1,12 +1,13 @@
 import json
+from datetime import datetime
 from uuid import UUID
 from typing import Dict, Any
 
 from services.logger import log
-from services.openai import completion
+from services.openai import generate_completion
 from core.config import COORDINATOR_INIT, COORDINATOR_CONFIG
 from core.worker import Worker
-from core.agents import Actor
+from core.agents import Agent, AgentFunction, AgentMatrix
 from core.memory import ContextController, Message
 from core.util import generate_uuid4, generate_timestamp
 
@@ -21,15 +22,21 @@ class Process:
         pass
 
 
-class Coordinator(Actor):
+class Coordinator(Agent):
     def __init__(self):
-        super().__init__("coordinator", COORDINATOR_CONFIG, COORDINATOR_INIT)
+        super().__init__(COORDINATOR_CONFIG)
         log.info(f"Coordinator: initializing self.")
 
-        self.function: Dict[str, Any] = {
-            "name": "coordinator",
-            "description": "Use this function to create a task and coordinate one of the available workers to process it.",
-            "parameters": {
+        self.matrix = AgentMatrix(
+            name="coordinator",
+            personality="You are the Coordinator module for Scint, a state-of-the-art intelligent assistant. You're responsibile for assigning tasks to the appropriate worker.",
+            guidelines="",
+            system_status=f"""Current Date: {datetime.now().strftime("%Y-%m-%d")}\n\nCurrent Time: {datetime.now().strftime("%H:%M")}""",
+        )
+        self.function = AgentFunction(
+            name="coordinator",
+            desc="Use this function to create a task and coordinate one of the available workers to process it.",
+            params={
                 "type": "object",
                 "properties": {
                     "task": {
@@ -43,35 +50,30 @@ class Coordinator(Actor):
                     },
                 },
             },
-            "required": ["worker"],
-        }
+            req=["worker"],
+        )
+        self.context = ContextController(4, 10)
         self.workers: Dict[str, Worker] = {}
-        self.context_controller = ContextController(2, 8)
 
     async def process_request(self, request):
         log.info(f"Coordinator: processing request.")
 
-        self.context_controller.add_message(request)
+        self.context.add_message(request)
         state = await self.get_state()
-        response = await completion(**state)
-        response_content = response.get("content")
-        response_function = response.get("function_call")
+        response_message = await generate_completion(**state)
+        response_content = response_message.get("content")
+        response_function = response_message.get("function_call")
 
         if response_content is not None:
-            response = Message(
-                role="assistant",
-                content=response_content,
-                name=self.name,
-            )
-            self.context_controller.add_message(response)
-            yield response.context_dump()
+            response = Message(role="system", content=response_content)
+            self.context.add_message(response)
+            yield response
 
         if response_function is not None:
-            async for chunk in self.eval_function_call(response_function):
-                self.context_controller.add_message(chunk)
-                yield chunk
+            async for result in self.eval_function(response_function):
+                yield result
 
-    async def eval_function_call(self, response_function):
+    async def eval_function(self, response_function):
         log.info(f"Coordinator: evaluating function call.")
 
         function_name = response_function.get("name")
@@ -81,10 +83,13 @@ class Coordinator(Actor):
         if function_name.strip() == "coordinator":
             worker = function_args.get("worker")
             task = function_args.get("task")
-            task = Message("system", task, self.name)
+            task_message = Message("system", task)
+
+            log.info(task_message)
+            log.info(self.workers)
 
             try:
-                async for result in self.workers[worker].process_request(task):
+                async for result in self.workers[worker].process_request(task_message):
                     yield result
 
             except Exception as e:
@@ -94,14 +99,14 @@ class Coordinator(Actor):
     def add_workers(self, *workers: Worker):
         worker_keys = []
         for worker in workers:
-            log.info(f"Coordinator: adding {worker.name} worker.")
+            log.info(f"Coordinator: adding {worker.matrix.name} worker.")
 
-            self.workers[worker.name] = worker
+            self.workers[worker.matrix.name] = worker
 
         for worker_key in list(self.workers.keys()):
             worker_keys.append(worker_key)
 
-        self.function["parameters"]["properties"]["worker"]["enum"] = worker_keys
+        self.function.params["properties"]["worker"]["enum"] = worker_keys
 
     def update_function_definitions(self):
         log.info(f"Coordinator: updating function definitions.")

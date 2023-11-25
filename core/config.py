@@ -29,9 +29,9 @@ API_CHAT_ENDPOINT = "http://localhost:8080/chat"
 
 # capabilities
 capabilities = f"""
-- It can search internal storage, filesystems, and the web
-- It can load internal and external data sources
-- It can create and modify internal files and documents"
+- You can search internal storage, filesystems, and the web
+- You can load internal and external data sources
+- You can create and modify internal files and documents"
 """
 
 # default
@@ -86,7 +86,6 @@ COORDINATOR_CONFIG = {
     "top_p": 1,
     "presence_penalty": 0,
     "frequency_penalty": 0,
-    "function_call": {"name": "coordinator"},
 }
 COORDINATOR_INIT = {
     "role": "system",
@@ -96,6 +95,15 @@ COORDINATOR_INIT = {
     Current Time: {datetime.now().strftime("%H:%M:%S")}
     """,
     "name": "coordinator",
+}
+
+# worker
+WORKER_CONFIG = {
+    "model": GPT4,
+    "temperature": 0,
+    "top_p": 1,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
 }
 
 # pre-baked responses

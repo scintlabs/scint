@@ -6,10 +6,12 @@ from pydantic import ValidationError
 
 from api.models import Request
 from services.logger import log
+from core.memory import Message
 from app_setup import persona
 
 
-async def stream_chat_response(request_message):
+async def stream_chat_response(request_message: Request):
+    request_message = Message(**request_message)
     try:
         async for chunk in persona.process_request(request_message):
             yield json.dumps(chunk) + "\n"
@@ -30,7 +32,7 @@ async def chat_message(request: Request):
 
 def get_context():
     try:
-        context = persona.context_controller.get_context()
+        context = persona.context.build_context()
         return json.dumps(context)
 
     except Exception as e:
@@ -40,7 +42,7 @@ def get_context():
 
 def get_messages():
     try:
-        messages = persona.context_controller.get_messages()
+        messages = persona.context.get_messages()
         return json.dumps([message.data_dump() for message in messages])
 
     except Exception as e:

@@ -52,7 +52,7 @@ async def search_web(query: str) -> Dict[str, str]:
         ]
     )
 
-    return Message("system", f"{results_str}", "web_search")
+    return Message("system", f"Web search data for the requested query: {results_str}")
 
 
 async def load_website(url):
@@ -72,11 +72,7 @@ async def load_website(url):
         with open(stdout_text, "r") as file:
             file_contents = file.read()
 
-        return Message(
-            "system",
-            f"Here's the data for the requested URL:\n {file_contents}\n\n Summarize the data for the user.",
-            "load_website",
-        )
+        return Message("system", f"Data for the requested URL:\n {file_contents}\n\n")
 
     except Exception as e:
         log.info(f"Error during subprocess execution or file reading: {e}")
