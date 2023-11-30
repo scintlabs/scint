@@ -1,0 +1,74 @@
+{
+    "users": {
+        "id": 1,
+        "data": {
+            "name": "Alex Carter",
+            "dateOfBirth": "1990-05-14",
+            "age": 33,
+            "address": {
+                "street": "1428 Elm Street",
+                "city": "Springfield",
+                "state": "IL",
+                "zip_code": "62704",
+                "country": "USA"
+            },
+            "email": "alex.carter90@example.com",
+            "phone": "+1-555-0123-4567",
+            "social_media": {
+                "twitter": "@AlexC_90",
+                "instagram": "alex_carter1990",
+                "linkedin": "linkedin.com/in/alexcarter90"
+            },
+            "occupation": "Digital Marketing Specialist",
+            "education": {
+                "degree": "Bachelor's in Marketing",
+                "institution": "University of Illinois",
+                "graduation_year": 2012
+            },
+            "assistant_notes": {
+                "personality": [
+                    "Extroverted",
+                    "Creative",
+                    "Analytical",
+                    "Friendly",
+                    "Organized"
+                ],
+                "communication_preferences": {
+                    "professional": [
+                        "Email",
+                        "Social Media"
+                    ],
+                    "personal": [
+                        "Texting",
+                        "Voice Calls"
+                    ]
+                },
+                "languages_spoken": {
+                    "English": "Native",
+                    "Spanish": "Basic"
+                },
+                "physical_characteristics": {
+                    "height": "5'9\"",
+                    "hair": "Dark Brown",
+                    "eyes": "Green"
+                },
+                "interests": [
+                    "Photography",
+                    "Traveling",
+                    "Reading",
+                    "Blogging"
+                ],
+                "skills": {
+                    "tech_savvy": "Proficient with digital marketing tools and social media platforms"
+                },
+                "experience": {
+                    "travel_history": "Visited 15 countries, including Japan, Italy, and Brazil",
+                    "volunteering": "Regular volunteer at local animal shelters"
+                },
+                "goals": {
+                    "business": "To start a personal digital marketing consultancy"
+                }
+            }
+        }
+    }
+}
