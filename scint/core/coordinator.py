@@ -1,15 +1,15 @@
 import json
 from datetime import datetime
+from typing import Any, Dict
 from uuid import UUID
-from typing import Dict, Any
 
+from core.agents import Agent, AgentFunction, AgentMatrix
+from core.config import COORDINATOR_CONFIG
+from core.memory import ContextController, Message
+from core.util import generate_timestamp, generate_uuid4
+from core.worker import Worker
 from services.logger import log
 from services.openai import generate_completion
-from core.config import COORDINATOR_INIT, COORDINATOR_CONFIG
-from core.worker import Worker
-from core.agents import Agent, AgentFunction, AgentMatrix
-from core.memory import ContextController, Message
-from core.util import generate_uuid4, generate_timestamp
 
 
 class Process:

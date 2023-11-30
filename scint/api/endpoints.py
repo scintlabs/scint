@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-from fastapi.responses import StreamingResponse
-from pydantic import ValidationError
 
 from api.models import Request
-from services.logger import log
-from core.memory import Message
 from app_setup import persona
+from core.memory import Message
+from fastapi.responses import StreamingResponse
+from pydantic import ValidationError
+from services.logger import log
 
 
 async def stream_chat_response(request_message: Request):

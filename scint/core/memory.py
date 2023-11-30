@@ -1,10 +1,10 @@
 import asyncio
-from uuid import UUID
 from typing import Dict, List
+from uuid import UUID
 
+from core.util import generate_timestamp, generate_uuid4
 from services.logger import log
 from services.openai import generate_embedding, generate_summary
-from core.util import generate_timestamp, generate_uuid4
 
 
 class Message:

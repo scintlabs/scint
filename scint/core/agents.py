@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 from uuid import UUID
 
-from services.logger import log
+from core.config import DEFAULT_CONFIG
 from core.memory import ContextController
 from core.util import generate_uuid4
-from core.config import DEFAULT_CONFIG
+from services.logger import log
 
 
 class AgentMatrix:

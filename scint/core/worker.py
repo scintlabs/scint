@@ -1,14 +1,11 @@
-import json
 import importlib
-from datetime import datetime
-from typing import Dict, Any
+import json
 
-from core.agents import Agent, AgentMatrix, AgentFunction
+from core.agents import Agent, AgentFunction, AgentMatrix
+from core.config import DEFAULT_CONFIG
 from core.memory import ContextController, Message
-from core.config import WORKER_CONFIG
-from services.openai import generate_completion
 from services.logger import log
-
+from services.openai import generate_completion
 
 FUNCTION_TO_MODULE_MAP = {
     "search_web": "web",
@@ -20,7 +17,7 @@ FUNCTION_TO_MODULE_MAP = {
 
 class Worker(Agent):
     def __init__(self, name, purpose, description, params, req):
-        super().__init__(WORKER_CONFIG)
+        super().__init__(DEFAULT_CONFIG)
 
         self.matrix = AgentMatrix(name=name, personality=purpose)
         self.function = AgentFunction(

@@ -1,10 +1,9 @@
 from typing import List
 
+from core.config import GPT3, GPT4
 from openai import AsyncOpenAI
-from tenacity import retry, stop_after_attempt, wait_random_exponential
-
 from services.logger import log
-from core.config import GPT4, GPT3
+from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 openai_async = AsyncOpenAI()
 openai_completions = openai_async.chat.completions

@@ -1,13 +1,12 @@
+import json
 import os
 import uuid
-import json
 from datetime import datetime
-from typing import Optional, Dict, Union
+from typing import Dict, Optional, Union
 
 import dotenv
 import numpy as np
 import tiktoken
-
 from services.logger import log
 
 

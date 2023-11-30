@@ -1,12 +1,12 @@
 import json
 from datetime import datetime
 
-from services.logger import log
-from services.openai import generate_completion
-from core.agents import Agent, AgentMatrix, AgentFunction
+from core.agents import Agent, AgentFunction, AgentMatrix
+from core.config import PERSONA_CONFIG
 from core.coordinator import Coordinator
 from core.memory import ContextController, Message
-from core.config import PERSONA_CONFIG
+from services.logger import log
+from services.openai import generate_completion
 
 
 class Persona(Agent):
