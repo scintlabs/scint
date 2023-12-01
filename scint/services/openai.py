@@ -45,6 +45,7 @@ async def generate_completion(**kwargs):
         raise
 
 
+@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 async def generate_summary(content: str) -> str:
     log.info(f"OpenAI Service: sending summary request.")
 
@@ -73,13 +74,21 @@ async def generate_summary(content: str) -> str:
 
     except Exception as e:
         log.info(f"OpenAI Service: there was an exception: {e}")
+        raise
 
 
+@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 async def generate_embedding(text: str) -> List[float]:
     log.info(f"OpenAI Service: sending embedding request.")
 
     model = "text-embedding-ada-002"
-    response = await openai_embeddings.create(input=[text], model=model)
-    log.info(f"OpenAI Service: embedding received from language model.")
 
-    return response["data"][0]["embedding"]
+    try:
+        response = await openai_embeddings.create(input=[text], model=model)
+        log.info(f"OpenAI Service: embedding received from language model.")
+
+        return response["data"][0]["embedding"]
+
+    except Exception as e:
+        log.info(f"OpenAI Service: there was an exception: {e}")
+        raise
