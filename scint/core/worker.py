@@ -58,7 +58,7 @@ class Worker(Agent):
                 log.error(f"No module found for function {function_name}.")
                 yield
 
-            module_path = f"handlers.{module_name}"
+            module_path = f"workers.{module_name}"
 
             try:
                 module = importlib.import_module(module_path)

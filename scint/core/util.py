@@ -64,17 +64,6 @@ def read_file_in_chunks(file_object, chunk_size):
         yield data
 
 
-def create_temporality_message() -> dict[str, str]:
-    date = datetime.now().strftime("%Y-%m-%d")
-    time = datetime.now().strftime("%H:%m")
-
-    return {
-        "role": "system",
-        "content": f"The following message was sent at {time} on {date}.",
-        "name": "coordinator",
-    }
-
-
 def read_file_content(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
