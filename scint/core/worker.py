@@ -11,7 +11,6 @@ FUNCTION_TO_MODULE_MAP = {
     "search_web": "web",
     "load_website": "web",
     "file_manager": "filesystem",
-    "get_weather": "api",
 }
 
 

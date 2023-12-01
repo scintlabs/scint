@@ -3,11 +3,11 @@ from __future__ import annotations
 import json
 
 from api.models import Request
-from app_setup import persona
 from core.memory import Message
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 from services.logger import log
+from setup import persona
 
 
 async def stream_chat_response(request_message: Request):
