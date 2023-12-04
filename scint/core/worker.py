@@ -1,30 +1,62 @@
 import importlib
 import json
+from datetime import datetime
 
-from core.agents import Agent, AgentFunction, AgentMatrix
-from core.config import DEFAULT_CONFIG
-from core.memory import ContextController, Message
-from services.logger import log
-from services.openai import generate_completion
+from scint.core.agents import Agent, AgentTool, AgentMatrix
+from scint.core.config import DEFAULT_CONFIG
+from scint.core.memory import ContextController, Message
+from scint.services.logger import log
+from scint.services.openai import generate_completion
 
-FUNCTION_TO_MODULE_MAP = {
-    "search_web": "web",
-    "load_website": "web",
-    "file_manager": "filesystem",
-}
+
+class WorkerTool(AgentTool):
+    def __init__(self):
+        super().__init__(
+            name="coordinator",
+            desc="Use this function to create a task and coordinate one of the available workers to process it.",
+            params={
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "description": "Provide task details for the worker. Be specific.",
+                    },
+                    "worker": {
+                        "type": "string",
+                        "description": "Choose from the available workers to process the task.",
+                        "enum": [],
+                    },
+                },
+            },
+            req=["worker"],
+        )
+
+    async def function(self, **kwargs):
+        log.info(f"Coordinator: evaluating function call.")
+        pass
+
+
+class WorkerMatrix(AgentMatrix):
+    def __init__(self):
+        super().__init__(
+            name="coordinator",
+            personality="You are the Coordinator module for Scint, a state-of-the-art intelligent assistant. You're responsibile for assigning tasks to the appropriate worker.",
+            guidelines="",
+            system_status=f"""Current Date: {datetime.now().strftime("%Y-%m-%d")}\n\nCurrent Time: {datetime.now().strftime("%H:%M")}""",
+        )
 
 
 class Worker(Agent):
     def __init__(self, name, purpose, description, params, req):
         super().__init__(DEFAULT_CONFIG)
 
-        self.matrix = AgentMatrix(name=name, personality=purpose)
-        self.function = AgentFunction(
-            name=name, desc=description, params=params, req=req
-        )
+        log.info(f"Worker: initializing {name}.")
+
+        self.matrix = WorkerMatrix(name=name, personality=purpose)
+        self.tool = WorkerTool(name=name, desc=description, params=params, req=req)
         self.context = ContextController(2, 4)
 
-    async def process_request(self, request):
+    async def process_request(self, request: Message) -> Message:
         log.info(f"Worker: processing request.")
 
         self.context.add_message(request)
@@ -39,41 +71,6 @@ class Worker(Agent):
             yield response
 
         if response_function is not None:
-            async for chunk in self.eval_function(response_function):
+            async for chunk in self.eval_tool_call(response_function):
                 self.context.add_message(chunk)
                 yield chunk
-
-    async def eval_function(self, response_function):
-        log.info(f"Worker: evaluating function call.")
-
-        function_name = response_function.get("name")
-        function_args = response_function.get("arguments")
-        function_args = json.loads(function_args)
-
-        if function_name.strip() == self.function.name:
-            module_name = FUNCTION_TO_MODULE_MAP.get(function_name)
-
-            if not module_name:
-                log.error(f"No module found for function {function_name}.")
-                yield
-
-            module_path = f"workers.{module_name}"
-
-            try:
-                module = importlib.import_module(module_path)
-                method_to_call = getattr(module, function_name, None)
-
-                if method_to_call:
-                    result = await method_to_call(**function_args)
-                    yield result
-
-                else:
-                    log.error(f"Function {function_name} not found in {module_path}.")
-
-            except ImportError as e:
-                log.error(f"Module {module_path} could not be imported: {e}")
-                yield
-
-            except Exception as e:
-                log.error(f"Error during function call: {e}")
-                yield

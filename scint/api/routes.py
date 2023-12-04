@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from api.endpoints import chat_message, get_context, get_messages
-from api.models import Request
+from scint.api.endpoints import chat_message, get_context, get_messages
+from scint.api.models import Request
 from fastapi import FastAPI
 
 

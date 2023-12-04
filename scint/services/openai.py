@@ -1,8 +1,8 @@
 from typing import List
 
-from core.config import GPT3, GPT4
+from scint.core.config import GPT3, GPT4
+from scint.services.logger import log
 from openai import AsyncOpenAI
-from services.logger import log
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 openai_async = AsyncOpenAI()
@@ -27,7 +27,7 @@ async def generate_completion(**kwargs):
         "presence_penalty": kwargs.get("presence_penalty", 0.3),
         "frequency_penalty": kwargs.get("frequency_penalty", 0.3),
         "messages": kwargs.get("messages"),
-        "functions": kwargs.get("functions"),
+        "tools": kwargs.get("tools"),
     }
 
     log.info(parameters)

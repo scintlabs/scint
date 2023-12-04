@@ -2,9 +2,9 @@ import asyncio
 from typing import Dict, List
 from uuid import UUID
 
-from core.util import generate_timestamp, generate_uuid4
-from services.logger import log
-from services.openai import generate_embedding, generate_summary
+from scint.core.util import generate_timestamp, generate_uuid4
+from scint.services.logger import log
+from scint.services.openai import generate_embedding, generate_summary
 
 
 class Message:

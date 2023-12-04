@@ -7,7 +7,7 @@ from typing import Dict, Optional, Union
 import dotenv
 import numpy as np
 import tiktoken
-from services.logger import log
+from scint.services.logger import log
 
 
 def envar(var: str) -> Optional[str]:

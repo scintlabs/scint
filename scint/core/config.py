@@ -1,6 +1,6 @@
 import os
 
-from core.util import envar
+from scint.core.util import envar
 from xdg_base_dirs import xdg_data_home
 
 # data

@@ -1,3 +1,3 @@
-from core.persona import Persona
+from scint.core.interface import ScintInterface
 
-persona = Persona()
+scint = ScintInterface()

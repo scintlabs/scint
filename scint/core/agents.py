@@ -2,33 +2,32 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 from uuid import UUID
 
-from core.config import DEFAULT_CONFIG
-from core.memory import ContextController
-from core.util import generate_uuid4
-from services.logger import log
+from scint.core.memory import ContextController, Message
+from scint.core.util import generate_uuid4
+from scint.services.logger import log
 
 
-class AgentMatrix:
+class AgentMatrix(ABC):
     def __init__(
         self,
         name: str,
         personality: str,
         guidelines: str = None,
         system_status: str = None,
-    ) -> Dict[str, str]:
+    ):
         self.name = name
         self.personality = personality
         self.guidelines = guidelines
         self.system_status = system_status
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, str]:
         return {
             "role": "system",
             "content": f"""{self.personality}\n\n{self.guidelines}\n\n{self.system_status}""",
         }
 
 
-class AgentFunction:
+class AgentTool(ABC):
     def __init__(self, name: str, desc: str, params: Dict[str, Any], req: List[str]):
         self.name = name
         self.description = desc
@@ -37,44 +36,55 @@ class AgentFunction:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "name": self.name,
-            "description": self.description,
-            "parameters": self.params,
-            "required": self.req,
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self.params,
+                "required": self.req,
+            },
         }
+
+    async def evaluate(self, name, **kwargs):
+        log.info(f"Tool: evaluating {name} call.")
+
+        if name != self.name:
+            raise ValueError(
+                f"Incorrect tool name. Expected '{self.name}', got '{name}'."
+            )
+
+        param_keys = self.params.get("properties", {}).keys()
+        for key in kwargs.keys():
+            if key not in param_keys:
+                raise ValueError(
+                    f"Invalid parameter '{key}'. Expected parameters: {list(param_keys)}."
+                )
+
+        for req_param in self.req:
+            if req_param not in kwargs:
+                raise ValueError(f"Missing required parameter '{req_param}'.")
+
+        async for result in self.function(**kwargs):
+            yield result
+
+    @abstractmethod
+    async def function(self, **kwargs) -> Message:
+        pass
 
 
 class Agent(ABC):
-    def __init__(self, config=DEFAULT_CONFIG):
+    def __init__(self, config):
         self.id: UUID = generate_uuid4()
-        self.matrix = AgentMatrix(
-            name="Assistant",
-            personality="You are helpful assistant.",
-            guidelines="Play nice.",
-            system_status="Functioning normally.",
-        )
-        self.function = AgentFunction(
-            name="function",
-            desc="This is the default function.",
-            params={
-                "type": "object",
-                "properties": {
-                    "task": {
-                        "type": "string",
-                        "description": "Describe the requested task in detail so the Coordinator can assign the appropriate worker.",
-                    },
-                },
-            },
-            req=["task"],
-        )
+        self.matrix: AgentMatrix = None
+        self.tools: AgentTool = None
         self.context = ContextController(4, 10)
         self.config = config
 
     async def get_state(self) -> Dict[str, Any]:
         matrix = self.matrix.to_dict()
-        function = [self.function.to_dict()]
-        context = self.context.build_context()
         messages = [matrix]
+        tools = [self.tools.to_dict()]
+        context = self.context.build_context()
 
         for message in context:
             messages.append(message)
@@ -87,15 +97,11 @@ class Agent(ABC):
             "presence_penalty": self.config.get("presence_penalty"),
             "frequency_penalty": self.config.get("frequency_penalty"),
             "messages": messages,
-            "functions": function,
+            "tools": tools,
         }
 
         return self.state
 
     @abstractmethod
-    async def process_request(self):
-        pass
-
-    @abstractmethod
-    async def eval_function(self):
+    async def process_request(self, request: Message) -> Message:
         pass

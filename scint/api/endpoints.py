@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import json
 
-from api.models import Request
-from core.memory import Message
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
-from services.logger import log
-from setup import persona
+from scint.services.logger import log
+from scint.setup import scint
+from scint.api.models import Request
+from scint.core.memory import Message
 
 
 async def stream_chat_response(request_message: Request):
     request_message = Message(**request_message)
     try:
-        async for chunk in persona.process_request(request_message):
-            yield json.dumps(chunk) + "\n"
+        async for message in scint.chat(request_message):
+            yield json.dumps(message.data_dump()).encode("utf-8") + b"\n"
 
     except ValidationError as e:
         log.error(f"Validation Error: {e}")
@@ -32,7 +32,7 @@ async def chat_message(request: Request):
 
 def get_context():
     try:
-        context = persona.context.build_context()
+        context = scint.context.build_context()
         return json.dumps(context)
 
     except Exception as e:
@@ -42,7 +42,7 @@ def get_context():
 
 def get_messages():
     try:
-        messages = persona.context.get_messages()
+        messages = scint.context.get_messages()
         return json.dumps([message.data_dump() for message in messages])
 
     except Exception as e:
