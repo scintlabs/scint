@@ -14,7 +14,7 @@ async def stream_chat_response(request_message: Request):
     request_message = Message(**request_message)
     try:
         async for message in scint.chat(request_message):
-            yield json.dumps(message.data_dump()).encode("utf-8") + b"\n"
+            yield json.dumps(message.data_dump()) + b"\n"
 
     except ValidationError as e:
         log.error(f"Validation Error: {e}")
