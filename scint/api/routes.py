@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from fastapi import FastAPI
+
 from scint.api.endpoints import chat_message, get_context, get_messages
 from scint.api.models import Request
-from fastapi import FastAPI
 
 
 def setup_routes(app: FastAPI):

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import Dict
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
 class Response(BaseModel):
-    pass
+    content: str
 
 
 class Request(BaseModel):
-    message: Dict[str, str]
+    content: str

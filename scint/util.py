@@ -6,7 +6,7 @@ from typing import Dict, Optional, Union
 
 import dotenv
 import numpy as np
-import tiktoken
+
 from scint.services.logger import log
 
 
@@ -33,9 +33,8 @@ def load_config(dir) -> Union[Dict, None]:
         return None
 
 
-def count_tokens(s: str, model: str = "gpt-4") -> int:
-    encoding = tiktoken.encoding_for_model(model)
-    return len(encoding.encode(s))
+def openai_message(role: str, content: str):
+    return {"role": role, "content": content}
 
 
 async def file_writer(filepath, content):

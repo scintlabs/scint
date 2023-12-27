@@ -4,35 +4,34 @@ import json
 
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
-from scint.services.logger import log
-from scint.setup import scint
+
 from scint.api.models import Request
-from scint.core.memory import Message
+from scint.assistant import assistant
+from scint.core.context import Message
+from scint.services.logger import log
 
 
-async def stream_chat_response(request_message: Request):
-    request_message = Message(**request_message)
+async def stream_response(request: Message):
     try:
-        async for message in scint.chat(request_message):
-            yield json.dumps(message.data_dump()) + b"\n"
+        async for response in assistant.generate_response(request):
+            if isinstance(response, Message):
+                yield json.dumps(response.data_dump())
 
     except ValidationError as e:
-        log.error(f"Validation Error: {e}")
+        log.error(f"Endpoint: {e}")
 
     except Exception as e:
-        log.error(f"General Exception: {e}")
+        log.error(f"Endpoint: {e}")
 
 
 async def chat_message(request: Request):
-    return StreamingResponse(
-        stream_chat_response(request.message),
-        media_type="application/json",
-    )
+    message = Message("user", request.content, "User")
+    return StreamingResponse(stream_response(message), media_type="application/json")
 
 
 def get_context():
     try:
-        context = scint.context.build_context()
+        context = assistant.memory_manager.get_context()
         return json.dumps(context)
 
     except Exception as e:
@@ -42,8 +41,8 @@ def get_context():
 
 def get_messages():
     try:
-        messages = scint.context.get_messages()
-        return json.dumps([message.data_dump() for message in messages])
+        messages = assistant.memory_manager.get_messages()
+        return [message for message in messages]
 
     except Exception as e:
         log.error(f"Error retrieving messages: {e}")

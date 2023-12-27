@@ -1,76 +1,35 @@
-import importlib
-import json
-from datetime import datetime
+from typing import Dict
 
-from scint.core.agents import Agent, AgentTool, AgentMatrix
-from scint.core.config import DEFAULT_CONFIG
-from scint.core.memory import ContextController, Message
-from scint.services.logger import log
-from scint.services.openai import generate_completion
+from scint import config
+from scint.core.component import Component
 
 
-class WorkerTool(AgentTool):
+class Worker(Component):
     def __init__(self):
-        super().__init__(
-            name="coordinator",
-            desc="Use this function to create a task and coordinate one of the available workers to process it.",
-            params={
-                "type": "object",
-                "properties": {
-                    "task": {
-                        "type": "string",
-                        "description": "Provide task details for the worker. Be specific.",
-                    },
-                    "worker": {
-                        "type": "string",
-                        "description": "Choose from the available workers to process the task.",
-                        "enum": [],
-                    },
-                },
-            },
-            req=["worker"],
-        )
+        self.name = "Worker"
+        self.identity = f"You are a {self.name} module for Scint."
+        self.instructions = ""
+        self.config = config.DEFAULT_CONFIG
 
-    async def function(self, **kwargs):
-        log.info(f"Coordinator: evaluating function call.")
-        pass
+    def get_tools(self):
+        tools = {}
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if callable(attr) and hasattr(attr, "tool_metadata"):
+                tools[attr_name] = attr.tool_metadata
+        return tools
 
 
-class WorkerMatrix(AgentMatrix):
-    def __init__(self):
-        super().__init__(
-            name="coordinator",
-            personality="You are the Coordinator module for Scint, a state-of-the-art intelligent assistant. You're responsibile for assigning tasks to the appropriate worker.",
-            guidelines="",
-            system_status=f"""Current Date: {datetime.now().strftime("%Y-%m-%d")}\n\nCurrent Time: {datetime.now().strftime("%H:%M")}""",
-        )
+class Workers:
+    def __init__(self, workers: Dict[str, Worker] = {}):
+        self._workers = workers
 
+    def add(self, worker: Worker):
+        self._workers[worker.name] = worker
 
-class Worker(Agent):
-    def __init__(self, name, purpose, description, params, req):
-        super().__init__(DEFAULT_CONFIG)
+    def remove(self, worker_name):
+        if worker_name in self._workers:
+            del self._workers[worker_name]
 
-        log.info(f"Worker: initializing {name}.")
-
-        self.matrix = WorkerMatrix(name=name, personality=purpose)
-        self.tool = WorkerTool(name=name, desc=description, params=params, req=req)
-        self.context = ContextController(2, 4)
-
-    async def process_request(self, request: Message) -> Message:
-        log.info(f"Worker: processing request.")
-
-        self.context.add_message(request)
-        state = await self.get_state()
-        response_message = await generate_completion(**state)
-        response_content = response_message.get("content")
-        response_function = response_message.get("function_call")
-
-        if response_content is not None:
-            response = Message(role="system", content=response_content)
-            self.context.add_message(response)
-            yield response
-
-        if response_function is not None:
-            async for chunk in self.eval_tool_call(response_function):
-                self.context.add_message(chunk)
-                yield chunk
+    def get_worker(self, worker_name):
+        return self._workers.get(worker_name)

@@ -3,9 +3,10 @@ from __future__ import annotations
 import asyncio
 
 import uvicorn
-from scint.api.routes import setup_routes
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from scint.api.routes import setup_routes
 
 
 def create_app() -> FastAPI:
