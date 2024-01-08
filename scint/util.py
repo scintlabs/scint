@@ -1,54 +1,11 @@
-import json
 import os
-import uuid
-from datetime import datetime
-from typing import Dict, Optional, Union
-
 import dotenv
 import numpy as np
 
-from scint.services.logger import log
 
-
-def envar(var: str) -> Optional[str]:
+def envar(var: str) -> str:
     dotenv.load_dotenv()
     return os.environ.get(var)
-
-
-def generate_timestamp():
-    return datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-
-
-def generate_uuid4():
-    return str(uuid.uuid4())
-
-
-def load_config(dir) -> Union[Dict, None]:
-    try:
-        with open(dir, "r") as file:
-            data = json.load(file)
-            return data
-    except FileNotFoundError:
-        log.warning(f"State file {dir} not found.")
-        return None
-
-
-def openai_message(role: str, content: str):
-    return {"role": role, "content": content}
-
-
-async def file_writer(filepath, content):
-    if content is not None:
-        try:
-            with open(filepath, "w") as file:
-                document = file.write(content)
-
-                return document
-
-        except Exception:
-            log.info("{e}")
-
-    return
 
 
 def cosine_similarity(a, b):

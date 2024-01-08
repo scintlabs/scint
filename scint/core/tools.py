@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from scint.services.logger import log
 
@@ -11,28 +11,51 @@ class ToolMeta(type):
 
         return super().__new__(cls, name, bases, dct)
 
-    @staticmethod
-    def data_dump(name, dct):
+    @classmethod
+    def data_dump(cls, name, dct):
         return {
             "type": "function",
             "function": {
                 "name": name,
-                "description": dct.get("description", "No description provided"),
-                "properties": dct.get("props", {}),
-                "required": dct.get("required", []),
+                "description": dct.get("description", ""),
+                "parameters": {
+                    "type": "object",
+                    "properties": dct.get("props", {}),
+                    "required": dct.get("required", []),
+                },
             },
         }
 
+    @classmethod
+    async def validate_tool_call(cls, tool_call):
+        try:
+            func = tool_call.get("function")
+            func_args = json.loads(func.get("arguments"))
+
+            async for response in cls.execute_action(**func_args):
+                yield response
+
+        except Exception as e:
+            log.error(f"{cls.__name__}: {e}")
+
 
 class Tool(metaclass=ToolMeta):
-    pass
+    def __init__(self):
+        self.name = self.__class__.__name__
+        self.description = None
+        self.props = None
+        self.required = None
+
+    async def execute_action(self, **kwargs):
+        raise NotImplementedError("This method should be overridden in the subclass.")
 
 
 class Tools:
-    def __init__(self, tools: List[Tool] = None):
-        if tools is None:
-            tools = []
+    def __init__(self, tools: List[Tool] = []):
         self._tools = tools
+
+    def __iter__(self):
+        return iter(self._tools)
 
     def add(self, tool: Tool):
         self._tools.append(tool)
@@ -40,11 +63,14 @@ class Tools:
     def remove(self, tool):
         self._tools = [t for t in self._tools if t != tool]
 
+    def get(self, tool_name: str) -> Optional[Tool]:
+        for tool in self._tools:
+            if tool.name == tool_name:
+                return tool
+        return None
+
     def data_dump(self) -> List[Dict[str, Any]]:
         return [
             tool.__class__.data_dump(tool.__class__.__name__, tool.__class__.__dict__)
             for tool in self._tools
         ]
-
-    def __iter__(self):
-        return iter(self._tools)

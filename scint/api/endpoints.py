@@ -1,32 +1,32 @@
 from __future__ import annotations
 
 import json
+import asyncio
 
 from fastapi.responses import StreamingResponse
-from pydantic import ValidationError
 
+from scint.new import persona, respond, context, Message, responder
 from scint.api.models import Request
 from scint.assistant import assistant
-from scint.core.context import Message
 from scint.services.logger import log
 
 
-async def stream_response(request: Message):
+async def stream_response(handler):
     try:
-        async for response in assistant.generate_response(request):
+        async for response in handler:
             if isinstance(response, Message):
-                yield json.dumps(response.data_dump())
-
-    except ValidationError as e:
-        log.error(f"Endpoint: {e}")
+                yield json.dumps(response)
 
     except Exception as e:
         log.error(f"Endpoint: {e}")
 
 
 async def chat_message(request: Request):
-    message = Message("user", request.content, "User")
-    return StreamingResponse(stream_response(message), media_type="application/json")
+    message = Message("User", "user", request.content)
+    return StreamingResponse(
+        stream_response(respond(persona, responder, context, message)),
+        media_type="application/json",
+    )
 
 
 def get_context():
