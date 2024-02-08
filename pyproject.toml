@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "deltron"
+version = "0.1.0"
+description = ""
+authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
+readme = "README.md"
+packages = [{include = "deltron"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.101.1"
+pytailwindcss = "^0.2.0"
+uvicorn = "^0.23.2"
+jinja2 = "^3.1.2"
+markdown = "^3.4.4"
+python-frontmatter = "^1.0.0"
+pygments = "^2.16.1"
+frontmatter = "^3.0.7"
+xdg-base-dirs = "^6.0.1"
+loguru = "^0.7.2"
+tenacity = "^8.2.3"
+aiohttp = "^3.9.1"
+python-dotenv = "^1.0.0"
+numpy = "^1.26.3"
+openai = "^1.6.1"
+python-multipart = "^0.0.6"
+scrapy = "^2.11.0"
+aiofiles = "^23.2.1"
+
+[tool.poetry.scripts]
+deltron = "server:start"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
