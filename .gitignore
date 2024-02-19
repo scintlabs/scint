@@ -103,6 +103,8 @@ ENV/
 
 # IDE settings
 .vscode/
+.zed/
+.cursorignore
 
 # macOS
 

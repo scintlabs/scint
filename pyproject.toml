@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "deltron"
-version = "0.1.0"
+name = "Scint"
+version = "0.0.1"
 description = ""
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 readme = "README.md"
-packages = [{include = "deltron"}]
+packages = [{include = "scint"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -22,13 +22,17 @@ tenacity = "^8.2.3"
 aiohttp = "^3.9.1"
 python-dotenv = "^1.0.0"
 numpy = "^1.26.3"
-openai = "^1.6.1"
+openai = {extras = ["datalib"], version = "^1.12.0"}
 python-multipart = "^0.0.6"
 scrapy = "^2.11.0"
 aiofiles = "^23.2.1"
+aioredis = "^2.0.1"
+meilisearch = "^0.30.0"
+injector = "^0.21.0"
+redis = "^5.0.1"
 
 [tool.poetry.scripts]
-deltron = "server:start"
+scint = "scint.server:start"
 
 [build-system]
 requires = ["poetry-core"]

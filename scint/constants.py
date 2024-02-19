@@ -1,5 +1,5 @@
-from deltron.utils.main import envar
-from deltron.utils.logger import log
+from scint.utils.logger import log
+from scint.utils.main import envar
 
 # external api keys and tokens
 OPENAI_API_KEY = envar("OPENAI_API_KEY")

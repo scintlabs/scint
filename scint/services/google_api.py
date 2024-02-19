@@ -2,8 +2,8 @@ from typing import Dict, Optional
 
 import aiohttp
 
-from deltron.constants import GOOGLE_API_KEY, GOOGLE_SEARCH_ID
-from deltron.utils.logger import log
+from scint.constants import GOOGLE_API_KEY, GOOGLE_SEARCH_ID
+from scint.utils.logger import log
 
 ParsedResponseItem = Dict[str, Optional[str]]
 
