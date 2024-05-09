@@ -1,10 +1,13 @@
+# scint
+activities.json
+documents.json
+links.json
+projects.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
 
 # Distribution / packaging
 .Python
@@ -103,9 +106,8 @@ ENV/
 
 # IDE settings
 .vscode/
+.idea/
 .zed/
-.cursorignore
 
 # macOS
-
 .DS_Store

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "Scint"
+name = "scint"
 version = "0.0.1"
 description = ""
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
@@ -7,32 +7,35 @@ readme = "README.md"
 packages = [{include = "scint"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.101.1"
-pytailwindcss = "^0.2.0"
+python = "^3.12"
 uvicorn = "^0.23.2"
-jinja2 = "^3.1.2"
-markdown = "^3.4.4"
-python-frontmatter = "^1.0.0"
-pygments = "^2.16.1"
-frontmatter = "^3.0.7"
 xdg-base-dirs = "^6.0.1"
 loguru = "^0.7.2"
 tenacity = "^8.2.3"
 aiohttp = "^3.9.1"
 python-dotenv = "^1.0.0"
-numpy = "^1.26.3"
-openai = {extras = ["datalib"], version = "^1.12.0"}
-python-multipart = "^0.0.6"
-scrapy = "^2.11.0"
+openai = {extras = ["datalib"], version = "^1.17.0"}
+anthropic = "^0.23.1"
 aiofiles = "^23.2.1"
-aioredis = "^2.0.1"
-meilisearch = "^0.30.0"
 injector = "^0.21.0"
-redis = "^5.0.1"
+redis = "^5.0.3"
+websockets = "^12.0"
+psycopg2 = "^2.9.9"
+irc = "^20.4.0"
+meilisearch = "^0.31.0"
+pydantic = "^2.7.1"
+rethinkdb = "^2.4.10.post1"
+fastapi = "^0.110.3"
+anytree = "^2.12.1"
+textual = "^0.58.1"
+libmagic = "^1.0"
+python-magic = "^0.4.27"
+tree-sitter = "^0.21.3"
+setuptools = "^69.5.1"
 
 [tool.poetry.scripts]
-scint = "scint.server:start"
+scint = "scint.server:app"
+
 
 [build-system]
 requires = ["poetry-core"]
