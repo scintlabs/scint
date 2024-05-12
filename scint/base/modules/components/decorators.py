@@ -1,10 +1,11 @@
 import functools
 import inspect
 
+from scint.base.modules.components.function import FuncType
 from scint.support.types import Context, Function, FunctionParams, Message, Arguments
 from scint.support.types import SystemMessage, AssistantMessage, UserMessage
 from scint.controllers.intelligence import IntelligenceController
-from scint.system.logging import log
+from scint.support.logging import log
 
 
 def completion(prompt: str, prompts: list = None):
@@ -122,27 +123,22 @@ def embedding(function):
         yield decorated
 
 
-from scint.modules.components.callable import completion, function_call, embedding
+def metadata(description: str, props: dict, *args, **kwargs):
+    def decorator(argument):
+        d = description
+        p = props
 
+        class Func(metaclass=FuncType):
+            description = d
+            props = p
+            function = argument
 
-@completion("Provide a system message.", ["And some prompts.", "As many as you want."])
-async def a_python_function(arguments: str):
-    # Use an LLM to generate an "async generator python function" that returns some data, then use an LLM to manipulate or respond to it.
-    yield arguments
+            @functools.wraps(argument)
+            async def call(*args, **kwargs):
+                async for result in argument(*args, **kwargs):
+                    yield result
 
+        func = Func()
+        return func
 
-@function_call(
-    "Provide a description.",
-    {"arguments": {"type": "string", "description": "And some arguments."}},
-    "Provide a system message.",
-    ["And some prompts.", "As many as you want."],
-)
-async def a_python_function(arguments: dict):
-    # Use an LLM to generate an "async generator python function" that does "blah blah blah," then use an LLM to call this function.
-    yield arguments
-
-
-@embedding
-async def a_python_function(arguments: dict):
-    # Use an LLM to generate an "async generator python function" that returns some data, then use an LLM to turn it into an embedding.
-    yield arguments
+    return decorator

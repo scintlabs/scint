@@ -8,7 +8,7 @@ import dotenv
 import injector
 import numpy as np
 
-from scint.system.logging import log
+from scint.support.logging import log
 
 
 def get_func_params(lines):

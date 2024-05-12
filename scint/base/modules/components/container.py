@@ -1,7 +1,8 @@
 import json
 from scint.controllers.context import context_controller
-from scint.support.types import Message
-from scint.system.logging import log
+from scint.support.types import List, Message
+from scint.support.logging import log
+from scint.base.modules.components.utils import instancelist
 import redis
 
 
@@ -12,19 +13,23 @@ class Container:
         self._owner = owner
         self._container_name = f"{owner.__class__.__name__}_{id(owner)}"
         self._context_controller.register(self._container_name, owner)
-        self._redis = redis.Redis(host="localhost", port=6379, db=0)
         self._redis_key_prefix = f"{self._container_name}:"
+        self._redis = redis.Redis(host="localhost", port=6379, db=0)
         self._redis_ttl = 3600
 
     def append(self, message: Message):
         log.info(f"Appending message to {self._owner}'s container.")
-        log.debug(f"{message}")
-
         self._data.append(message)
+
         message_id = str(id(message))
         redis_key = f"{self._redis_key_prefix}{message_id}"
         serialized_message = message.model_dump_json()
         self._redis.set(redis_key, serialized_message, ex=self._redis_ttl)
+
+    def extend(self, messages: List[Message]):
+        if instancelist(messages, Message):
+            for message in messages:
+                self.append(message)
 
     def update_context(self, message: Message):
         self.update_context(self._container_name, self._owner, message)

@@ -3,7 +3,7 @@ import json
 from meilisearch import Client
 
 from scint.support.types import Message
-from scint.system.logging import log
+from scint.support.logging import log
 
 
 class SearchController:

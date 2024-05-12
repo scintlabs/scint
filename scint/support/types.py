@@ -4,7 +4,7 @@ from datetime import datetime
 import websockets
 from pydantic import BaseModel, Field
 
-from scint.system.logging import log
+from scint.support.logging import log
 
 WebSocket = websockets.WebSocketCommonProtocol
 WebSocketDisconnect = websockets.exceptions.ConnectionClosed
@@ -15,6 +15,44 @@ Optional = typing.Optional
 Callable = typing.Callable
 AsyncGenerator = typing.AsyncGenerator
 Union = typing.Union
+
+
+class dotdict(dict):
+    def __getattr__(self, attr):
+        value = self[attr]
+        if isinstance(value, dict) and not isinstance(value, dotdict):
+            value = dotdict(value)
+            self[attr] = value
+        return value
+
+    def __setattr__(self, key, value):
+        if isinstance(value, dict) and not isinstance(value, dotdict):
+            value = dotdict(value)
+        self[key] = value
+
+    def __delattr__(self, key):
+        try:
+            del self[key]
+        except KeyError:
+            raise AttributeError(f"{key} not found in {self}")
+
+    def __missing__(self, key):
+        return dotdict()
+
+    @property
+    def __metadata__(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "instructions": [item.metadata for item in self.instructions],
+            "messages": [message.metadata for message in self.messages],
+            "functions": [func.metadata for func in self.functions],
+            "function_choice": self.function_choice,
+            "modules": [module.metadata for module in self.modules],
+            "module_choice": self.module_choice,
+            "scopes": [scope.metadata for scope in self.scopes],
+            "scope_choice": self.scope_choice,
+        }
 
 
 class Provider(BaseModel):
@@ -76,7 +114,11 @@ class Message(Event):
     role: str
     content: str
 
-    def get_metadata(self):
+    @property
+    def metadata(self):
+        return self.__build__()
+
+    def __build__(self):
         return {"role": self.role, "content": str(self.content)}
 
 
@@ -97,19 +139,22 @@ class Arguments(BaseModel):
     content: Dict[str, Any]
 
 
-class ScopeArgs(Arguments):
+class FunctionArguments(Arguments):
     name: str
     content: Dict[str, Any]
 
 
-class FunctionArgs(Arguments):
+class RouteArguments(Arguments):
+    name: str
+    content: Dict[str, Any]
+
+
+class ScopeArguments(Arguments):
     name: str
     content: Dict[str, Any]
 
 
 # Data
-
-
 class User(BaseModel):
     username: str
     full_name: str
@@ -150,6 +195,7 @@ class FunctionProps(Metadata):
     name: str
     type: str
     description: str
+    enum: Optional[List[str]] = None
 
 
 class FunctionParams(Metadata):
@@ -182,8 +228,6 @@ class Classification(Metadata):
 
 
 class Context(Metadata, Event):
-    description: str
-    instructions: List[Message]
     functions: List[Any] = []
     function_choice: str | Dict[str, Any] = "auto"
     messages: List[Message] = []

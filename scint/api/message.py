@@ -5,9 +5,9 @@ import traceback
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from scint.modules.app import App
+from scint.base.app import Scint
 from scint.support.types import Dict, Message
-from scint.system.logging import log
+from scint.support.logging import log
 
 router = APIRouter()
 
@@ -32,13 +32,13 @@ async def websocket_handler(websocket: WebSocket):
 async def receive(websocket: WebSocket):
     message = await websocket.receive_text()
     message = json.loads(message)
-    log.info(f"Message: {message}")
+    log.debug(f"Message: {message}")
     return message
 
 
 async def send(websocket: WebSocket, message: Dict[str, str]):
-    async for res in App().parse(Message(**message)):
+    async for res in Scint().parse(Message(**message)):
         if isinstance(res, Message):
             response = {"role": res.role, "content": str(res.content)}
-            log.info(f"Response: {response}")
+            log.debug(f"Response: {response}")
             return await websocket.send_text(json.dumps(response))

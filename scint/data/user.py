@@ -7,7 +7,7 @@ import os
 from openai import OpenAI
 from tree_sitter import Language, Parser
 
-from scint.system.logging import log
+from scint.support.logging import log
 
 client = OpenAI()
 

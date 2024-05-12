@@ -1,11 +1,20 @@
 import functools
 import json
 
-from scint.system.configure import intelligence
-from scint.support.types import Arguments, File, Link, Any, Dict, List, Optional
+from scint.configure import intelligence
+from scint.support.types import (
+    File,
+    FunctionArguments,
+    Link,
+    Any,
+    Dict,
+    List,
+    Optional,
+    RouteArguments,
+)
 from scint.support.types import Context, Message
 from scint.support.types import Model, ModelParameters, Provider
-from scint.system.logging import log
+from scint.support.logging import log
 
 
 class IntelligenceController:
@@ -31,13 +40,12 @@ class IntelligenceController:
     def _create_request(self, context):
         request = {
             **context.preset,
-            "messages": [message.get_metadata() for message in context.messages],
+            "messages": [message.metadata for message in context.messages],
         }
-
         if len(context.functions) > 0:
             request["tools"] = []
             for function in context.functions:
-                function = {"type": "function", "function": function.model_dump()}
+                function = {"type": "function", "function": function}
                 request["tools"].append(function)
 
             if context.function_choice:
@@ -95,8 +103,11 @@ async def serialize_response(data: Any):
         for tool_call in tool_calls:
             function = tool_call.get("function")
             name = function.get("name")
-            args = function.get("arguments")
-            return Arguments(name=name, content=json.loads(args))
+            args = json.loads(function.get("arguments"))
+            log.info(args)
+            if name == "route" and args.get("module"):
+                return RouteArguments(name=name, content=args)
+            return FunctionArguments(name=name, content=args)
 
     if data.get("url") is not None:
         return Link(url=data.url)

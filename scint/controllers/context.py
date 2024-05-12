@@ -14,9 +14,7 @@ class ContextController:
     def register(self, name: str, owner: Any, parent: Any = None):
         container = {"name": name, "owner": owner, "parent": parent, "messages": []}
         self._containers.append(container)
-
-    def get(self):
-        return [container for container in self._containers]
+        return self._find_container(name)
 
     def update(self, container_name: str, message: Any):
         container = self._find_container(container_name)
