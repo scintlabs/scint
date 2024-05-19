@@ -7,6 +7,8 @@ content = {"choices": [{"message": {"content": "guess what?"}}]}
 
 
 def rgetattr(obj, attr, *args):
+    """
+    """
     def _getattr(obj, attr):
         try:
             if isinstance(obj, dict):

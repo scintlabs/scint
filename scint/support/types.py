@@ -17,44 +17,6 @@ AsyncGenerator = typing.AsyncGenerator
 Union = typing.Union
 
 
-class dotdict(dict):
-    def __getattr__(self, attr):
-        value = self[attr]
-        if isinstance(value, dict) and not isinstance(value, dotdict):
-            value = dotdict(value)
-            self[attr] = value
-        return value
-
-    def __setattr__(self, key, value):
-        if isinstance(value, dict) and not isinstance(value, dotdict):
-            value = dotdict(value)
-        self[key] = value
-
-    def __delattr__(self, key):
-        try:
-            del self[key]
-        except KeyError:
-            raise AttributeError(f"{key} not found in {self}")
-
-    def __missing__(self, key):
-        return dotdict()
-
-    @property
-    def __metadata__(self):
-        return {
-            "name": self.name,
-            "description": self.description,
-            "instructions": [item.metadata for item in self.instructions],
-            "messages": [message.metadata for message in self.messages],
-            "functions": [func.metadata for func in self.functions],
-            "function_choice": self.function_choice,
-            "modules": [module.metadata for module in self.modules],
-            "module_choice": self.module_choice,
-            "scopes": [scope.metadata for scope in self.scopes],
-            "scope_choice": self.scope_choice,
-        }
-
-
 class Provider(BaseModel):
     text: Dict[str, Any]
     image: Dict[str, Any]
@@ -67,25 +29,17 @@ class ModelParameters(BaseModel):
     top_p: Optional[float] = None
     presence_penalty: Optional[float] = None
     frequency_penalty: Optional[float] = None
-    temperature: Optional[float] = None
     stream: Optional[bool] = None
     max_tokens: Optional[int] = None
     messages: Optional[List[Dict[str, Any]]] = None
     tools: Optional[List[Dict[str, Any]]] = None
     tool_choice: Optional[Dict[str, Any]] = None
-    top_p: Optional[float] = None
     prompt: Optional[str] = None
     quality: Optional[str] = None
     size: Optional[str] = None
     response_format: Optional[str] = None
     input: Optional[str] = None
     n: Optional[int] = None
-
-
-class Classification(BaseModel):
-    name: str = "balanced"
-    format: str = "completion"
-    provider: str = "openai"
 
 
 class Model(BaseModel):
@@ -113,12 +67,15 @@ class Event(BaseModel):
 class Message(Event):
     role: str
     content: str
+    abstract: str = None
+    annotations: str = None
+    recipient: str = "default"
 
     @property
     def metadata(self):
-        return self.__build__()
+        return self.__metadata__()
 
-    def __build__(self):
+    def __metadata__(self):
         return {"role": self.role, "content": str(self.content)}
 
 
@@ -134,22 +91,16 @@ class SystemMessage(Message):
     role: str = "system"
 
 
+class Task(BaseModel):
+    name: str
+
+
 class Arguments(BaseModel):
     name: str
     content: Dict[str, Any]
 
 
 class FunctionArguments(Arguments):
-    name: str
-    content: Dict[str, Any]
-
-
-class RouteArguments(Arguments):
-    name: str
-    content: Dict[str, Any]
-
-
-class ScopeArguments(Arguments):
     name: str
     content: Dict[str, Any]
 
@@ -167,7 +118,7 @@ class User(BaseModel):
 
 
 class Data(BaseModel):
-    data: Any
+    pass
 
 
 class File(Data):
@@ -182,71 +133,68 @@ class Image(Data):
     data: bytes
 
 
-class Component(Data):
-    pass
+class Embedding(Data):
+    data: List[float]
 
 
-# Metadata
-class Metadata(BaseModel):
-    pass
-
-
-class FunctionProps(Metadata):
+class FunctionProps(Data):
     name: str
     type: str
     description: str
     enum: Optional[List[str]] = None
 
 
-class FunctionParams(Metadata):
-    type: str
-    properties: Dict[str, Any] | FunctionProps
+class FunctionParams(Data):
+    type: str = "object"
+    properties: FunctionProps
     required: List[str]
 
 
-class Function(Metadata):
+class Function(Data):
     name: str
     type: str = "function"
     description: str = None
-    parameters: FunctionParams
+    parameters: Dict[str, Any]
+
+    @property
+    def metadata(self):
+        return self.__metadata__()
+
+    def __metadata__(self):
+        return {
+            "type": self.type,
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self.parameters,
+            },
+        }
 
 
-class Scope(Metadata):
-    name: str
-    description: str
-
-
-class Module(Metadata):
-    name: str
-    description: str
-
-
-class Classification(Metadata):
-    name: str = "balanced"
-    format: str = "completion"
+class Classification(Data):
     provider: str = "openai"
-
-
-class Context(Metadata, Event):
-    functions: List[Any] = []
-    function_choice: str | Dict[str, Any] = "auto"
-    messages: List[Message] = []
+    format: str = "completion"
     preset: str = "balanced"
+
+
+class Messages(BaseModel):
+    data: List[Message]
+
+    @property
+    def metadata(self):
+        return self.__metadata__()
+
+    def __metadata__(self):
+        return {"messages": [message.metadata for message in self.messages]}
+
+
+class ContextData(Data, Event):
+    id: str
+    name: str
+    root: Optional[str] = None
+    branches: Optional[List[str]] = None
+    prompts: List[Message] = []
+    messages: List[Message] = []
+    functions: List[Function] = []
+    function_choice: str | Dict[str, Any] = "auto"
     classification: Classification = Classification()
-
-
-class AppContext(Context):
-    function_choice: Dict[str, Any]
-    modules: List[Module] = []
-
-
-class ModuleContext(Context):
-    scopes: List[Scope] = []
-
-
-class ScopeContext(Context):
-    pass
-
-
-class Embedding(Metadata, Data):
-    data: List[float]

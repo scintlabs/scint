@@ -1,83 +1,57 @@
-from scint.support.types import Any
-from rethinkdb import RethinkDB
-
-r = RethinkDB()
+from scint.controllers.search import search_controller
+from scint.controllers.storage import storage_controller
+from scint.objects.context import App
+from scint.objects.prompts import PromptLibrary
+from scint.support.types import ContextData, Function, Message, SystemMessage
+from scint.support.logging import log
 
 
 class ContextController:
     def __init__(self):
-        self._containers = []
-        self._rethinkdb_conn = r.connect("localhost", 28015)
-        self._rethinkdb_db = "scint"
-        self._rethinkdb_table = "messages"
+        self.search = search_controller
+        self.storage = storage_controller
+        self.context = [App()]
+        self.build_context(self.context[0])
 
-    def register(self, name: str, owner: Any, parent: Any = None):
-        container = {"name": name, "owner": owner, "parent": parent, "messages": []}
-        self._containers.append(container)
-        return self._find_container(name)
+    async def process(self, message: Message):
+        try:
+            log.info(f"Processing message.")
+            prompt = self.search.results("prompts", message.content)
+            prompt_message = SystemMessage(content=str(prompt[0].get("content")))
+            functions = self.search.results("functions", message.content)
+            func_list = [Function(**function) for function in functions]
+            root_context = self.context[0]
+            root_context.prompts.set_prompt("modifier", prompt_message)
+            root_context.functions.refresh(func_list)
+            async for response in root_context.process(message):
+                yield response
+        except Exception as e:
+            log.error(f"Error processing message: {e}")
 
-    def update(self, container_name: str, message: Any):
-        container = self._find_container(container_name)
-        if container:
-            container["messages"].append(message)
+    def add_context(self, context):
+        log.info(f"Adding {context.name} to global context.")
+        self.context.append(context)
+        self.build_context(context)
 
-    def rebuild(
-        self,
-        container_name: str,
-        owner: Any,
-        context: dict,
-        search: str,
-        keywords: list,
-    ):
-        container = self._find_container(container_name)
-        if container and container["owner"] == owner:
-            rebuilt_messages = []
-            for message in container["messages"]:
-                if (
-                    self._match_context(message, context)
-                    and self._match_search(message, search)
-                    and self._match_keywords(message, keywords)
-                ):
-                    rebuilt_messages.append(message)
-            container["messages"] = rebuilt_messages
-            return rebuilt_messages
-        return []
+    def build_context(self, context):
+        log.info(f"Building {context.name} context.")
+        promptlib = PromptLibrary()
+        ctx = self.get_context(context)
+        ctx.prompts.set_prompt("status")
+        for prompt in promptlib:
+            if prompt.get("name") == "instructions":
+                instr = SystemMessage(content=str(prompt.get("content")))
+                ctx.prompts.set_prompt("instructions", instr)
+            if prompt.get("name") == "identity":
+                ident = SystemMessage(content=str(prompt.get("content")))
+                ctx.prompts.set_prompt("identity", ident)
+        return ctx
 
-    def sync_messages_to_rethinkdb(self):
-        for container in self._containers:
-            container_name = container["name"]
-            redis_messages = self._get_expired_messages_from_redis(container_name)
-            self._store_messages_in_rethinkdb(container_name, redis_messages)
+    def get_context(self, context):
+        return next((c for c in self.context if c.name == context.name), None)
 
-    def _find_container(self, name: str):
-        for container in self._containers:
-            if container["name"] == name:
-                return container
-        return None
-
-    def _get_expired_messages_from_redis(self, container_name):
-        # Implement logic to retrieve expired messages from Redis for the given container
-        # Return the list of expired messages
-        pass
-
-    def _store_messages_in_rethinkdb(self, container_name, messages):
-        # Implement logic to store messages in RethinkDB for the given container
-        pass
-
-    def _match_context(self, message: Any, context: dict):
-        # Implement logic to match message with the given context
-        # Return True if the message matches the context, False otherwise
-        pass
-
-    def _match_search(self, message: Any, search: str):
-        # Implement logic to match message with the given search query
-        # Return True if the message matches the search query, False otherwise
-        pass
-
-    def _match_keywords(self, message: Any, keywords: list):
-        # Implement logic to match message with the given keywords
-        # Return True if the message matches any of the keywords, False otherwise
-        pass
+    def get_global_context(self):
+        return ContextData(**self.context.metadata)
 
 
 context_controller = ContextController()

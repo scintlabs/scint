@@ -1,65 +1,101 @@
 import json
 
+import aiohttp
 from meilisearch import Client
 
-from scint.support.types import Message
 from scint.support.logging import log
+from scint.support.utils import envar
+
+
+# with open("scint/data/functions.json", "r", encoding="utf-8") as f:
+#     await search_controller.update_documents("functions", json.load(f))
 
 
 class SearchController:
-    def __init__(self):
-        self.url = "http://localhost:7700"
-        self.key = "lmVPWlWw97HheYxtqRrm7mGc-BuoNJPzp_ZoYNApI-Y"
+    """
+    """
+    def __init__(self, url, key):
+        self.url = url
+        self.key = key
         self.client = Client(self.url, self.key)
-        self.load_modules()
 
-    def load_modules(self):
-        self.modules = json.load(open("scint/modules.json", encoding="utf-8"))
-        self.client.index("modules").add_documents(self.modules)
-
-    def index_data(self):
-        data = self.storage_controller.select_data("users", ["id", "name", "email"])
-        documents = [{"id": row[0], "name": row[1], "email": row[2]} for row in data]
-        self.add_documents(documents)
-
-    def create_index(self, primary_key=None):
-        if self.index_name not in self.client.get_indexes():
-            self.client.create_index(self.index_name, {"primaryKey": primary_key})
-            print(f"Index '{self.index_name}' created.")
-        else:
-            print(f"Index '{self.index_name}' already exists.")
-
-    def add_documents(self, documents):
-        index = self.client.get_index(self.index_name)
-        index.add_documents(documents)
-        print(f"{len(documents)} document(s) added to the index.")
-
-    def update_documents(self, documents):
-        index = self.client.get_index(self.index_name)
-        index.update_documents(documents)
-        print(f"{len(documents)} document(s) updated in the index.")
-
-    def delete_documents(self, document_ids):
-        index = self.client.get_index(self.index_name)
-        index.delete_documents(document_ids)
-        print(f"{len(document_ids)} document(s) deleted from the index.")
-
-    async def search_documents(self, query, filters=None, limit=10):
+    def results(self, index, query, limit=4):
+        """
+        """
         options = {
             "hybrid": {"semanticRatio": 0.9, "embedder": "default"},
             "limit": limit,
-            "filters": filters,
         }
-        res = self.client.index("documents").search(query, options)
+        res = self.client.index(index).search(query, options)
         hits = res.get("hits")
-
         if hits and len(hits) > 0:
-            yield hits[0].get("documents")
+            return hits
 
-    def get_document(self, document_id):
-        index = self.client.get_index(self.index_name)
-        return index.get_document(document_id)
+    def add_index(self, index_name, primary_key=None, docs=None):
+        """
+        """
+        self.client.create_index(index_name, {"primaryKey": primary_key})
+        if docs:
+            self.add_documents(index_name, docs)
+            return log.info(f"Index {index_name} created and documents added.")
+        return log.info(f"Index {index_name} created.")
 
-    def get_index_stats(self):
-        index = self.client.get_index(self.index_name)
-        return index.get_stats()
+    def delete_index(self, index_name):
+        """
+        """
+        if self.client.index(index_name).delete():
+            return log.info(f"{index_name} deleted.")
+        return log.info(f"{index_name} not found.")
+
+    def add_documents(self, index_name, documents):
+        """
+        """
+        self.client.index(index_name).update_documents(documents)
+        log.info(f"{len(documents)} document(s) updated in the index.")
+
+    def delete_documents(self, index_name, document_ids):
+        """
+        """
+        index = self.client.get_index(index_name)
+        index.delete_documents(document_ids)
+        log.info(f"{len(document_ids)} document(s) deleted from the index.")
+
+    async def enable_experimental_feature(self, feature_data):
+        """
+        """
+        endpoint_url = f"{self.url}/experimental-features/"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer lmVPWlWw97HheYxtqRrm7mGc-BuoNJPzp_ZoYNApI-Y",
+        }
+        data = json.dumps(feature_data)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.patch(
+                endpoint_url, data=data, headers=headers
+            ) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    print(f"Failed to enable experimental feature: {response.status}")
+                    return await response.text()
+
+    async def update_settings(self, index_name, settings):
+        """
+        """
+        full_url = f"{self.url}/indexes/{index_name}/settings"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer lmVPWlWw97HheYxtqRrm7mGc-BuoNJPzp_ZoYNApI-Y",
+        }
+        data = json.dumps(settings)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.patch(full_url, data=data, headers=headers) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    return await response.text()
+
+
+search_controller = SearchController("http://localhost:7700", envar("MEILI_MASTER_KEY"))

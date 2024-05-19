@@ -5,13 +5,14 @@ import os
 import re
 
 import dotenv
-import injector
 import numpy as np
 
 from scint.support.logging import log
 
 
 def get_func_params(lines):
+    """
+    """
     source = "".join(lines)
     description_match = re.search(
         r"description\s*=\s*(\".*?\")",
@@ -32,21 +33,16 @@ def get_func_params(lines):
 
 
 async def stream_response(function):
+    """
+    """
     async for response in function:
         if response:
             yield response.model_dump_json(include=["id", "sender", "content"]) + "\n"
 
 
-class Dependency(injector.Module):
-    def __init__(self, bindings: dict):
-        self.bindings = bindings
-
-    def configure(self, binder: injector.Binder) -> None:
-        for interface, implementation in self.bindings.items():
-            binder.bind(interface, to=implementation)
-
-
 def find_functions():
+    """
+    """
     function_info = []
     for name, obj in globals().items():
         if inspect.isfunction(obj):
@@ -68,6 +64,8 @@ def find_functions():
 
 
 def rgetattr(obj, attr, *args):
+    """
+    """
     def _getattr(obj, attr):
         try:
             if isinstance(obj, dict):
@@ -83,15 +81,21 @@ def rgetattr(obj, attr, *args):
 
 
 def envar(var: str) -> str | None:
+    """
+    """
     dotenv.load_dotenv()
     return os.environ.get(var)
 
 
 def cosine_similarity(a, b):
+    """
+    """
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
 def read_file_in_chunks(file_object, chunk_size):
+    """
+    """
     while True:
         data = file_object.read(chunk_size)
         if not data:
@@ -99,13 +103,9 @@ def read_file_in_chunks(file_object, chunk_size):
         yield data
 
 
-def inject_module(module_injector, module_interface):
-    bridge = injector.Injector([module_injector])
-    injected_module = bridge.get(module_interface)
-    return injected_module
-
-
 def read_file_content(file_path):
+    """
+    """
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             return file.read()
@@ -115,6 +115,8 @@ def read_file_content(file_path):
 
 
 def build_directory_mapping(path):
+    """
+    """
     directory_mapping = {
         "directory": os.path.basename(path) if os.path.basename(path) else path,
         "data": {"directories": [], "files": []},

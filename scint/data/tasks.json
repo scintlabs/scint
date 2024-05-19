@@ -1,0 +1,19 @@
+[
+    {
+        "name": "Task",
+        "description": "This is the first task",
+        "ordered": true,
+        "scheduled": true,
+        "created": "2021-01-01T00:00:00Z",
+        "updated": "2021-01-01T00:00:00Z",
+        "status": "active",
+        "activities": [
+            {
+                "name": "Activity",
+                "description": "This is the first activity",
+                "updated": "2021-01-01T00:00:00Z",
+                "status": "active"
+            }
+        ]
+    }
+]
