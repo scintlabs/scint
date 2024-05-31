@@ -5,8 +5,6 @@ from datetime import datetime
 import websockets
 from pydantic import BaseModel, Field
 
-from scint.modules.logging import log
-
 WebSocket = websockets.WebSocketCommonProtocol
 WebSocketDisconnect = websockets.exceptions.ConnectionClosed
 Any = typing.Any
@@ -18,20 +16,10 @@ AsyncGenerator = typing.AsyncGenerator
 Union = typing.Union
 
 
-class Header(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid4()))
-    created: str = Field(default_factory=lambda: datetime.now().isoformat())
-
 
 class Event(BaseModel):
-    header: Header = Header()
-
-
-class ProviderParams(BaseModel):
-    provider: str = "openai"
-    format: str = "completion"
-    preset: str = "balanced"
-
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    created: str = Field(default_factory=lambda: datetime.now().isoformat())
 
 class MessageClassification(BaseModel):
     continuation: bool = False
@@ -39,8 +27,8 @@ class MessageClassification(BaseModel):
 
 
 class MessageContent(BaseModel):
-    response: Optional[List[Dict[str, Any]]] = []
     content: str = ""
+    response: Optional[List[Dict[str, Any]]] = []
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -74,6 +62,7 @@ class MessageContent(BaseModel):
 
 
 class Message(Event):
+    name: Optional[str] = None
     role: str
     content: str
     category: Optional[str] = None
@@ -105,7 +94,7 @@ class AssistantMessage(Message):
     role: str = "assistant"
 
 
-class SystemMessage(Message):
+class Prompt(Message):
     role: str = "system"
 
 
@@ -171,7 +160,7 @@ class Function(Data):
         }
 
 
-class ProviderParams(Data):
+class MessageParameters(Data):
     provider: str = "openai"
     format: str = "completion"
     preset: str = "balanced"
@@ -191,10 +180,10 @@ class Structure(BaseModel):
 class Completion(Data, Event):
     id: str | int
     name: str
-    prompts: List[SystemMessage] = []
+    prompts: List[Prompt] = []
     messages: List[Message] = []
     functions: List[Function] = []
-    classification: ProviderParams = ProviderParams(
+    classification: MessageParameters = MessageParameters(
         provider="openai",
         format="completion",
         preset="balanced",
@@ -208,7 +197,7 @@ class Completion(Data, Event):
         return Embedding(
             id=self.id,
             string=string,
-            classification=ProviderParams(
+            classification=MessageParameters(
                 provider="openai",
                 format="embedding",
                 preset="embedding",
@@ -219,7 +208,7 @@ class Completion(Data, Event):
 class Embedding(Data, Event):
     id: str | int
     string: str
-    classification: ProviderParams = ProviderParams(
+    classification: MessageParameters = MessageParameters(
         provider="openai", format="embedding", preset="embedding"
     )
 

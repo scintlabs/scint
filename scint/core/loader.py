@@ -6,12 +6,16 @@ from scint.modules.logging import log
 
 class Loader:
     def __init__(self):
-        self.library = {"prompts": None, "functions": None, "people": None}
+        self.library = {
+            "prompts": None,
+            "functions": None,
+            "people": None,
+        }
         self.load()
 
     def load(self):
         for name, value in self.library.items():
-            lib_module = importlib.import_module(f"scint.core.lib.{name}")
+            lib_module = importlib.import_module(f"scint.data.lib.{name}")
             if lib_module:
                 lib_data = []
                 lib_attr = getattr(lib_module, name)
@@ -29,5 +33,7 @@ class Loader:
                 self.library[name] = lib_data
         log.info(f"Library loaded.")
 
-
 loader = Loader()
+
+
+log.info(uuid.uuid4())

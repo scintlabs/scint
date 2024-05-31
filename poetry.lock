@@ -1670,6 +1670,17 @@ doc = ["reno", "sphinx"]
 test = ["pytest", "tornado (>=4.5)", "typeguard"]
 
 [[package]]
+name = "terminaltexteffects"
+version = "0.10.1"
+description = "A collection of visual effects that can be applied to terminal piped stdin text."
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "terminaltexteffects-0.10.1-py3-none-any.whl", hash = "sha256:7b88825b974031bbab09a11c816514f456a8087bd4dab605ca3d5d5ab7878d39"},
+    {file = "terminaltexteffects-0.10.1.tar.gz", hash = "sha256:37258f7dd80b79703128f24ecc1ee3e1a4fece3ad444de7d08672fd15b7df72d"},
+]
+
+[[package]]
 name = "tokenizers"
 version = "0.19.1"
 description = ""
@@ -2359,4 +2370,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cd5e351061272ecfa4d92cbfdde34a3308bc400c279c3252c33c3c0b44446c79"
+content-hash = "cf4bd1b717632d8460c76a75884af72d717e9c3b5c5fceb26732fce19f9eac4d"

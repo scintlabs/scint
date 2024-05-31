@@ -110,3 +110,6 @@ ENV/
 
 # macOS
 .DS_Store
+
+# meilisearch
+search/

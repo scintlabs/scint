@@ -1,11 +1,11 @@
-from scint.core.models import Function, SystemMessage
+from scint.data.schema import Function, Prompt
 from scint.data.serialize import keyfob
 from scint.modules.search import search_controller
-from scint.data.load import loader
+from scint.core.loader import loader
 from scint.modules.logging import log
 
 
-class Composer:
+class ContextComposer:
     def __init__(self):
         self.library = loader.library
         self.prompts = self.library["prompts"]
@@ -58,7 +58,7 @@ class Composer:
                     category = entry
                     results = await self.search.results("prompts", query, category)
                     prompt = results[0].get("content")
-                    prompts.append(SystemMessage(content=prompt, category=category))
+                    prompts.append(Prompt(content=prompt, category=category))
                 return prompts
         except Exception as e:
             log.info(f"Error composing prompts: {e}")
@@ -88,12 +88,10 @@ class Composer:
                     category = entry
                     results = await self.search.results("people", query)
                     prompt = results[0]
-                    prompts.append(
-                        SystemMessage(content=str(prompt), category=category)
-                    )
+                    prompts.append(Prompt(content=str(prompt), category=category))
                 return prompts
         except Exception as e:
             log.info(f"Error composing prompts: {e}")
 
 
-composer = Composer()
+context_composer = ContextComposer()

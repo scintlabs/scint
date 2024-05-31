@@ -2,17 +2,9 @@ from fastapi import APIRouter, HTTPException, WebSocket
 
 from scint.core.controller import controller
 from scint.modules.queue import message_queue
-from scint.modules.intelligence import intelligence_controller
-from scint.modules.search import search_controller
-from scint.modules.storage import storage_controller
 from scint.support.types import List
 
 router = APIRouter()
-
-intelligence = intelligence_controller
-context = controller
-search = search_controller
-storage = storage_controller
 
 
 @router.websocket("/ws")
@@ -21,8 +13,28 @@ async def websocket_route(websocket: WebSocket):
 
 
 @router.get("/context")
-async def current_context():
-    return await controller.current_context()
+async def get_active_contexts():
+    if len(controller.contexts) > 0:
+        context_object = {}
+        for active_context in controller.contexts:
+            prompts = controller.extract_context(active_context.prompts)
+            messages = controller.extract_context(active_context.messages)
+            context_object[active_context.name] = {
+                "description": active_context.description,
+                "messages": prompts + messages,
+            }
+        return context_object
+
+
+@router.get("/threads")
+async def get_threads():
+    threads_object = {}
+    for thread in controller.threads.children:
+        threads_object[thread.name] = {
+            "description": thread.description,
+            "messages": thread.messages.metadata,
+        }
+    return threads_object
 
 
 @router.get("/conversations/{conversation_id}", response_model=List[dict])

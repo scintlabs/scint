@@ -6,7 +6,7 @@ from meilisearch import Client
 
 from scint.modules.logging import log
 from scint.support.utils import env
-from scint.data.load import loader
+from scint.core.loader import loader
 from scint.modules.logging import log
 
 
@@ -20,14 +20,14 @@ class SearchController:
     def __init__(self, url, key):
         self.url = url
         self.key = key
-        self.client = Client(self.url, self.key)
+        self.search = Client(self.url, self.key)
 
     async def results(self, index, query, category=None, limit=4):
         hybrid = {"semanticRatio": 0.9, "embedder": "default"}
         options = {"hybrid": hybrid, "limit": limit}
         if category:
             options["filter"] = f"categories = {category}"
-        res = self.client.index(index).search(query, options)
+        res = self.search.index(index).search(query, options)
         hits = res.get("hits")
         if hits:
             return hits
@@ -35,35 +35,35 @@ class SearchController:
 
     def load_indexes(self):
         log.info("Loading search indexes.")
-        for module, metadata in loader.library.items():
-            if self.client.index(module):
-                self.delete_index(module)
-            self.add_index(module, primary_key="id", docs=metadata)
-            self.client.index(module).update_filterable_attributes(["categories"])
+        for libname, libdata in loader.library.items():
+            self.add_index(libname, primary_key="id")
+            self.search.index(libname).delete_all_documents()
+            self.add_documents(libname, loader.library.get(libname))
+            self.search.index(libname).update_filterable_attributes(["categories"])
 
     def update_indexes(self, index):
-        self.client.index(index).update_filterable_attributes(["categories"])
+        self.search.index(index).update_filterable_attributes(["categories"])
 
     def add_index(self, index_name, primary_key=None, docs=None):
         log.info(f"Creating {index_name} index.")
-        self.client.create_index(index_name, {"primaryKey": primary_key})
+        self.search.create_index(index_name, {"primaryKey": primary_key})
         if docs:
             self.add_documents(index_name, docs)
 
     def delete_index(self, index_name):
-        self.client.index(index_name).delete()
+        self.search.index(index_name).delete()
 
     def add_documents(self, index_name, documents):
-        self.client.index(index_name).update_documents(documents)
+        self.search.index(index_name).update_documents(documents)
         log.info(f"Added {len(documents)} items to {index_name}.")
 
     def delete_documents(self, index_name, document_ids):
-        index = self.client.index(index_name)
+        index = self.search.index(index_name)
         index.delete_documents(document_ids)
         log.info(f"{len(document_ids)} document(s) deleted from the index.")
 
     def delete_all_documents(self, index_name):
-        index = self.client.index(index_name)
+        index = self.search.index(index_name)
         index.delete_all_documents()
         log.info(f"All documents deleted from the index.")
 
@@ -85,9 +85,7 @@ class SearchController:
                 if response.status == 200:
                     return await response.json()
                 else:
-                    log.error(
-                        f"Failed to enable experimental feature: {response.status}"
-                    )
+                    log.error(f"{response.status}")
                     return await response.text()
 
     async def monitor_and_update_indexes(self):

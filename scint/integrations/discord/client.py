@@ -41,7 +41,11 @@ class ScintDiscord(Client):
         try:
             await self.send_to_websocket(
                 channel,
-                {"sender": sender, "receiver": receiver, "content": content},
+                {
+                    "sender": sender,
+                    "receiver": receiver,
+                    "content": f"{message.author}: {content}",
+                },
             )
         except Exception as e:
             await message.channel.send(f"There were problems: {e}")
@@ -55,6 +59,8 @@ class ScintDiscord(Client):
                     await self.send_message(channel, response)
 
     async def send_message(self, channel, response):
+        if response.get("content") == "ping":
+            return
         await channel.send(response.get("content"))
 
 

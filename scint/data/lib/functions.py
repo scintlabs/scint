@@ -4,33 +4,27 @@ import os
 import uuid
 
 import aiohttp
-from kagiapi import KagiClient
 
-from scint.core.models import SystemMessage
+from scint.data.schema import Prompt
 from scint.modules.logging import log
 from scint.support.utils import encode_image
 
 
+# module setup
 def make_function_list():
     functions = []
     for name, func in locals().items():
         if callable(func) and hasattr(func, "metadata"):
-            instance = func
-            functions.append(instance)
+            if getattr(func, "metadata")["id"]:
+                instance = func
+                functions.append(instance)
     return functions
 
 
 functions = make_function_list()
 
 
-async def search_web(query: str):
-    search_web.metadata = "search_web"
-    kagi = KagiClient(os.environ.get("KAGI_API_KEY"))
-    results = kagi.enrich(query=query)
-    for result in results["data"]:
-        yield SystemMessage(content=f"{result}")
-
-
+# async functions returning SystemMessage objects
 async def search_github_repos(query: str):
     search_github_repos.metadata = "search_github_repos"
     log.info(f"Searching GitHub repositories for: {query}")
@@ -45,7 +39,7 @@ async def search_github_repos(query: str):
     errors = stderr.decode().strip() if stderr else ""
     full_output = output + "\n" + errors if errors else output
 
-    yield SystemMessage(content=f"{full_output}")
+    yield Prompt(content=f"{full_output}")
 
 
 async def download_image(image_url):
@@ -68,9 +62,9 @@ async def download_image(image_url):
                             },
                         },
                     ]
-                    yield SystemMessage(content=messages)
+                    yield Prompt(content=messages)
             else:
-                yield SystemMessage(content="Failed to download image.")
+                yield Prompt(content="Failed to download image.")
 
 
 async def load_file(file_path):
@@ -78,10 +72,33 @@ async def load_file(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read()
-            yield SystemMessage(content=f"{content}")
+            yield Prompt(content=f"{content}")
 
     except (UnicodeDecodeError, FileNotFoundError, PermissionError):
         yield None
+
+
+async def new_note(title, content, username):
+    new_note.metadata = "new_note"
+    if username == "kaechle" or "syztem" or "vitafa":
+        with open(f"{title}.md", "w") as file:
+            file.write(content)
+        yield Prompt(content=f"Note {title} created for {username}.")
+    else:
+        yield Prompt(content="That user isn't active in the system.")
+
+
+async def get_note(title, username):
+    get_note.metadata = "get_note"
+    if username == "kaechle" or "syztem" or "vitafa":
+        try:
+            with open(f"{title}.md", "r") as file:
+                content = file.read()
+            yield Prompt(content=f"Note {title} for {username}: {content}")
+        except FileNotFoundError:
+            yield Prompt(content=f"Note {title} not found for {username}.")
+    else:
+        yield Prompt(content="That user isn't active in the system.")
 
 
 async def create_directory_map(path):
@@ -173,17 +190,10 @@ async def use_terminal(commands: str):
     output = stdout.decode().strip() if stdout else ""
     errors = stderr.decode().strip() if stderr else ""
     full_output = output + "\n" + errors if errors else output
-    yield SystemMessage(content=full_output)
+    yield Prompt(content=full_output)
 
 
-async def swap_context(context):
-    yield SystemMessage(content=f"Switched context to {context}")
-
-
-async def merge_context(context):
-    yield SystemMessage(content=f"Switched context to {context}")
-
-
+# example enum for llm functions requiring iterators in arguments
 enum = [
     "Module",
     "Module",
@@ -196,31 +206,65 @@ enum = [
     "Module",
 ]
 
+# metadata representations of functions for sending to llm api
 functions = [
     {
-        "name": "swap_context",
+        "name": "new_note",
+        "categories": ["initial"],
         "import_path": "scint.core.lib.functions",
-        "categories": ["core"],
-        "description": "This function allows you to swap the messages loaded in your context window for ones that may be more relevant to the conversation.",
+        "description": "Creates a new markdown-formatted note with the given title and content for specified users. Writes the content to a file named after the title if the user is active.",
         "parameters": {
             "type": "object",
             "properties": {
-                "context": {
+                "title": {
                     "type": "string",
-                    "description": "The name of the context to switch to.",
-                    "enum": [*enum],
-                }
+                    "description": "The title of the new note.",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The content of the new note.",
+                },
+                "username": {
+                    "type": "string",
+                    "description": "The username for whom the note is created. Must be an active user.",
+                },
             },
-            "required": ["context"],
+            "required": ["title", "content", "username"],
         },
         "keywords": [
-            "context",
-            "switch",
-            "change",
-            "context switch",
-            "context change",
-            "enhance memory",
-            "contextual",
+            "create new note",
+            "new note",
+            "write note",
+            "note management",
+            "user notes",
+            "text file",
+        ],
+    },
+    {
+        "name": "get_note",
+        "categories": ["initial"],
+        "import_path": "scint.core.lib.functions",
+        "description": "Retrieves the content of an existing markdown note for specified users. Reads from a file named after the title if the user is active.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "The title of the note to retrieve.",
+                },
+                "username": {
+                    "type": "string",
+                    "description": "The username for whom the note is retrieved. Must be an active user.",
+                },
+            },
+            "required": ["title", "username"],
+        },
+        "keywords": [
+            "retrieve note",
+            "read note",
+            "note management",
+            "user notes",
+            "text file",
         ],
     },
     {
@@ -234,7 +278,7 @@ functions = [
                 "context": {
                     "type": "string",
                     "description": "The name of the context to switch to.",
-                    "enum": [],
+                    "enum": [*enum],
                 }
             },
             "required": ["context"],
@@ -350,6 +394,18 @@ functions = [
             },
             "required": ["commands"],
         },
+        "psuedocode": """
+            define an asynchronous function to execute terminal commands
+            set metadata attribute for the function to "use_terminal"
+            call the metadata method with "use_terminal" as argument
+            create a new process to run the provided commands in an asyncio subprocess shell
+                capture the output and errors using stdout and stderr
+            run the communicate method on the process and wait for the results
+            decode and strip the stdout output if present
+            decode and strip the stderr output if present
+            if there are errors, concatenate the output and errors
+            yield a system message containing the full output
+        """,
         "keywords": [
             "terminal",
             "shell",
@@ -359,51 +415,6 @@ functions = [
             "command line",
             "subprocess",
         ],
-    },
-    {
-        "name": "recursive_getattr",
-        "categories": ["initial"],
-        "import_path": "scint.core.lib.functions",
-        "description": "Recursively retrieves the value of a specified attribute from an object, supporting dot notation for nested attributes.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "obj": {
-                    "type": "object",
-                    "description": "The object to retrieve the attribute from.",
-                },
-                "attr": {
-                    "type": "string",
-                    "description": "The attribute name to retrieve, supporting dot notation for nested attributes.",
-                },
-            },
-            "required": ["obj", "attr"],
-        },
-        "keywords": [
-            "attribute retrieval",
-            "recursive",
-            "dot notation",
-            "dict access",
-            "python dictionry",
-            "nested attributes",
-        ],
-    },
-    {
-        "name": "search_web",
-        "categories": ["initial"],
-        "import_path": "scint.core.lib.functions",
-        "description": "Searches the web using the specified query and yields enriched results.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "The search query string.",
-                }
-            },
-            "required": ["query"],
-        },
-        "keywords": ["web search", "search", "enrich results", "query"],
     },
     {
         "name": "search_github_repos",
@@ -420,6 +431,17 @@ functions = [
             },
             "required": ["query"],
         },
+        "psuedocode": """
+            log an informational message stating the system is searching GitHub repositories
+            new process variable to create an asyncio subprocess shell
+                stdout and stderr variables to capture the output and errors
+
+            run the communicate method on the process variable and wait for the results
+            run the decode and strip methods on stdout
+            run the decode and strip methods on stderr
+            if there are errors, concatenate the output and errors
+            yield a system message with the full output
+        """,
         "keywords": ["GitHub", "repository search", "search", "query", "repos"],
     },
 ]

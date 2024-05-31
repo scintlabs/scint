@@ -1,5 +1,5 @@
 from scint.settings import intelligence
-from scint.core.models import Completion
+from scint.data.schema import Completion
 from scint.support.types import Dict, Optional
 from scint.support.types import Model, ModelParameters, Provider
 from scint.modules.logging import log

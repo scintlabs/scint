@@ -9,7 +9,7 @@ from redis.asyncio import Redis
 
 from scint.core.controller import controller
 from scint.modules.logging import log
-from scint.core.models import Message, UserMessage
+from scint.data.schema import Message, UserMessage
 from scint.settings import intelligence
 from scint.data.serialize import dictorial
 
@@ -53,7 +53,7 @@ class MessageQueue:
             provider = dictorial(intelligence, "providers.openai")
             method = dictorial(provider, "format.embedding.method")
             result = await method(model="text-embedding-3-small", input=message.content)
-            message.embedding = dictorial(result, "choices.0.data.embedding")
+            message.embedding = dictorial(result, "data.0.embedding")
             return message
         except Exception as e:
             log.error(f"Error embedding message: {e}")
@@ -62,9 +62,12 @@ class MessageQueue:
         try:
             log.info(f"Routing message to context controller.")
             prepared_message = await self.prepare_message(message)
-            result = self.controller.contextualize(prepared_message)
-            async for message in result:
-                yield message
+            if prepared_message:
+                result = self.controller.contextualize(prepared_message)
+                async for message in result:
+                    yield message
+            else:
+                log.warning("Prepared message is None, skipping routing")
         except Exception as e:
             log.error(f"Error routing message: {e}\n{traceback.format_exc()}")
 
@@ -72,11 +75,17 @@ class MessageQueue:
         async for message in self.pubsub.listen():
             if message["type"] == "message":
                 log.info(f"Received: {message['data'].decode()}")
-                message = json.loads(message["data"])
-                message = UserMessage(content=message["content"])
-                async for res in self.route_message(message):
-                    response = {"role": res.role, "content": str(res.content)}
-                    await self.send(websocket, response)
+                try:
+                    message_data = json.loads(message["data"])
+                    if "content" in message_data and message_data["content"].strip():
+                        user_message = UserMessage(content=message_data["content"])
+                        async for res in self.route_message(user_message):
+                            response = {"role": res.role, "content": str(res.content)}
+                            await self.send(websocket, response)
+                    else:
+                        log.warning("Received empty message content")
+                except json.JSONDecodeError:
+                    log.error("Failed to decode JSON message")
 
     async def websocket_handler(self, websocket: WebSocket):
         await websocket.accept()
@@ -87,20 +96,20 @@ class MessageQueue:
             redis_listener = asyncio.create_task(self.websocket_listener(websocket))
             while True:
                 try:
-                    await websocket.send_json({"type": "ping"})
-                    pong_waiter = await asyncio.wait_for(
-                        websocket.receive_json(), timeout=heartbeat_interval
-                    )
-                    if pong_waiter.get("type") != "pong":
-                        log.warning("Did not receive pong response, reconnecting...")
-                        raise WebSocketDisconnect
                     message = await asyncio.wait_for(
-                        self.receive(websocket), timeout=heartbeat_interval
+                        self.receive(websocket),
+                        timeout=heartbeat_interval,
                     )
-                    await self.publish(self.channel, json.dumps(message))
+                    if message.get("type") == "heartbeat":
+                        await websocket.send_text(
+                            json.dumps({"type": "heartbeat", "content": "ping"})
+                        )
+                    else:
+                        await self.publish(self.channel, json.dumps(message))
                 except asyncio.TimeoutError:
-                    log.warning("Ping timeout, reconnecting...")
-                    raise WebSocketDisconnect
+                    await websocket.send_text(
+                        json.dumps({"type": "heartbeat", "content": "ping"})
+                    )
         except WebSocketDisconnect:
             log.info("WebSocket disconnected")
         except Exception as e:
@@ -108,12 +117,6 @@ class MessageQueue:
         finally:
             if redis_listener:
                 redis_listener.cancel()
-            await websocket.close()
-            if self.pubsub:
-                await self.pubsub.unsubscribe(self.channel)
-                await self.pubsub.close()
-            await self.redis.close()
-            log.info("Closed WebSocket and Redis connections gracefully.")
 
 
 message_queue = MessageQueue()

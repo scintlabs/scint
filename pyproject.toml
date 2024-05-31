@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scint"
-version = "0.1.9"
+version = "0.3.9"
 description = ""
 authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
 readme = "README.md"
@@ -26,7 +26,6 @@ libmagic = "^1.0"
 python-magic = "^0.4.27"
 tree-sitter = "^0.22.3"
 pydantic-settings = "^2.2.1"
-kagiapi = "^0.2.1"
 discord = "^2.3.2"
 
 [tool.poetry.scripts]

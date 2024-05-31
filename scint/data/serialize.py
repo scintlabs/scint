@@ -7,8 +7,8 @@ import functools
 
 from pydantic import BaseModel
 
-from scint.core.models import Arguments, Embedding, File, Link
-from scint.core.models import AssistantMessage
+from scint.data.schema import Arguments, Embedding, File, Link
+from scint.data.schema import AssistantMessage
 from scint.modules.logging import log
 
 
