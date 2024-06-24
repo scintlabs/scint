@@ -1,8 +1,9 @@
 # Scint
 
-## [architecture](docs/architecture.md)
+## State Controller
 
-## [context](docs/context.md)
+- Concrete
 
-## [lifecycles](docs/lifecycles.md)
+## [architecture](docs/02-architecture.md)
 
+## [lifecycles](docs/09-lifecycles.md)

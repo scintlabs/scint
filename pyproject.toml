@@ -20,16 +20,30 @@ redis = "^5.0.3"
 websockets = "^12.0"
 meilisearch = "^0.31.0"
 pydantic = "^2.7.1"
-rethinkdb = "^2.4.10.post1"
 fastapi = "^0.111.0"
 libmagic = "^1.0"
 python-magic = "^0.4.27"
-tree-sitter = "^0.22.3"
+tree-sitter = "0.21.3"
 pydantic-settings = "^2.2.1"
 discord = "^2.3.2"
 
 [tool.poetry.scripts]
 scint = "scint.server:run"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "off"
+reportMissingImports = true
+reportSyntaxErrors = true
+reportMissingTypeStubs = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownLambdaType = false
+reportMissingModuleSource = false
+reportGeneralTypeIssues = false
 
 [build-system]
 requires = ["poetry-core"]

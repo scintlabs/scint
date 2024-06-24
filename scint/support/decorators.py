@@ -2,17 +2,16 @@ import functools
 
 from scint.modules.intelligence import intelligence_controller
 from scint.modules.logging import log
-from scint.data.schema import Completion
-from scint.data.schema import Message, AssistantMessage, Prompt, UserMessage
-from scint.data.schema import Arguments
+from scint.schema import (Arguments, AssistantMessage, Completion, Message,
+                          Prompts, UserMessage)
 
 
 def completion(prompt: str, prompts: list = None):
     def decorator(func):
         description = "An ad-hoc completion to use for any Python function that returns a string value or a Scint message type."
-        instructions = [Prompt(content="")]
+        instructions = [Prompts(content="")]
         messages = []
-        system_prompt = Prompt(content=prompt)
+        system_prompt = Prompts(content=prompt)
         messages.append(system_prompt)
         if prompts:
             for index, each_prompt in enumerate(prompts):
@@ -30,7 +29,7 @@ def completion(prompt: str, prompts: list = None):
                 elif isinstance(response, str):
                     response = response
 
-                msg = Prompt(content=f"Summarize content: {response}")
+                msg = Prompts(content=f"Summarize content: {response}")
                 messages.append(msg)
                 context = Completion(
                     **{
@@ -53,9 +52,9 @@ def completion(prompt: str, prompts: list = None):
 
 def function(*args, **kwargs):
     def decorator(func):
+        from scint.core.controller import context_controller
         from scint.data.lib import functions
         from scint.modules.intelligence import intelligence_controller
-        from scint.core.controller import context_controller
 
         # func_source = parse_function(func)
         # prompt = SystemMessage(content=f"{func_source}")

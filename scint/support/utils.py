@@ -1,25 +1,33 @@
+import ast
+import asyncio
 import base64
+import functools
+import hashlib
+import inspect
 import json
 import os
-import asyncio
-import ast
-import functools
-import inspect
-import dotenv
 import re
-import functools
 
+from types import LambdaType
+from typing import Any, Coroutine, Final
+import dotenv
 import numpy as np
 from pydantic import BaseModel
 
-from scint.data.schema import Arguments, Embedding, File, Link
-from scint.data.schema import AssistantMessage
-from scint.modules.logging import log
+from scint.support.logging import log
 
 
-waitforit = lambda t: asyncio.sleep(t)
-instancelist = lambda l, t: all(isinstance(i, t) for i in l)
-attrlist = lambda l, t: all(hasattr(i, t) for i in l)
+def hash_object(file_path):
+    if os.path.getsize(file_path) > 1e6:
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+            return sha256_hash.hexdigest()
+    with open(file_path, "rb") as f:
+        bytes = f.read()
+        readable_hash = hashlib.sha256(bytes).hexdigest()
+    return readable_hash
 
 
 def dictorial(data, attr):
@@ -42,24 +50,24 @@ def dictorial(data, attr):
             return result
         if isinstance(data, dict) and attr in data:
             return data[attr]
-        if isinstance(data, BaseModel):
+        # if isinstance(data, BaseModel):
+        #     try:
+        #         return data.model_dump().get(attr)
+        #     except AttributeError:
+        #         pass
+        if isinstance(data, str):
             try:
-                return data.model_dump().get(attr)
-            except AttributeError:
+                json_data = json.loads(data)
+                if attr in json_data:
+                    return json_data.get(attr)
+            except json.JSONDecodeError:
                 pass
-        try:
-            json_data = json.loads(data)
-            if attr in json_data:
-                return json_data.get(attr)
-        except (TypeError, json.JSONDecodeError):
-            pass
     except (KeyError, IndexError, AttributeError):
         pass
     return None
 
 
 def keyfob(data, attr):
-
     def search_nested(obj, attr):
         if isinstance(obj, dict):
             if attr in obj:
@@ -78,7 +86,7 @@ def keyfob(data, attr):
                 return getattr(obj, attr)
             if isinstance(obj, BaseModel):
                 try:
-                    return data.model_dump().get(attr)
+                    return obj.model_dump().get(attr)
                 except AttributeError:
                     pass
         return None
@@ -94,82 +102,22 @@ def keyfob(data, attr):
                 return data.model_dump().get(attr)
             except AttributeError:
                 pass
-        try:
-            json_data = json.loads(data)
-            if attr in json_data:
-                return json_data.get(attr)
-        except (TypeError, json.JSONDecodeError):
-            pass
+        if isinstance(data, str):
+            try:
+                json_data = json.loads(data)
+                if attr in json_data:
+                    return json_data.get(attr)
+            except json.JSONDecodeError:
+                pass
     except (KeyError, IndexError, AttributeError):
         pass
-
     return None
-
-
-async def serialize_response(object, paths):
-    log.info(f"Unpacking and serializing response.")
-    for path in paths:
-        name = path.split(".")[-1]
-        if dictorial(object, path):
-            if name == "tool_calls":
-                for call in dictorial(object, path):
-                    return make_arguments(call)
-            elif name == "content":
-                return make_message(dictorial(object, path))
-            elif name == "url":
-                return make_artifact(dictorial(object, path))
-            elif name == "file":
-                return make_artifact(dictorial(object, path))
-            elif name == "embedding":
-                return make_artifact(dictorial(object, path))
-
-
-def make_message(data):
-    return AssistantMessage(
-        content=keyfob(data, "response"),
-        category=keyfob(data, "category"),
-        embedding=keyfob(data, "embedding"),
-        classification=keyfob(data, "classification"),
-    )
-
-
-def make_arguments(data):
-    name = dictorial(data, "function.name")
-    args = dictorial(data, "function").get("arguments")
-    return Arguments(name=name, arguments=json.loads(args))
-
-
-def make_artifact(data):
-    try:
-        if keyfob(data, "url"):
-            return Link(data=dictorial(data, "url"))
-        if keyfob(data, "file"):
-            return File(data=keyfob(data, "file"))
-        if keyfob(data, "embedding"):
-            return Embedding(data=keyfob(data, "embedding"))
-    except (KeyError, IndexError, AttributeError):
-        return None
-
-
-def identity(*args, **kwargs):
-    if not args:
-        if not kwargs:
-            return None
-        elif len(kwargs) == 1:
-            return next(iter(kwargs.values()))
-        else:
-            return (*kwargs.values(),)
-    elif not kwargs:
-        if len(args) == 1:
-            return args[0]
-        else:
-            return args
-    else:
-        return (*args, *kwargs.values())
 
 
 def get_func_params(lines):
     source = "".join(lines)
+    description = None
+    props = None
     description_match = re.search(
         r"description\s*=\s*(\".*?\")",
         source,
@@ -185,7 +133,10 @@ def get_func_params(lines):
         props = props_match.group(1)
         props = ast.literal_eval(props)
 
-    return description, props
+    if description and props:
+        return description, props
+
+    return None, None
 
 
 def find_functions():
@@ -229,9 +180,9 @@ def rgetattr(obj, attr, *args):
     return functools.reduce(_getattr, [obj] + attr.split("."))
 
 
-def env(var: str) -> str | None:
+def env(var: str) -> str:
     dotenv.load_dotenv()
-    return os.environ.get(var)
+    return dotenv.get_key("/Users/kaechle/Developer/scint/scint-python/.env", var)
 
 
 def cosine_similarity(a, b):
@@ -309,7 +260,7 @@ def parse_docstring(docstring, *args):
 
 
 async def build_props(self):
-    description = None
+    description = ""
     props = {}
     if self.modules:
         for module in self.modules:
@@ -332,7 +283,7 @@ async def build_props(self):
     return props
 
 
-def find_functions():
+def find_runtime_functions():
     function_info = []
     for name, obj in globals().items():
         if inspect.isfunction(obj):
@@ -353,10 +304,27 @@ def find_functions():
     return function_info
 
 
-def parse_function(function):
-    source = inspect.getsource(function)
-    description = attr_from_source(source, "description")
-    props = attr_from_source(source, "props")
-    if props and description:
-        return True
-    return False
+def rgetembedding(struct, embedding, best_match=None, best_similarity=-1):
+    struct_embedding = struct.embedding
+    similarity = cosine_similarity([embedding], [struct_embedding])[0][0]
+
+    if similarity > best_similarity:
+        best_match, best_similarity = struct, similarity
+
+    for nested_struct in struct.structs:
+        best_match, best_similarity = rgetembedding(
+            nested_struct,
+            embedding,
+            best_match,
+            best_similarity,
+        )
+
+    return best_match, best_similarity
+
+
+waitforit = lambda t: asyncio.sleep(t)  # type: ignore
+attrlist = lambda l, t: all(hasattr(i, t) for i in l)  # type: ignore
+
+# rules = lambda c: dictorial(config, f"filetype.{lang}.rules.all.{c}")
+waitforit = lambda t: asyncio.sleep(t)  # type: ignore
+attrlist = lambda l, t: all(hasattr(i, t) for i in l)  # type: ignore
