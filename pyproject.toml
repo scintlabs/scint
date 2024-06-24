@@ -10,7 +10,6 @@ packages = [{ include = "scint" }]
 python = "^3.12"
 uvicorn = "^0.29.0"
 loguru = "^0.7.2"
-tenacity = "^8.2.3"
 aiohttp = "^3.9.1"
 python-dotenv = "^1.0.0"
 openai = { extras = ["datalib"], version = "^1.17.0" }
@@ -25,7 +24,11 @@ libmagic = "^1.0"
 python-magic = "^0.4.27"
 tree-sitter = "0.21.3"
 pydantic-settings = "^2.2.1"
-discord = "^2.3.2"
+aiostream = "^0.6.1"
+spacy = "^3.7.5"
+pytest = "^8.2.2"
+pytest-cov = "^5.0.0"
+meilisearch-python-sdk = "^2.10.1"
 
 [tool.poetry.scripts]
 scint = "scint.server:run"
@@ -33,17 +36,16 @@ scint = "scint.server:run"
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
-typeCheckingMode = "off"
 reportMissingImports = true
 reportSyntaxErrors = true
 reportMissingTypeStubs = false
-reportUnknownParameterType = false
 reportUnknownVariableType = false
 reportUnknownMemberType = false
 reportUnknownArgumentType = false
-reportUnknownLambdaType = false
-reportMissingModuleSource = false
+reportUnknownLambdaType = true
+reportMissingModuleSource = true
 reportGeneralTypeIssues = false
+typeCheckingMode = "off"
 
 [build-system]
 requires = ["poetry-core"]
