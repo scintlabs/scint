@@ -2,8 +2,8 @@ import uuid
 from collections import deque
 
 import asyncio
-import aiohttp
-from meilisearch.client import Client
+from meilisearch_python_sdk import AsyncClient
+from meilisearch_python_sdk.models.search import Hybrid
 
 from scint.support.utils import env, cosine_similarity
 from scint.support.logging import log
@@ -12,7 +12,7 @@ from scint.core import library
 
 class SearchController:
     def __init__(self, url, api_key):
-        self.search = Client(url, api_key)
+        self.search = AsyncClient(url, api_key)
         self.search._headers = {
             "Authorization": f"Bearer {env('MEILISEARCH_API_KEY')}",
         }
@@ -20,13 +20,11 @@ class SearchController:
         self.library = lambda module: library.read(module)  # type: ignore
 
     async def results(self, index_name, query, category=None, limit=4):
-        hybrid = {"semanticRatio": 0.9, "embedder": "default"}
-        options = {"hybrid": hybrid, "limit": limit}
-        if category:
-            options["filter"] = f"categories = {category}"
+        hybrid = Hybrid(semantic_ratio=0.9, embedder="default")
+        filter = f"categories = {category}" if category else None
         index = self.search.index(index_name)
-        res = index.search(query, options)
-        hits = res.get("hits")
+        res = await index.search(query, hybrid=hybrid, limit=limit, filter=filter)
+        hits = res.hits
         if hits:
             results = []
             for hit in hits:
@@ -48,23 +46,23 @@ class SearchController:
 
     async def load_indexes(self):
         log.info("Loading semantic indexes.")
-        for index_name in self.indexes:
-            if self.search.index(index_name) is None:
-                await self.add_index(index_name)
-            index = self.search.index(f"{index_name}")
+        async with asyncio.TaskGroup() as tg:
+            for index_name in self.indexes:
+                if self.search.index(index_name) is None:
+                    tg.create_task(self.add_index(index_name))
         await self.update_index(index_name, ["categories"])
         await self.delete_all_docs(index_name)
         await self.add_docs(index_name, self.library(index_name))
 
     async def add_index(self, index_name):
         log.info(f"Creating {index_name} index.")
-        index = self.search.index(index_name)
-        self.search.create_index(index, "id")
+        index = await self.search.index(index_name)
+        await self.search.create_index(index, "id")
 
     async def update_index(self, index_name, attr):
         log.info(f"Updating {index_name} index.")
         index = self.search.index(index_name)
-        result = index.update_filterable_attributes(attr)
+        result = await index.update_filterable_attributes(attr)
         return log.info(result)
 
     async def add_docs(self, index_name, docs):
@@ -73,28 +71,29 @@ class SearchController:
         id_docs = []
         for doc in docs:
             id_docs.append({"id": str(uuid.uuid4()), **doc})
-        result = index.add_documents(id_docs, "id")
+        result = await index.add_documents(id_docs, "id")
         return log.info(result)
 
     async def update_docs(self, index_name, docs):
         log.info(f"Updating {len(docs)} documents in {index_name} index.")
         index = self.search.index(index_name)
-        for doc in docs:
-            {"id": str(uuid.uuid4()), **doc}
-            name = doc.get("name")
-            filter = f"name = {name}"
-            self.delete_docs(index, filter)
-        result = index.update_documents(docs, "id")
+        async with asyncio.TaskGroup() as tg:
+            for doc in docs:
+                {"id": str(uuid.uuid4()), **doc}
+                name = doc.get("name")
+                filter = f"name = {name}"
+                tg.create_task(self.delete_docs(index, filter))
+        result = await index.update_documents(docs, "id")
         return log.info(result)
 
     async def delete_docs(self, index_name, filter):
         index = self.search.index(index_name)
-        index.delete_documents_by_filter(filter)
+        await index.delete_documents_by_filter(filter)
 
     async def delete_all_docs(self, index_name):
         log.info(f"Removing all documents from {index_name} index.")
         index = self.search.index(index_name)
-        result = index.delete_all_documents()
+        await index.delete_all_documents()
 
 
 def search_breadth_first(graph, start, target):
