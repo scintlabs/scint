@@ -1,31 +1,17 @@
 from __future__ import annotations
 
-import asyncio
+from falcon.asgi import App
 
-import uvicorn
-from fastapi import FastAPI
+from scint.base.types.library import Library
+from scint.base.types.studio import Studio
+from scint.base.types.context import Context
 
-from scint.services.search import search_controller
-from scint.api.routers import message_queue, router
-from scint.support.utils import env
+context = Context()
+library = Library()
+studio = Studio()
 
-app = FastAPI()
-app.include_router(router)
+print(context.providers)
+app = App()
 
-
-async def start():
-    config = uvicorn.Config(app, host="localhost", port=8000, reload=True)
-    server = asyncio.create_task(uvicorn.Server(config).serve())
-    messages = asyncio.create_task(message_queue.connect())
-    search = asyncio.create_task(search_controller.monitor_indexes())
-    await server
-    await messages
-    await search
-
-
-def run():
-    asyncio.run(start())
-
-
-if __name__ == "__main__":
-    run()
+app.add_route("/ws", context.providers.broker)
+app.add_route("/search", context.providers.search)

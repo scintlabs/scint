@@ -1,0 +1,25 @@
+{
+    "providers": [
+        {
+            "name": "MessageBroker",
+            "import_path": "scint.base.models.providers.broker",
+            "settings": {}
+        },
+        {
+            "name": "StorageProvider",
+            "import_path": "scint.base.models.providers.storage",
+            "settings": {}
+        },
+        {
+            "name": "SearchProvider",
+            "import_path": "scint.base.models.providers.search",
+            "settings": {}
+        },
+        {
+            "name": "IntelligenceProvider",
+            "import_path": "scint.base.models.providers.intelligence",
+            "settings": {}
+        }
+    ],
+    "context": {}
+}
