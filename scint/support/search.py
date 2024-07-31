@@ -5,7 +5,7 @@ from meilisearch_python_sdk import AsyncClient
 from meilisearch_python_sdk.models.search import Hybrid
 
 from scint.base.types.providers import ProviderType
-from scint.base.models import env
+from scint.base.utils import env
 
 
 class SearchProvider(metaclass=ProviderType):

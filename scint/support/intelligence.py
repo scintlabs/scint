@@ -1,21 +1,17 @@
 from typing import Optional
 
-
 from scint.base.models.requests import Request
 from scint.base.types.providers import ProviderType
-from scint.base.models import dictorial, build_function, build_messages, unpack_response
-from scint import Settings
+from scint.base.utils import dictorial, build_function, build_messages, unpack_response
+from scint import settings
 
 
-settings = Settings()
-settings.load_json("settings/providers.json", "providers")
 intelligence = settings.providers.intelligence.as_dict()
-
+providers = intelligence.get("providers")
+presets = intelligence.get("presets")
 methods = ["completion", "image", "speech", "embedding"]
 get_preset = lambda p: dictorial(settings, f"presets.{p}")  # type: ignore
 get_provider = lambda p: dictorial(f"providers.{p}")  # type: ignore
-providers = intelligence.get("providers")
-presets = intelligence.get("presets")
 
 
 class IntelligenceProvider(metaclass=ProviderType):
