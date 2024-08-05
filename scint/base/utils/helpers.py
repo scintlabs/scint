@@ -40,5 +40,5 @@ def hash_object(file_path):
 def generate_id(name: str):
     timestamp = int(time.time())
     random_digits = random.randint(100, 999)
-    full_string = f"{name[:4].lower()}-{timestamp}{random_digits}"
+    full_string = f"{name[:8].lower()}-{timestamp}{random_digits}"
     return full_string[:8]

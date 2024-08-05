@@ -2,7 +2,7 @@ import os
 import json
 
 
-def map_code_repo(root_dir):
+def map_project(root_dir):
     repo_map = {}
 
     def walk_directory(directory, current_map):
@@ -39,7 +39,7 @@ def map_code_repo(root_dir):
 
 if __name__ == "__main__":
     repo_root = "."
-    repo_structure = map_code_repo(repo_root)
+    repo_structure = map_project(repo_root)
 
     with open("repo_structure.json", "w") as f:
-        json.dump(repo_structure, f, indent=2)
+        json.build()repo_structure, f, indent=2)

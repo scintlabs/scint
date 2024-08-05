@@ -26,20 +26,23 @@ uvicorn = { extras = ["standard"], version = "^0.30.1" }
 falcon = "^3.1.3"
 pydantic = "^2.8.2"
 pydantic-settings = "^2.3.4"
+aioconsole = "^0.7.1"
+sanic = "^24.6.0"
+sqlalchemy = "^2.0.32"
 
 [tool.poetry.scripts]
 scint = "app.server:run"
 
 [tool.pyright]
-venvPath = "/Users/kaechle/Library/Caches/pypoetry/virtualenvs"
-venv = "test-0DJbXm4h-py3.12"
+venvPath = ".venv"
+venv = "."
 reportMissingImports = true
 reportSyntaxErrors = true
 reportMissingTypeStubs = false
 reportUnknownVariableType = false
 reportUnknownMemberType = false
 reportUnknownArgumentType = false
-reportUnknownLambdaType = true
+reportUnknownLambdaType = "none"
 reportMissingModuleSource = true
 reportGeneralTypeIssues = false
 typeCheckingMode = "off"

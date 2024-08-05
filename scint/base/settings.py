@@ -1,23 +1,21 @@
+import os
 import importlib
 import importlib.resources as pkg_resources
 import json
-import os
+import yaml
 from functools import reduce
 from typing import Any, Dict, List
-
-import yaml
 
 
 class Settings:
     def __init__(self):
         self._settings: Dict[str, Any] = {}
         self._load_order: List[str] = []
+        self.load_defaults()
 
-    def load_yaml(self, file_path: str, namespace: str = "") -> None:
-        with open(file_path, "r") as f:
-            data = yaml.safe_load(f)
-        self._merge_settings(data, namespace)
-        self._load_order.append(f"YAML:{file_path}:{namespace}")
+    def load_defaults(self):
+        self.load_json("settings/services.json", "services")
+        self.load_json("settings/user.json", "user")
 
     def load_json(self, file_path: str, namespace: str = "") -> None:
         with open(file_path, "r") as f:
@@ -25,7 +23,13 @@ class Settings:
         self._merge_settings(data, namespace)
         self._load_order.append(f"JSON:{file_path}:{namespace}")
 
-    def load_env(self, prefix: str = "", namespace: str = "") -> None:
+    def load_yaml(self, file_path: str, namespace: str = "") -> None:
+        with open(file_path, "r") as f:
+            data = yaml.safe_load(f)
+        self._merge_settings(data, namespace)
+        self._load_order.append(f"YAML:{file_path}:{namespace}")
+
+    def load_env(self, prefix: str = "SCINT_", namespace: str = "") -> None:
         env_settings = {}
         for key, value in os.environ.items():
             if key.startswith(prefix):

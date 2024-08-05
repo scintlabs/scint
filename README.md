@@ -11,9 +11,55 @@
 Didact
 Lumic
 
+with context(ref):
+    def code():
+        return stuff
+
+
+with context(self, )
+metaclass sets data objects in a separate, shared namespace object
+Context
+    Server
+        System
+            Process
+            Events
+        Admin
+            Tasks
+            Commands
+            Director
+
+
+```
+Context
+    Where (envrionments)
+        Server
+        Library
+        Studio
+    Who
+        System
+        Admin
+        User
+    What
+        Process
+        Task
+    When (scheduler)
+        Events
+    Why
+        Prompt?
+    How (actors)
+        Director
+        Producer
+        Performer
+        Keeper
+        Liason
+        Porter
+        Trustee
+```
+
 > “Finally there he returns, trying to imitate in his walk the inflexible stiffness of some kind of automaton while carrying his tray with the recklessness of a tight-rope-walker by putting it in a perpetually unstable, perpetually broken equilibrium which he perpetually reestablishes by a light movement of the arm and hand. All his behavior seems to us a game. He applies himself to chaining his movements as if they were mechanisms, the one regulating the other; his gestures and even his voice seem to be mechanisms; he gives himself the quickness and pitiless rapidity of things. He is playing, he is amusing himself. But what is he playing? We need not watch long before we can explain it: he is playing at being a waiter in a café."
 
 — Jean-Paul Sartre, *Being an Nothingness*
+
 
 Excerpt From
 Being and Nothingness
