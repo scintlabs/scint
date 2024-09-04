@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from scint.base import Server
-from scint.base.components.emitters.interface import Interface
+from scint.core.orchestration import Orchestration
+from scint.core.settings import Settings
 
-server = Server()
-server.add_route("/ws", server.services.messagebus)
 
-interface = Interface()
+def start():
+    settings = Settings()
+    app = Orchestration(settings)
+    return app

@@ -1,4 +1,7 @@
-from .auth import Auth
-from .bus import MessageBus
-from .console import Console
-from .intelligence import Intelligence
+from scint.core import BaseType
+
+
+class Service(metaclass=BaseType):
+    def __init__(self, **kwargs):
+        for name, value in kwargs.items():
+            setattr(self, name, value)

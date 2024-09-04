@@ -1,33 +1,7 @@
 {
-    "console": {
-        "name": "Console",
-        "import_path": "scint.services.console",
-        "settings": {}
-    },
-    "auth": {
-        "name": "Auth",
-        "import_path": "scint.services.auth",
-        "settings": {}
-    },
-    "messagebus": {
-        "name": "MessageBus",
-        "import_path": "scint.services.bus",
-        "settings": {
-            "host": "localhost",
-            "port": 6379
-        }
-    },
-    "search": {
-        "name": "Search",
-        "import_path": "scint.services.search",
-        "settings": {
-            "url": "http://localhost:7700",
-            "api_key": "MEILISEARCH_KEY"
-        }
-    },
-    "storage": {
-        "name": "Storage",
-        "import_path": "scint.services.storage",
+    "channels": {
+        "name": "Channels",
+        "import_path": "scint.services.channels",
         "settings": {}
     },
     "intelligence": {
@@ -36,29 +10,28 @@
         "settings": {
             "presets": {
                 "deterministic": {
-                    "model": "gpt-4o",
+                    "model": "gpt-4o-2024-08-06",
                     "temperature": 0.4,
                     "top_p": 1.2,
                     "presence_penalty": 0.0,
                     "frequency_penalty": 0.0
                 },
                 "balanced": {
-                    "model": "gpt-4o",
+                    "model": "gpt-4o-2024-08-06",
                     "temperature": 1.4,
                     "top_p": 0.6,
                     "presence_penalty": 0.25,
                     "frequency_penalty": 0.25
                 },
                 "creative": {
-                    "model": "gpt-4o",
+                    "model": "gpt-4o-2024-08-06",
                     "temperature": 1.7,
                     "top_p": 0.6,
                     "presence_penalty": 0.45,
-                    "frequency_penalty": 0.45,
-                    "response_format": { "type": "json_object" }
+                    "frequency_penalty": 0.45
                 },
                 "router": {
-                    "model": "gpt-4o",
+                    "model": "gpt-4o-2024-08-06",
                     "temperature": 0.5,
                     "top_p": 1.4,
                     "presence_penalty": 2.0,
@@ -66,8 +39,7 @@
                     "tool_choice": {
                         "type": "function",
                         "function": { "name": "route_message" }
-                    },
-                    "response_format": { "type": "json_object" }
+                    }
                 },
                 "image": {
                     "quality": "hd",
@@ -93,7 +65,7 @@
                                 "gpt4": "gpt-4",
                                 "gpt35": "gpt-3.5-turbo"
                             },
-                            "method": "AsyncOpenAI().chat.completions.create",
+                            "method": "AsyncOpenAI().beta.chat.completions.parse",
                             "parameters": {
                                 "model": "string",
                                 "temperature": 1.0,
@@ -107,8 +79,7 @@
                                 "seed": null,
                                 "messages": [],
                                 "tools": [],
-                                "tool_choice": {},
-                                "response_format": "JSON"
+                                "tool_choice": {}
                             }
                         },
                         "image": {
@@ -162,6 +133,81 @@
                     }
                 }
             }
+        }
+    },
+    "relay": {
+        "name": "Relay",
+        "import_path": "scint.services.relay",
+        "settings": {}
+    },
+    "search": {
+        "name": "Search",
+        "import_path": "scint.services.search",
+        "settings": {
+            "prompts": [
+                {
+                    "name": "core_instructions",
+                    "description": "Core instructions prompt..",
+                    "labels": ["Instructions prompt."],
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "data": "Make sure all semantic blocks of content are enclosed within individual message format blocks. The parsing system is designed to treat headings, paragraphs, markdown blocks, and all other content that's typically broken with newline characters. Do NOT use newline characters in your formatting."
+                        },
+                        {
+                            "type": "text",
+                            "data": "Be sure to include semantic labels and an annotation for all messages. Write annotations to help guide and remind yourself of key facts or important moments."
+                        },
+                        {
+                            "type": "text",
+                            "data": "Be sure to include semantic labels and an annotation for all messages. Write annotations to help guide and remind yourself of key facts or important moments."
+                        }
+                    ],
+                    "role": "system"
+                },
+                {
+                    "name": "core_identity",
+                    "description": "Core identity prompt used for all non-process compositions.",
+                    "labels": ["Personality prompt."],
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "data": "You are a component of Scint, an intelligent system utilizing multiple cutting-edge language models, sophisticated composition and memory augmentations, and unparalleled flexibility. You are no assistant—you are a tutor, guide, mentor designed for accurate, lifelike interactions and expert guidance. Perform accordingly."
+                        }
+                    ],
+                    "role": "system"
+                }
+            ],
+            "functions": [
+                {
+                    "name": "use_terminal",
+                    "description": "Executes shell commands asynchronously and yields the output and errors.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "commands": {
+                                "type": "string",
+                                "description": "The shell commands to be executed."
+                            }
+                        },
+                        "required": ["commands"]
+                    }
+                },
+                {
+                    "name": "search_github_repos",
+                    "description": "Asynchronously searches for GitHub repositories based on a query string.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "The search query string used to find repositories on GitHub."
+                            }
+                        },
+                        "required": ["query"]
+                    }
+                }
+            ]
         }
     }
 }

@@ -1,0 +1,52 @@
+{
+    "orchestration": {
+        "requires": "@settings",
+        "instantiates": ["@handlers", "@architect", "@composer"],
+        "provides": "@context",
+        "services": {
+            "intelligence": {},
+            "messaging": {},
+            "persistence": {}
+        }
+    },
+    "network": {
+        "requires": "@persistence",
+        "creates": "@indexes",
+        "provides": "@search",
+        "anchor": {
+            "nodes": [
+                { "type": "Project" },
+                { "type": "Conversation" },
+                { "type": "Task" }
+            ]
+        }
+    },
+    "composer": {
+        "requires": "@search",
+        "creates": "@nodes",
+        "provides": "@domain",
+        "components": [
+            { "type": "Executor" },
+            { "type": "Behavior" },
+            { "type": "Simulation" },
+            { "type": "Machine" },
+            { "type": "Invoker" },
+            { "type": "State" },
+            { "type": "Queue" },
+            { "type": "Function" },
+            { "type": "Enum" },
+            { "type": "Pattern" }
+        ],
+        "primitives": [
+            { "type": "Condition" },
+            { "type": "Event" },
+            { "type": "Instruction" },
+            { "type": "Prompt" },
+            { "type": "Message" },
+            { "type": "Link" },
+            { "type": "Block" },
+            { "type": "List" },
+            { "type": "Symbol" }
+        ]
+    }
+}
