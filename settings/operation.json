@@ -1,14 +1,14 @@
 {
     "broker": {
         "name": "Broker",
-        "import_path": "scint.app.services.broker",
+        "import_path": "scint.services.broker",
         "settings": {
             "url": "redis://localhost"
         }
     },
     "intelligence": {
         "name": "Intelligence",
-        "import_path": "scint.app.services.intelligence",
+        "import_path": "scint.services.intelligence",
         "settings": {
             "presets": {
                 "deterministic": {
@@ -139,7 +139,7 @@
     },
     "search": {
         "name": "Search",
-        "import_path": "scint.app.services.search",
+        "import_path": "scint.services.search",
         "settings": {
             "url": "http://localhost:7700/",
             "key": "MEILISEARCH_API_KEY",
@@ -217,7 +217,7 @@
     },
     "persistence": {
         "name": "Persistence",
-        "import_path": "scint.app.services.persistence",
+        "import_path": "scint.services.persistence",
         "settings": {
             "params": {
                 "dbname": "scint",

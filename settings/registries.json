@@ -1,0 +1,17 @@
+{
+    "structure": {
+        "name": "Architect",
+        "import_path": "scint.core.modules.structure",
+        "settings": "settings/construct.json"
+    },
+    "operation": {
+        "name": "Controller",
+        "import_path": "scint.core.modules.operation",
+        "settings": "settings/intention.json"
+    },
+    "discourse": {
+        "name": "Broadcaster",
+        "import_path": "scint.core.modules.discourse",
+        "settings": "settings/broadcast.json"
+    }
+}

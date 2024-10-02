@@ -1,0 +1,16 @@
+{
+    "broker": {
+        "name": "Broker",
+        "import_path": "scint.services.broker",
+        "settings": {
+            "url": "redis://localhost"
+        }
+    },
+    "broadcaster": {
+        "name": "Broadcaster",
+        "import_path": "scint.core.broadcaster",
+        "settings": {
+            "url": "redis://localhost"
+        }
+    }
+}

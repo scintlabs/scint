@@ -1,7 +1,7 @@
 from typing import Protocol, Dict, List, Any
 
-from scint.core.primitives.messages import Message
-from scint.core import Construct
+from scint.framework.models.messages import Message
+from scint.framework import Construct
 
 
 class Index: ...
