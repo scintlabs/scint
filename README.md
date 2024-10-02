@@ -5,22 +5,6 @@
 
 Scint is a Python framework designed to build intelligent, goal-directed systems that interact seamlessly with large language models (LLMs). It provides a structured approach to create AI agents capable of complex behaviors, context management, and interaction with various resources and data at a high level of abstraction. Scint emphasizes flexibility and extensibility, allowing developers to define clear and consistent interfaces that LLMs can understand and utilize effectively.
 
-## Architecture
-
-- **Hierarchical Language Model intent**: Create a hierarchy of LLM intent, each responsible for different levels of abstraction or entire domains. Higher-level LLMs can decompose complex tasks into simpler subtasks for lower-level LLMs.
-- **Context-based Framework**: Create specific context objects for different types of actions or resources. Define a set of high-level operations for each context that LLMs can invoke. Implement these operations as methods within each context class.
-- **Event-driven Architecture**: Utilize the existing message processing structure to create a communication layer between LLMs and the system. Define a standardized message format that includes the context, action, and parameters.
-
-### Context as Identity
-
-- **Dynamic Context Creation**: Allow LLMs to create new contexts or modify existing ones using the create_scoped_state function. This enables the system to adapt and expand its capabilities based on LLM inputs.
-- **Resource Abstraction**: Use the Container context to represent abstract resources that LLMs can manipulate. Implement methods within the Container class to perform high-level operations on these resources.
-- **Task Orchestration**: Utilize the Composer context to create complex workflows or sequences of actions across different contexts. Allow LLMs to define and execute these workflows.
-- **Asynchronous Processing**: Leverage the existing asynchronous structure to handle multiple LLM requests concurrently. Use the Thread context to manage and coordinate parallel processing of tasks.
-- **State Management**: Implement a state management system using the ContextMap and ContextMapView classes. Allow LLMs to query and modify the state of different contexts.
-- **Error Handling and Logging**: Utilize the existing logging mechanism (__logger__ decorator) to provide feedback to LLMs about the execution of their requests. Implement error handling mechanisms that can provide meaningful feedback to LLMs.
-- **Natural Language Interface**: Create a natural language processing layer that can interpret LLM requests and map them to specific context actions. This could involve using the LLM itself to parse and understand more complex instructions.
-
 ## Features
 
 - Modular Architecture: Scint is built with a modular design, making it easy to extend and customize components according to specific needs
