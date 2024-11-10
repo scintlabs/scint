@@ -1,17 +1,30 @@
 from enum import EnumMeta
-from types import DynamicClassAttribute, new_class
-from typing import Any, Dict
+from types import DynamicClassAttribute
 
 from scint.repository.models.struct import StructType
 
 
 class EnumType(EnumMeta, StructType):
+    def __init__(self, __o: object):
+        super().__init__(__o)
+        self.members = None
+        self.TEXT = None
+        self.TEXT = None
+
     def __new__(cls, name, bases, dct, **kwds):
         def name(self):
             return self._name_
 
         def value(self):
             return self._value_
+
+        @property
+        def model(self):
+            return {k: v.__dict__ for k, v in self.__dict__}
+
+        @property
+        def context(self, *args, **kwargs):
+            return self.model
 
         def __call__(cls, string_value: str, case_sensitive: bool = True):
             if not case_sensitive:
@@ -31,33 +44,10 @@ class EnumType(EnumMeta, StructType):
 
         dct["name"] = DynamicClassAttribute(name)
         dct["value"] = DynamicClassAttribute(value)
+        dct["model"] = model
         dct["__call__"] = __call__
         return super().__new__(cls, name, bases, dct, **kwds)
 
 
-def Enum(m: Dict[str, Any]):
-    return new_class(
-        "Enum",
-        (StructType, EnumType),
-        {"metaclass": EnumType},
-        lambda: {"members": m},
-    )
-
-
-class Stimulant:
-    def model(self):
-        dct = {}
-        for k, v in self.__dict__.items():
-            try:
-                dct[k] = v.model
-            except AttributeError:
-                if isinstance(v, list):
-                    dct[k] = [i.model for i in v]
-                elif isinstance(v, dict):
-                    dct[k] = {k: v.__dict__ for k, v in self.__dict__.items()}
-                elif isinstance(v, str):
-                    dct[k] = v
-        return dct
-
-    def context(self):
-        return self.model
+def Enumerator(*args, **kwargs) -> EnumType:
+    return type("Enum", (EnumType,), kwargs)

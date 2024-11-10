@@ -1,6 +1,7 @@
 # Scint
 
 > ⚠️ **Attention**
+>
 > Scint is experimental and very much a work in progress. Presently, this README functions as a scattering of ideas and notes, much of which was authored by language models. While the documentation reflects ideas represented in the accompanying code, very little in either the former or latter is set in stone. In other words, everything in this repo is subject to chaotic change, so tread lightly.
 
 Scint is a Python framework designed to build intelligent, goal-directed systems that interact seamlessly with large language models (LLMs). It provides a structured approach to create AI agents capable of complex behaviors, context management, and interaction with various resources and data at a high level of abstraction. Scint emphasizes flexibility and extensibility, allowing developers to define clear and consistent interfaces that LLMs can understand and utilize effectively.
@@ -24,10 +25,10 @@ Scint’s architecture is composed of several key components that work together 
 - Context Objects: Scint uses context objects to encapsulate the state and behavior of different parts of the system. Contexts can be nested and are designed to be dynamically created and modified.
 - State Handling: The framework employs chain maps and custom state classes to manage state across different contexts, enabling shared and isolated states as needed.
 
-### Components and Compositions
+### Components and Entitys
 
 - Components: At the core, Scint defines components that encapsulate functionality. Components can be simple functions or more complex classes that represent parts of the system.
-- Compositions: Compositions are higher-level constructs that organize components into workflows or processes. They allow for complex behaviors to be defined by combining simpler components.
+- Entitys: Entitys are higher-level constructs that organize components into workflows or processes. They allow for complex behaviors to be defined by combining simpler components.
 
 ### Messaging and Events
 
@@ -39,7 +40,7 @@ Scint’s architecture is composed of several key components that work together 
 - Async Functions: Many components and functions in Scint are designed to be asynchronous, enabling the system to handle multiple tasks without blocking.
 - Concurrency: By utilizing asyncio, Scint can manage concurrent interactions, which is crucial for applications that require handling multiple user sessions or background tasks.
 
-### Integration with External Services
+### Integration with External Processs
 
 - WebSocket Support: Scint includes support for WebSocket connections, allowing real-time communication with clients.
 - Database Interaction: Provides classes for interacting with databases like PostgreSQL for data persistence.

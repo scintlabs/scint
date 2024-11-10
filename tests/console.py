@@ -1,7 +1,7 @@
 import asyncio
 import json
-import threading
 import queue
+import threading
 
 import websockets
 
@@ -12,7 +12,7 @@ class Console:
 
 
 def format_message(message):
-    return json.dumps({"body": [{"type": "text", "data": message}]})
+    return json.dumps({"body": [{"type": "text", "state": message}]})
 
 
 def input_thread(input_queue):
@@ -42,7 +42,7 @@ async def websocket_client():
                     data = json.loads(message)
                     blocks = data.get("blocks")
                     for block in blocks:
-                        print(block.get("data"))
+                        print(block.get("state"))
 
                 except asyncio.TimeoutError:
                     pass
@@ -59,5 +59,5 @@ if __name__ == "__main__":
         asyncio.run(websocket_client())
     except KeyboardInterrupt as k:
         print(k)
-        print(" exiting...")
+        print("exiting...")
         exit()
