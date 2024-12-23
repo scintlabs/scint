@@ -1,10 +1,16 @@
 # Scint
 
 > ⚠️ **Attention**
->
+
 > Scint is experimental and very much a work in progress. Presently, this README functions as a scattering of ideas and notes, much of which was authored by language models. While the documentation reflects ideas represented in the accompanying code, very little in either the former or latter is set in stone. In other words, everything in this repo is subject to chaotic change, so tread lightly.
 
 Scint is a Python framework designed to build intelligent, goal-directed systems that interact seamlessly with large language models (LLMs). It provides a structured approach to create AI agents capable of complex behaviors, context management, and interaction with various resources and data at a high level of abstraction. Scint emphasizes flexibility and extensibility, allowing developers to define clear and consistent interfaces that LLMs can understand and utilize effectively.
+
+## Setup
+
+```bash
+ poetry run python3 src/app.py
+ ```
 
 ## Features
 
