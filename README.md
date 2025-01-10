@@ -1,60 +1,119 @@
 # Scint
 
 > ⚠️ **Attention**
+>
+> Scint is a work in progress. Code, APIs, and documentation are subject to change without notice.
 
-> Scint is experimental and very much a work in progress. Presently, this README functions as a scattering of ideas and notes, much of which was authored by language models. While the documentation reflects ideas represented in the accompanying code, very little in either the former or latter is set in stone. In other words, everything in this repo is subject to chaotic change, so tread lightly.
+Scint is an experimental Python framework for building goal-directed, AI-driven systems. With a modular design and an emphasis on extensibility, Scint aims to provide a foundation for building complex, context-aware agents capable of reasoning, memory management, and structured interaction—both with users and external resources.
 
-Scint is a Python framework designed to build intelligent, goal-directed systems that interact seamlessly with large language models (LLMs). It provides a structured approach to create AI agents capable of complex behaviors, context management, and interaction with various resources and data at a high level of abstraction. Scint emphasizes flexibility and extensibility, allowing developers to define clear and consistent interfaces that LLMs can understand and utilize effectively.
+---
 
-## Setup
+## Table of Contents
 
-```bash
- poetry run python3 src/app.py
- ```
+1. [Overview](#overview)
+2. [Architecture and Concepts](#architecture-and-concepts)
+    - [Core](#core)
+    - [Composition](#composition)
+    - [Processes](#processes)
+    - [Memory](#memory)
+3. [Getting Started](#getting-started)
+    - [Installation](#installation)
+    - [Usage](#usage)
+4. [Contributing](#contributing)
+5. [License](#license)
 
-## Features
+---
 
-- Modular Architecture: Scint is built with a modular design, making it easy to extend and customize components according to specific needs
-- Asynchronous Processing: Leverages Python’s asyncio library for handling multiple tasks concurrently, enabling efficient processing of numerous interactions
-- State Management: Implements a robust state management system using contexts and chain maps, allowing for dynamic context creation and manipulation
-- Event-Driven Communication: Utilizes an event-driven architecture to handle communication between different parts of the system, including message passing and function invocation
-- Integration with LLMs: Provides structures for composing prompts, handling LLM responses, and managing interactions, making it suitable for applications involving AI language models
-- Resource Abstraction: Offers abstract representations of resources (like files, messages, and functions) that can be manipulated programmatically
-- Persistence and Search: Includes components for data persistence using databases like PostgreSQL and search capabilities using tools like Meilisearch
+## Overview
 
-## Architecture
+Scint provides a high-level, flexible platform for integrating LLMs into Python applications. It abstracts away much of the complexity involved in:
 
-Scint’s architecture is composed of several key components that work together to create a flexible and extensible framework:
+- Handling prompt/response pipelines.
+- Maintaining conversational or contextual memory.
+- Exposing Python functions in a manner that LLMs can understand and reliably call.
+- Managing workflows (processes) and orchestrating multi-step tasks.
 
-### Context and State Management
+**Why Scint?**
 
-- Context Objects: Scint uses context objects to encapsulate the state and behavior of different parts of the system. Contexts can be nested and are designed to be dynamically created and modified.
-- State Handling: The framework employs chain maps and custom state classes to manage state across different contexts, enabling shared and isolated states as needed.
+- **Structured AI Interactions**
+   Scint aims to bridge structured application logic with the unstructured world of LLM responses, ensuring more consistent and predictable outputs.
 
-### Components and Entitys
+- **Extendability**
+   From adding new aspects (logging, indexing, embeddings) to hooking up different LLM backends, Scint is built to grow with your needs.
 
-- Components: At the core, Scint defines components that encapsulate functionality. Components can be simple functions or more complex classes that represent parts of the system.
-- Entitys: Entitys are higher-level constructs that organize components into workflows or processes. They allow for complex behaviors to be defined by combining simpler components.
+- **Experimental Playground**
+   While not yet production-ready, Scint offers a glimpse of how advanced applications might guide, critique, and orchestrate AI reasoning in complex domains.
 
-### Messaging and Events
+## Architecture and Concepts
 
-- Message Models: Scint defines models for different types of messages (input, output, system) using Pydantic for data validation and serialization.
-- Event Handling: The framework includes an event system that captures method calls, results, and other significant occurrences within the system, facilitating debugging and introspection.
+- **Process Orchestration**
+   - **Orchestrator** coordinates multi-step tasks and can chain processes (like searching a database, parsing data, generating text, etc.) under a single flow.
+   - **Controller** acts as a higher-level manager or gateway for these processes.
 
-### Asynchronous Processing
+- **Context and Memory Management**
+   - **Memory** abstractions (e.g., `Context`, `Threads`, `Thread`) organize conversation data, embeddings, events, and files.
+   - **Composer** automatically selects and augments contextual data based on similarity, ensuring relevant information is recalled at each step.
 
-- Async Functions: Many components and functions in Scint are designed to be asynchronous, enabling the system to handle multiple tasks without blocking.
-- Concurrency: By utilizing asyncio, Scint can manage concurrent interactions, which is crucial for applications that require handling multiple user sessions or background tasks.
+### Core
 
-### Integration with External Processs
+**Controller**
 
-- WebSocket Support: Scint includes support for WebSocket connections, allowing real-time communication with clients.
-- Database Interaction: Provides classes for interacting with databases like PostgreSQL for data persistence.
-- Search Functionality: Integrates with search services such as MeiliSearch to offer advanced search capabilities within the system.
-- Third-Party APIs: Includes components for interacting with external APIs, such as GitHub repositories or web content fetching.
+### Composition
 
-### LLM Interaction
+One of the core design principals of Scin is its dynamic compositionality, realized through two core abstractions: Aspects and Structs. This design is geared toward enabling language models (and other higher-level frameworks) to self-compose new types and behaviors at runtime by instantiating and combining these building blocks—an approach reminiscent of Rust’s structs and traits, albeit achieved here via Python’s dynamic metaclass machinery.
 
-- Prompt Management: Defines structures for creating and managing prompts sent to LLMs, including system prompts, user messages, and assistant responses.
-- Function Execution: Supports the execution of functions based on LLM outputs, allowing the system to perform actions as directed by the AI’s responses.
-- Embedding and Similarity: Implements methods for generating embeddings and calculating similarity scores, which can be used for tasks like intent recognition or content matching.
+**Aspects**
+
+Aspects are analogous to “protocols” or “traits” that define contracts for functionality. They use a custom metaclass, AspectType, to track which attributes (data) and methods (behaviors) a class must implement. Any class marked as an Aspect (or subclass thereof) effectively declares, “I provide certain methods or data; anything using me needs to satisfy these protocols.”
+
+1.	Protocol Checking
+
+AspectType enforces a mini “protocol” system: if a class (or instance) claims to implement a particular Aspect, it must define all required attributes and methods in its namespace. If they’re missing, a TypeError is raised. This ensures consistency at runtime—even if classes are generated on-the-fly (e.g., by a language model).
+
+2.	Decorator Injection
+
+Each Aspect may optionally declare a decorator method, which is applied to all public methods in its subclasses. This allows for cross-cutting behaviors—like logging, instrumentation, or AI-driven transformations—without altering the base logic of the method. It’s a powerful way to inject functionality into your classes dynamically.
+
+3.	Dynamic Composition
+
+Because Aspects are metaclass-driven, you can compose multiple Aspects into a single class. Suppose you have `LoggingAspect` and `SecurityAspect`: you can create a new class that incorporates both, and AspectType ensures everything lines up. This means you can quickly spin up new objects with multiple cross-cutting features attached—particularly useful if you’re generating code from a language model that decides what “traits” a class needs on the fly.
+
+**Structs**
+
+Where Aspects handle contracts for behavior, Structs provide a highly flexible, dataclass-like container for your data hierarchy. The StructType metaclass collects annotations from all base classes, auto-generates fields, then transforms the resulting class into a Python dataclass.
+
+1.	Data Composition
+
+Struct are designed for strongly typed, hierarchical data. A Struct can contain other nested Structs, as well as lists or sets of them. This recursive composition is essential for building up complex data models—again, driven dynamically if needed.
+
+2.	Validation and Inheritance
+
+StructType ensures that subclasses include at least the fields required by their parent. This is enforced through __subclasscheck__. Meanwhile, the __post_init__ method auto-initializes any default factories, giving you a predictable state for each new instance.
+
+3.	Hierarchical Organization
+
+Common utility methods (add_child, remove_child, walk) reflect how Structs often model tree-like relationships, enabling you to build complex, nested data structures that can be easily traversed, inspected, and modified.
+
+4.	AI-Friendliness
+
+The model and from_dict methods illustrate how these structures can be serialized and deserialized, making them convenient for AI-based generation and consumption. A language model can dynamically craft JSON or dictionary data that can be turned into a Struct—or multiple nested Structs—at runtime. This empowers a model to “self-compose” new data structures on the fly, furthering the dynamic spirit of the system.
+
+### Processes
+
+**Orchestrator**
+
+### Memory
+
+**Composer**
+
+### Structures
+
+**Mapper**
+
+## Getting Started
+
+### Installation
+
+### Usage
+
+## Contributing

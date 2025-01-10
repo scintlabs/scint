@@ -55,14 +55,6 @@ def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     return dot_product / (magnitude1 * magnitude2)
 
 
-def similarities(intent, embedding):
-    return [
-        1 - cosine_similarity(embedding, process.weighted_average_embedding())
-        for process in intent
-        if process.weighted_average_embedding() is not None
-    ]
-
-
 def generate_hash(file_path):
     if os.path.getsize(file_path) > 1e6:
         sha256_hash = hashlib.sha256()
@@ -74,15 +66,3 @@ def generate_hash(file_path):
         data = f.read()
         readable_hash = hashlib.sha256(data).hexdigest()
     return readable_hash
-
-
-__all__ = (
-    env,
-    encode_image,
-    cosine_similarity,
-    generate_id,
-    generate_timestamp,
-    generate_hash,
-    get_module,
-    set_module,
-)
