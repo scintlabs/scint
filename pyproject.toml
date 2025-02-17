@@ -1,10 +1,10 @@
 [project]
 name = "scint"
-version = "0.1.0"
+version = "0.5.0"
 description = "Add your description here"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "MIT License" }
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
     "aiofiles>=24.1.0",
     "aiohttp>=3.10.10",
@@ -25,18 +25,23 @@ dependencies = [
     "rich>=13.9.4",
     "nltk>=3.9.1",
     "websockets>=14.1",
+    "jinja2>=3.1.5",
+    "networkx>=3.4.2",
+    "matplotlib>=3.10.0",
+    "fastapi>=0.115.8",
+    "sentence-transformers>=3.4.1",
+    "base32-lib>=1.0.2",
+    "surrealdb>=1.0.3",
+    "pyvis>=0.3.2",
 ]
 
-[tool.poetry]
-name = "scint"
-version = "0.1.0"
-description = ""
-authors = ["Tim Kaechle <timothy.kaechle@me.com>"]
-readme = "README.md"
-packages = [{ include = "src" }]
+[tool.setuptools]
+package-dir = {"scint" = "scint"}
 
-[tool.poetry.dependencies]
-python = ">=3.10"
+[tool.pytest]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib"
+pythonpath = ["."]
 
 [tool.pyright]
 venvPath = ".venv"
@@ -52,9 +57,6 @@ reportMissingModuleSource = true
 reportGeneralTypeIssues = false
 typeCheckingMode = "off"
 
-[tool.ruff.lint]
-ignore = ["E731"]
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

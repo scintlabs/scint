@@ -1,0 +1,26 @@
+name: main_process
+type: sequence
+children:
+    - name: fetch
+      type: tool
+      function: fetch_data
+
+    - name: validate
+      type: branch
+      condition: is_valid_data
+      if_branch:
+          name: process_all
+          type: map
+          process:
+              name: single_process
+              type: task
+              function: process_item
+          input_key: items
+      else_branch:
+          name: error
+          type: task
+          function: handle_error
+
+    - name: aggregate
+      type: parallel
+      join_function: aggregate_results

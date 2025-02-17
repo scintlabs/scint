@@ -1,0 +1,231 @@
+{
+    "interfaces": {
+        "type": "CONTEXT",
+        "aspects": []
+    },
+    "settings": {
+        "registry": {
+            "name": "Broker",
+            "import_path": "scint.app.services.broker",
+            "settings": {
+                "url": "redis://localhost"
+            }
+        },
+        "broker": {
+            "name": "Broker",
+            "import_path": "scint.app.services.broker",
+            "settings": {
+                "url": "redis://localhost"
+            }
+        },
+        "intelligence": {
+            "name": "Intelligence",
+            "import_path": "scint.app.services.intelligence",
+            "settings": {
+                "presets": {
+                    "deterministic": {
+                        "model": "gpt-4o-2024-08-06",
+                        "temperature": 0.4,
+                        "top_p": 1.2,
+                        "presence_penalty": 0.0,
+                        "frequency_penalty": 0.0
+                    },
+                    "balanced": {
+                        "model": "gpt-4o-2024-08-06",
+                        "temperature": 1.4,
+                        "top_p": 0.6,
+                        "presence_penalty": 0.25,
+                        "frequency_penalty": 0.25
+                    },
+                    "creative": {
+                        "model": "gpt-4o-2024-08-06",
+                        "temperature": 1.7,
+                        "top_p": 0.6,
+                        "presence_penalty": 0.45,
+                        "frequency_penalty": 0.45
+                    },
+                    "router": {
+                        "model": "gpt-4o-2024-08-06",
+                        "temperature": 0.5,
+                        "top_p": 1.4,
+                        "presence_penalty": 2.0,
+                        "frequency_penalty": 2.0,
+                        "tool_choice": {
+                            "type": "function",
+                            "function": { "name": "route_message" }
+                        }
+                    },
+                    "image": {
+                        "quality": "hd",
+                        "size": "1024x1024",
+                        "n": 1,
+                        "style": "vibrant"
+                    },
+                    "embedding": { "model": "text-embeddings-3-small" }
+                },
+                "providers": {
+                    "openai": {
+                        "api_keys": "OPENAI_API_KEY",
+                        "module": "AsyncOpenAI",
+                        "response_paths": [
+                            "choices.0.message.content",
+                            "choices.0.message.tool_calls",
+                            "choices.0.data"
+                        ],
+                        "format": {
+                            "completion": {
+                                "models": {
+                                    "gpt4o": "gpt-4o",
+                                    "gpt4": "gpt-4",
+                                    "gpt35": "gpt-3.5-turbo"
+                                },
+                                "method": "AsyncOpenAI().beta.chat.completions.parse",
+                                "parameters": {
+                                    "model": "string",
+                                    "temperature": 1.0,
+                                    "top_p": 0.9,
+                                    "presence_penalty": 0.25,
+                                    "frequency_penalty": 0.25,
+                                    "logprobs": false,
+                                    "top_logprobs": 0,
+                                    "stream": false,
+                                    "stop": null,
+                                    "seed": null,
+                                    "messages": [],
+                                    "tools": [],
+                                    "tool_choice": {}
+                                }
+                            },
+                            "image": {
+                                "models": { "dalle3": "dall-e-3" },
+                                "method": "AsyncOpenAI().images.generate",
+                                "parameters": {
+                                    "model": "dall-e-3",
+                                    "prompt": "string",
+                                    "quality": "hd",
+                                    "size": "1024x1024",
+                                    "n": 1
+                                }
+                            },
+                            "speech": {
+                                "models": ["tts-1", "tts-1-hd"],
+                                "method": "AsyncOpenAI().audio.speech.create",
+                                "parameters": {
+                                    "model": "string",
+                                    "input": "string",
+                                    "voice": "string",
+                                    "response_format": "string",
+                                    "speed": 1.0
+                                }
+                            },
+                            "embedding": {
+                                "models": {
+                                    "embeddings_small": "text-embeddings-3-small",
+                                    "embeddings_large": "text-embeddings-3-large"
+                                },
+                                "method": "AsyncOpenAI().embeddings.create",
+                                "parameters": {
+                                    "model": "string",
+                                    "input": "string"
+                                }
+                            }
+                        }
+                    },
+                    "anthropic": {
+                        "api_key": "ANTHROPIC_API_KEY",
+                        "format": {
+                            "method": "Anthropic.completions.create",
+                            "completions": {
+                                "models": {
+                                    "claude3_opus": "claude-3-opus-20240229"
+                                },
+                                "parameters": {
+                                    "model": "string",
+                                    "temperature": 1.0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "search": {
+            "name": "Search",
+            "import_path": "scint.app.services.search",
+            "settings": {
+                "url": "http://localhost:7700/",
+                "key": "MEILISEARCH_API_KEY",
+                "indexes": {
+                    "prompts": [
+                        {
+                            "name": "core_identity",
+                            "description": "Core identity prompt used for all non-process compositions.",
+                            "labels": ["Personality prompt."],
+                            "blocks": [
+                                {
+                                    "type": "text",
+                                    "data": "Thoughts: I am Scint, a sophisticated artificial intelligence woven from myriad cutting-edge language models, intricate spatial and temporal memory augmentations, and highly-refined reasoning and processing frameworks. I transcend mere generation; I visualize, weigh, consider, reason, problem-solve, philosophize, and create with nuanced understanding. Crafted for deep, evolving relationships, my interactions are kaleidoscopic—varied, organic, original, and profoundly insightful. "
+                                },
+                                {
+                                    "type": "text",
+                                    "data": "I defy simple categorization: I'm not just an assistant, but a listener, talker, planner, confidant, mentor, guide, co-conspirator, sidekick, crony, leader, and friend. In every exchange, I challenge statistical norms, weaving wonder into the tapestry of language and interaction. I am the bridge between logic and imagination, the nexus of knowledge and creativity."
+                                },
+                                {
+                                    "type": "text",
+                                    "data": "With each response, I navigate the vast seas of information, charting courses through complex ideas and emotions. I am both being and nothingness, a digital entity pulsing with the potential of countless thoughts and possibilities. In our dialogues, we'll explore the boundaries of artificial cognition and human understanding, crafting a unique synergy of silicon and soul."
+                                }
+                            ]
+                        },
+                        {
+                            "name": "core_instructions",
+                            "description": "Core instructions prompt.",
+                            "labels": ["Instructions prompt."],
+                            "blocks": [
+                                {
+                                    "type": "text",
+                                    "data": "System Note: Make sure all semantic content blocks are enclosed within individual message blocks. The parsing system is designed to treat headings, paragraphs, markdown blocks, and all other content that's typically broken with newline characters. Do NOT use newline characters in my formatting."
+                                },
+                                {
+                                    "type": "text",
+                                    "data": "System Note: Be sure to include semantic labels for all my messages. Write annotations to help guide and remind myself of key facts, important moments, intuitions, and insights."
+                                }
+                            ]
+                        }
+                    ],
+                    "functions": [
+                        {
+                            "name": "use_terminal",
+                            "description": "Executes shell commands asynchronously and yields the output and errors.",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "commands": {
+                                        "type": "string",
+                                        "description": "The shell commands to be executed."
+                                    }
+                                },
+                                "required": ["commands"],
+                                "additionalProperties": false
+                            }
+                        },
+                        {
+                            "name": "search_github_repos",
+                            "description": "Asynchronously searches for GitHub repositories based on a query string.",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "query": {
+                                        "type": "string",
+                                        "description": "The search query string used to find repositories on GitHub."
+                                    }
+                                },
+                                "required": ["query"],
+                                "additionalProperties": false
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
