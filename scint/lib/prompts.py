@@ -8,8 +8,8 @@ from typing import Deque, List, Optional
 import numpy as np
 from pydantic import BaseModel, Field, ConfigDict
 
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait
+from scint.lib.struct import Struct
+from scint.lib.traits import Trait
 
 
 def parse_created(created_str: str) -> dt:

@@ -5,8 +5,8 @@ from scint.lib.exchange import Exchange
 from scint.lib.intelligence import Intelligent
 from scint.lib.context import Contextual
 from scint.lib.entities import Interpreter
-from scint.lib.schema.threads import Message
-from scint.lib.common.tools import Tools
+from scint.lib.schema.signals import Message
+from scint.lib.tools import Tools
 
 
 exchange = Exchange()

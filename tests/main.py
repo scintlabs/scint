@@ -1,7 +1,7 @@
 import asyncio
 
 # from scint.framework.types.interfaces import Interface, Processor
-from scint.lib.common.traits import Trait
+from scint.lib.traits import Trait
 from scint.lib.exchange import Exchange
 
 

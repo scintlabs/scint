@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import inspect
 from ast import FunctionType
-from scint.lib.common.typing import List, Optional
+from scint.lib.util.typing import List, Optional
 
-from scint.lib.schema import Params
-from scint.lib.common.typing import _parse_params, _parse_doc, _finalize_type
+
+from scint.lib.util.typing import _parse_params, _parse_doc, _finalize_type
+from scint.lib.schema.models import Params
 
 
 class Function:

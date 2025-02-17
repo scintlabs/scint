@@ -4,10 +4,10 @@ from enum import Enum
 from typing import Any, Dict, Generic, TypeVar, Optional
 
 from scint.lib.observability import Observable, Observant
-from scint.lib.schema import Model
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait, Traits
-from scint.lib.common.typing import _create_provider
+from scint.lib.protocols import Model
+from scint.lib.struct import Struct
+from scint.lib.traits import Trait, Traits
+from scint.lib.util.typing import _create_provider
 
 T = TypeVar("T")
 

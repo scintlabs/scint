@@ -4,10 +4,10 @@ import inspect
 from enum import Enum, EnumType
 from types import FunctionType, new_class, prepare_class
 from uuid import uuid4
-from scint.lib.common.typing import Any, Dict, List, Literal, Optional, Type, Union, Tuple
+from typing import Any, Dict, List, Literal, Optional, Type, Union, Tuple
 from typing_extensions import TypeVar, get_args, get_origin
 
-from scint.lib.schema import Model, Param, Params
+from scint.lib.schema.models import Model, Param, Params
 
 _I = TypeVar("_I")
 _Tr = TypeVar("_Tr")

@@ -7,10 +7,10 @@ from typing import Any, Dict, TypeVar
 from anthropic import AsyncAnthropic
 from openai import AsyncOpenAI, OpenAI
 
-from scint.lib.schema.threads import Response
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait
-from scint.lib.schema.threads import Message, FunctionCall
+from scint.lib.schema.signals import Response
+from scint.lib.struct import Struct
+from scint.lib.traits import Trait
+from scint.lib.schema.signals import Message, FunctionCall
 
 
 _T = TypeVar("_T")

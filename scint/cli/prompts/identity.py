@@ -1,5 +1,5 @@
-from scint.lib.schema.library import Content
-from scint.lib.schema.processes import Prompt
+from scint.lib.schema.records import Content
+from scint.lib.schema.models import Prompt
 
 name = "Scint"
 

@@ -6,8 +6,8 @@ from typing import Any, List
 
 from meilisearch_python_sdk.models.search import Hybrid
 
-from scint.lib.common.traits import Trait
-from scint.lib.schema import Index
+from scint.lib.traits import Trait
+from scint.lib.protocols import Index
 
 
 class CanSearch(Trait):

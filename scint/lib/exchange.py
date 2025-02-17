@@ -6,9 +6,9 @@ from typing import Callable
 
 from redis.asyncio import Redis
 
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait
-from scint.lib.schema.threads import Event, Message
+from scint.lib.struct import Struct
+from scint.lib.traits import Trait
+from scint.lib.schema.signals import Event, Message
 
 from scint.lib.util.utils import env
 
@@ -74,7 +74,7 @@ class Subscribable(Trait):
             while True:
                 message = await pubsub.get_message(ignore_subscribe_messages=True)
                 if message is not None:
-                    callback(message["data"].decode())
+                    callback(message["schema"].decode())
 
         r = await Redis.from_url(env("REDIS_URL"))
         async with r.pubsub() as pubsub:

@@ -4,8 +4,8 @@ from typing import Callable, Dict, List, Set, Any
 from threading import Lock
 import logging
 
-from scint.lib.schema.threads import Event
-from scint.lib.common.traits import Trait
+from scint.lib.schema.signals import Event
+from scint.lib.traits import Trait
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

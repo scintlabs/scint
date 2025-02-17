@@ -42,7 +42,7 @@ class Interface(Trait):
 
     def output(self, msg: Response):
         content_blocks = getattr(msg, "content", [])
-        content = "".join([b.data for b in content_blocks if hasattr(b, "data")])
+        content = "".join([b.data for b in content_blocks if hasattr(b, "schema")])
         self.console.print(
             Panel(
                 Markdown(content),
@@ -55,7 +55,7 @@ class Interface(Trait):
 
 
 def format_message(message):
-    return json.dumps({"body": [{"type": "text", "data": message}]})
+    return json.dumps({"body": [{"type": "text", "schema": message}]})
 
 
 def input_thread(input_queue):
@@ -85,7 +85,7 @@ async def websocket_client():
                     data = json.loads(message)
                     blocks = data.get("blocks")
                     for block in blocks:
-                        print(block.get("data"))
+                        print(block.get("schema"))
 
                 except asyncio.TimeoutError:
                     pass

@@ -5,7 +5,7 @@ from typing import List, Optional, Any
 
 from pydantic import BaseModel, ConfigDict
 
-from scint.lib.schema.threads import Content
+from scint.lib.schema.signals import Content
 
 
 class Model(BaseModel):

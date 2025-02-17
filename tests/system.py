@@ -117,7 +117,7 @@ class Implements:
 
 
 class DataTrait(Trait):
-    requires = ("data",)
+    requires = ("schema",)
 
     def process(self):
         return f"Processing {self.data}"

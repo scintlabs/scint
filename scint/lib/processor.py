@@ -8,8 +8,8 @@ from enum import Enum
 from typing import Any, Callable, TypeVar
 
 from scint.lib.entities import Entity
-from scint.lib.common.tools import Task
-from scint.lib.common.traits import Trait
+from scint.lib.tools import Task
+from scint.lib.traits import Trait
 
 _T = TypeVar("_T")
 

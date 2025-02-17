@@ -3,10 +3,10 @@ from __future__ import annotations
 from uuid import uuid4
 
 from scint.lib.context import Contextual
-from scint.lib.common.state import Stateful, State
-from scint.lib.common.tools import Tools
-from scint.lib.common.traits import Traits, Trait
-from scint.lib.common.typing import Constructor, _finalize_type
+from scint.lib.state import Stateful, State
+from scint.lib.tools import Tools
+from scint.lib.traits import Traits, Trait
+from scint.lib.util.typing import Constructor, _finalize_type
 
 
 def init_on_enter(obj: Stateful):

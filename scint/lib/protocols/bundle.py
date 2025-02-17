@@ -6,9 +6,9 @@ from scint.lib.exchange import Publishable, Subscribable
 from scint.lib.context import Context
 from scint.lib.observability import Observable, Observant
 from scint.lib.processor import Processor
-from scint.lib.schema import Channel
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait, Traits
+from scint.lib.protocols import Channel
+from scint.lib.struct import Struct
+from scint.lib.traits import Trait, Traits
 
 
 class Bundled(Trait):

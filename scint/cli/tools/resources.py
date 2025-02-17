@@ -76,7 +76,7 @@ app = {
             "parse": {
                 "specifications": {},
             },
-            "build": {
+            "protocols": {
                 "rules": {},
                 "arguments": {},
                 "factories": {},

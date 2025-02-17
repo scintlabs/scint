@@ -70,4 +70,4 @@ def generate_hash(file_path):
 # async def generate_image(context):
 #     req = {"quality": "hd", "size": "1024x1024", "n": 1, "style": "vibrant"}
 #     res = await Models.openai.images.generate.create(**req)
-#     return res.choices[0].data.url
+#     return res.choices[0].schema.url

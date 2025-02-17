@@ -4,16 +4,15 @@ from enum import Enum
 from typing import Any
 
 from scint.lib.observability import Observable, Observant
-from scint.lib.schema import Model
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait, Traits
-from scint.lib.common.typing import Constructor, _create_service
+from scint.lib.protocols import Model
+from scint.lib.traits import Trait, Traits
+from scint.lib.util.typing import Constructor, _create_service
 
 
 class ServiceStatus(Enum): ...
 
 
-class ServiceSettings(Struct): ...
+class ServiceSettings(Model): ...
 
 
 class ServiceRequest(Model): ...

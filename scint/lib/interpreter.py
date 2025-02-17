@@ -10,8 +10,7 @@ import tree_sitter as ts
 
 from scint.lib.entities import Entity
 from scint.lib.intelligence import Intelligent
-from scint.lib.common.traits import Trait, Traits
-from scint.lib.types import Param, Params
+from scint.lib.traits import Trait, Traits
 
 
 class Parser(Trait):

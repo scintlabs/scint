@@ -4,11 +4,12 @@ from typing import Any, Dict, List, Optional, Type
 
 from scint.lib.intelligence import generate_embedding
 from scint.lib.observability import Observant
-from scint.lib.schema.library import Record, Library, Catalog
-from scint.lib.schema.threads import Thread, Threads
-from scint.lib.common.struct import Struct
-from scint.lib.common.traits import Trait, Traits
-from scint.lib.common.typing import Constructor
+from scint.lib.schema.records import Record
+from scint.lib.library import Library, Catalog
+from scint.lib.threads import Thread, Threads
+from scint.lib.struct import Struct
+from scint.lib.traits import Trait, Traits
+from scint.lib.util.typing import Constructor
 from scint.lib.util.utils import cosine_similarity
 
 

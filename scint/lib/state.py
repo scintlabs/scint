@@ -1,5 +1,5 @@
 from enum import Enum
-from scint.lib.common.typing import List, Optional
+from scint.lib.util.typing import List, Optional
 
 
 class StateTransitionError(Exception):

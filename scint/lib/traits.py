@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import FunctionType, MethodType
 
-from scint.lib.common.typing import _finalize_type
+from scint.lib.util.typing import _finalize_type
 
 
 class TraitType(type):
