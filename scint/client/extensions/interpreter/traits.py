@@ -8,9 +8,10 @@ from typing_extensions import get_origin, get_args
 import tree_sitter as ts
 
 
-from scint.lib.entities import Entity
+from scint.lib.schema.models import Param, Params
+from scint.lib.types import Interface
 from scint.lib.intelligence import Intelligent
-from scint.lib.traits import Trait, Traits
+from scint.lib.types import Trait, Traits
 
 
 class Parser(Trait):
@@ -173,5 +174,5 @@ class Parser(Trait):
         return result
 
 
-class Interpreter(Entity):
+class Interpreter(Interface):
     implements = Traits(Intelligent, Parser)

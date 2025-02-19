@@ -5,9 +5,9 @@ from typing import Any, Dict, Generic, TypeVar, Optional
 
 from scint.lib.observability import Observable, Observant
 from scint.lib.protocols import Model
-from scint.lib.struct import Struct
-from scint.lib.traits import Trait, Traits
-from scint.lib.util.typing import _create_provider
+from scint.lib.types import Struct
+from scint.lib.types import Trait, Traits
+from scint.lib.types.typing import _create_provider
 
 T = TypeVar("T")
 
@@ -52,8 +52,6 @@ class ProviderType(type):
 
 
 class Providable(Trait):
-    """Core trait for provider capabilities"""
-
     def configure(self, settings: ProviderSettings):
         self.settings = settings
         self.status = ProviderStatus.CONFIGURED
@@ -72,14 +70,11 @@ class Providable(Trait):
         raise NotImplementedError
 
     def handle_error(self, error: ProviderError):
-        """Handle provider-specific errors"""
         self.status = ProviderStatus.ERROR
         raise error
 
 
 class Provider(metaclass=ProviderType):
-    """Base provider class"""
-
     type: str
     name: str
     version: str
@@ -93,8 +88,6 @@ class Provider(metaclass=ProviderType):
 
 
 class ProviderRegistry:
-    """Registry for managing multiple providers"""
-
     _providers: Dict[str, Provider] = {}
 
     @classmethod
@@ -111,17 +104,12 @@ class ProviderRegistry:
         return cls._providers
 
 
-# Example provider implementations
 class LLMProvider(Provider):
-    """Base class for LLM providers"""
-
     def generate(self, prompt: str, **kwargs) -> ProviderResponse[str]:
         raise NotImplementedError
 
 
 class CacheProvider(Provider):
-    """Base class for cache providers"""
-
     def get(self, key: str) -> ProviderResponse[Any]:
         raise NotImplementedError
 
@@ -130,8 +118,6 @@ class CacheProvider(Provider):
 
 
 class StorageProvider(Provider):
-    """Base class for storage providers"""
-
     def save(self, key: str, data: Any) -> ProviderResponse[bool]:
         raise NotImplementedError
 
@@ -139,16 +125,13 @@ class StorageProvider(Provider):
         raise NotImplementedError
 
 
-# Example concrete provider
 class OpenAIProvider(LLMProvider):
     name = "openai"
     version = "1.0.0"
 
     def connect(self) -> bool:
-        # Initialize OpenAI client
         if not self.settings.api_key:
             raise ProviderError("API key not configured", self.name)
-        # ... implementation
         return True
 
     def generate(self, prompt: str, **kwargs) -> ProviderResponse[str]:
@@ -156,7 +139,6 @@ class OpenAIProvider(LLMProvider):
             ProviderRequest(operation="generate", params={"prompt": prompt, **kwargs})
         ):
             raise ProviderError("Invalid request", self.name)
-        # ... implementation
         return ProviderResponse(
             data="Generated text",
             metadata={"model": "gpt-4", "tokens": 150},
@@ -164,29 +146,6 @@ class OpenAIProvider(LLMProvider):
         )
 
 
-# Example usage
 class RedisCacheProvider(CacheProvider):
     name = "redis"
     version = "1.0.0"
-
-
-# Registry usage
-provider_registry = ProviderRegistry()
-openai_provider = OpenAIProvider(ProviderSettings(api_key="your-api-key"))
-provider_registry.register(openai_provider)
-openai_settings = ProviderSettings(
-    api_key="your-api-key", base_url="https://api.openai.com/v1"
-)
-llm_provider = OpenAIProvider(openai_settings)
-llm_provider.connect()
-
-response = llm_provider.generate("Hello, world!")
-
-# Switch providers easily
-anthropic_provider = provider_registry.get("anthropic")
-if anthropic_provider:
-    response = anthropic_provider.generate("Hello, world!")
-
-# Use different types of providers
-cache_provider = RedisCacheProvider(ProviderSettings(base_url="redis://localhost:6379"))
-cache_provider.set("key", "value")

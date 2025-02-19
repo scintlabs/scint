@@ -5,8 +5,8 @@ from typing import Any
 
 from scint.lib.observability import Observable, Observant
 from scint.lib.protocols import Model
-from scint.lib.traits import Trait, Traits
-from scint.lib.util.typing import Constructor, _create_service
+from scint.lib.types import Trait, Traits
+from scint.lib.types.typing import Constructor, _create_service
 
 
 class ServiceStatus(Enum): ...

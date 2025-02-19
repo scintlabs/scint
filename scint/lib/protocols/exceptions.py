@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 
+class StateTransitionError(Exception):
+    pass
+
+
 class RouterError(Exception):
     pass
 

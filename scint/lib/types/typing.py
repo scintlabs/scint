@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from enum import Enum, EnumType
-from types import FunctionType, new_class, prepare_class
+from enum import Enum
+from types import FunctionType, prepare_class
 from uuid import uuid4
 from typing import Any, Dict, List, Literal, Optional, Type, Union, Tuple
 from typing_extensions import TypeVar, get_args, get_origin
@@ -96,7 +96,27 @@ def _parse_params(func: FunctionType) -> "Params":
         if not schema:
             continue
 
-        ptype = schema.get("type", "")
+        if not schema.get("type"):
+            return
+
+        match schema.get("type", ""):
+            case "str":
+                ptype = "string"
+            case "int":
+                ptype = "integer"
+            case "float":
+                ptype = "number"
+            case "bool":
+                ptype = "boolean"
+            case "list":
+                ptype = "array"
+            case "dict":
+                ptype = "object"
+            case "None":
+                ptype = "null"
+            case _:
+                ptype = "string"
+
         if "enum" in schema:
             ptype = "enum"
             items = schema["enum"]
@@ -106,9 +126,6 @@ def _parse_params(func: FunctionType) -> "Params":
             items = None
 
         prop_desc = param_descs.get(name, "")
-        if not prop_desc and schema.get("enum"):
-            prop_desc = f"Possible values: {schema['enum']}"
-
         parameters_list.append(
             Param(
                 name=name,
@@ -147,13 +164,13 @@ def _create_service(name, bases, dct):
             setattr(self.__class__, interface_name, property(get_interface))
 
         dct["__init__"] = __init__
-    return _finalize_type(name, bases, dct)
+    return _build_type(name, bases, dct)
 
 
 def _create_interface(name: str, bases, dct: Dict[str, Any]):
     dct["id"] = str(uuid4())
     dct["name"] = name
-    return _finalize_type(name, bases, dct)
+    return _build_type(name, bases, dct)
 
 
 def _create_struct(name: str, bases, dct: Dict[str, Any]):
@@ -176,11 +193,11 @@ def _create_struct(name: str, bases, dct: Dict[str, Any]):
     dct["__init__"] = __init__
     dct["__post_init__"] = __post_init__
     dct["__repr__"] = __repr__
-    return _finalize_type(name, bases, dct)
+    return _build_type(name, bases, dct)
 
 
 def _create_tool(name: str, bases, dct: Dict[str, Any]):
-    return _finalize_type(name, bases, dct)
+    return _build_type(name, bases, dct)
 
 
 def _define_type(name, type, **kwds):
@@ -208,16 +225,31 @@ def _with_context(dct: Dict[str, Any]):
     return dct
 
 
-def _with_traits(dct):
+def _parse_types(bases):
+
     pass
+
+
+def _extend_type(extension, dct):
+    pass
+
+
+# def _with_trait(dct, trait):
+#     def __init_traits__(self):
+#         for t in self._traits:
+#             t.__init_trait__(self)
+
+#     if not hasattr(trait, "__init_trait__"):
+#         trait["__init_trait__"] = lambda self: self
+
+#     if not hasattr(dct, "__init_traits__"):
+#         dct["__init_traits__"] = __init_traits__
+
+#     return dct
 
 
 def _with_constructor(dct):
     pass
-
-
-def _build_type(name, bases, kwds, namespace):
-    return new_class("Base" + name, bases, kwds, lambda ns: ns.update(namespace))
 
 
 def _validate_type(value, expected_type):
@@ -233,57 +265,34 @@ def _validate_type(value, expected_type):
 
 
 def _finalize_type(name: str, bases: Tuple[Type], dct: Dict[str, Any]):
+    def __post_init__(self, **kwargs):
+        for f, t in annotations.items():
+            if f not in kwargs:
+                raise TypeError(f"Missing required argument: {f}")
+            value = kwargs[f]
+            if not _validate_type(value, t):
+                raise TypeError(f"Expected {t} for {f}, got {type(value)}")
+            self._fields[f] = value
+
     if any(hasattr(b, "id") for b in bases):
         dct["__init_subclass__"] = lambda self, **kwargs: None
         dct["__subclasscheck__"] = lambda *args: False
+
+    dct["id"] = str(uuid4())
+    dct["__post_init__"] = __post_init__
     return dct
 
 
-class ConstructorType(EnumType):
-    def __call__(cls, *args, **kwargs):
-        if (
-            args
-            and len(args) >= 3
-            and isinstance(args[0], str)
-            and isinstance(args[1], tuple)
-            and isinstance(args[2], dict)
-        ):
-            return cls._make(*args, **kwargs)
-        else:
-            return super().__call__(*args, **kwargs)
+def _build_type(name: str, bases: Tuple[Type], dct: Dict[str, Any]):
 
+    if any(hasattr(b, "id") for b in bases):
+        dct["__init_subclass__"] = lambda self, *args, **kwargs: None
+        dct["__subclasscheck__"] = lambda *args: False
 
-class Constructor(Enum, metaclass=ConstructorType):
-    def __init__(self, name=False, bases=False, dct=False, new=False):
-        self.type_name = name
-        self.base = bases
-        self.dct = dct
-        self.new = self.__call__(name, bases, dct)
+    dct["id"] = str(uuid4())
+    dct["type"] = name
 
-    def __call__(self, name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-        dct = self._get_type(name, bases, dct)
-        return new_class(name, bases, {}, lambda ns: dct)
-
-    def _get_type(self, name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-        from importlib import import_module
-
-        try:
-            match name:
-                case "Entity":
-                    module = import_module("scint.lib.entities", "Handler")
-                    return getattr(module, name)
-                case "Thread":
-                    module = import_module("scint.lib.context", "Thread")
-                    return getattr(module, name)
-                case _:
-                    return _create_tool(name, bases, dct)
-        except Exception as e:
-            raise Exception(f"Couldn't create type '{name}': {e}.")
-
-    @classmethod
-    def _make(cls, name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-        member = next(iter(cls))
-        return member.__call__(name, bases, dct)
+    return dct
 
 
 # class ServiceTypes(Constructor):

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from types import MethodType
-from scint.lib.util.typing import Any, List
+from scint.lib.types.typing import Any, List
 
 
-from scint.lib.tools import Tool
+from scint.lib.types.tools import Tool
 
 
 class Requires:

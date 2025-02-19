@@ -6,8 +6,7 @@ from typing import Callable
 
 from redis.asyncio import Redis
 
-from scint.lib.struct import Struct
-from scint.lib.traits import Trait
+from scint.lib.types import Struct, Trait
 from scint.lib.schema.signals import Event, Message
 
 from scint.lib.util.utils import env

@@ -3,11 +3,11 @@ from __future__ import annotations
 from enum import Enum
 from uuid import uuid4
 from datetime import datetime as dt, timezone as tz
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from scint.lib.schema.records import Content
+from scint.lib.schema.records import Block
 
 
 def parse_created(created_str: str) -> dt:
@@ -39,13 +39,6 @@ class ResultType(Enum):
     SearchQuery = "SearchQuery"
 
 
-class DataEvent(Signal):
-    catalog: str
-    path: str
-    operation: str
-    content_id: str
-
-
 class Event(Signal):
     type: EventType
     content: str
@@ -53,7 +46,7 @@ class Event(Signal):
 
 class Result(Signal):
     type: ResultType
-    content: Result
+    content: Block
 
     @property
     def model(self):
@@ -75,7 +68,8 @@ class ProcessCall(Signal):
 
 class FunctionCall(Signal):
     call_id: str
-    result: Result
+    name: str
+    arguments: Dict[str, Any]
 
     @property
     def model(self):
@@ -86,15 +80,34 @@ class FunctionCall(Signal):
         }
 
 
-class Response(Signal):
-    content: List[Content]
+class Intention(Signal):
+    blocks: List[Block]
     entities: Optional[List[str]]
     keywords: List[str]
     prediction: List[str]
+    annotation: str
 
     @property
     def model(self):
-        return {"role": "assistant", "content": self.content}
+        return {
+            "role": "assistant",
+            "content": "".join([b.content for b in self.blocks]),
+        }
+
+
+class Response(Signal):
+    blocks: List[Block]
+    entities: Optional[List[str]]
+    keywords: List[str]
+    prediction: List[str]
+    annotation: str
+
+    @property
+    def model(self):
+        return {
+            "role": "assistant",
+            "content": "".join([b.content for b in self.blocks]),
+        }
 
 
 class Message(Signal):

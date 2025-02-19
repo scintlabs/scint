@@ -5,7 +5,7 @@ from threading import Lock
 import logging
 
 from scint.lib.schema.signals import Event
-from scint.lib.traits import Trait
+from scint.lib.types import Trait
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

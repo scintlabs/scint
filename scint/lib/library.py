@@ -4,9 +4,9 @@ from typing import Dict, List, Optional, Any
 
 from pydantic import Field
 
-from scint.lib.struct import Struct
-from scint.lib.traits import Trait
-from scint.lib.schema.records import CatalogType, Content, DataNode, Index
+from scint.lib.types import Struct
+from scint.lib.types import Trait
+from scint.lib.schema.records import CatalogType, Block, DataNode, Index
 
 
 class Catalog(Struct):
@@ -16,7 +16,7 @@ class Catalog(Struct):
     index: Index
     signals: List[str] = Field(default_factory=list)
 
-    def add_node(self, path: str, content: Content) -> DataNode:
+    def add_node(self, path: str, content: Block) -> DataNode:
         parts = path.split("/")
         current = self.root
 
@@ -39,20 +39,6 @@ class Catalog(Struct):
 
     def get_node(self, path: str) -> Optional[DataNode]:
         return self.root.find_by_path(path)
-
-
-class LibraryView(Trait):
-    def apply_filters(self) -> List[DataNode]:
-        pass
-
-    def sort_by(self, key: str) -> List[DataNode]:
-        pass
-
-
-class Library(Struct):
-    indices: Dict[str, Index] = Field(default_factory=dict)
-    catalogs: Dict[str, Catalog] = Field(default_factory=dict)
-    views: Dict[str, LibraryView] = Field(default_factory=dict)
 
 
 class Catalogable(Trait):
@@ -84,6 +70,20 @@ class DataThread(Struct):
 
     def get_context_data(self) -> List[DataNode]:
         pass
+
+
+class LibraryView(Trait):
+    def apply_filters(self) -> List[DataNode]:
+        pass
+
+    def sort_by(self, key: str) -> List[DataNode]:
+        pass
+
+
+class Library(Struct):
+    indices: Dict[str, Index] = Field(default_factory=dict)
+    catalogs: Dict[str, Catalog] = Field(default_factory=dict)
+    views: Dict[str, LibraryView] = Field(default_factory=dict)
 
 
 Filters = Dict[str, Any]

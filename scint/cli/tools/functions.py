@@ -3,19 +3,15 @@ from __future__ import annotations
 import asyncio
 import aiohttp
 
-from scint.api.models import (
-    Block,
-    BlockType,
-    FuncResult,
-    Response,
-    Tool,
-    Parameter,
-    Parameters,
-)
-from scint.support.utils import encode_image
+from scint.lib.schema.records import Block
+from scint.lib.schema.signals import Result
 
 
 async def use_terminal(commands: str):
+    """
+    Executes shell commands asynchronously and yields the output and errors.
+    commands: The shell commands to be executed.
+    """
     process = await asyncio.create_subprocess_shell(
         commands,
         stdout=asyncio.subprocess.PIPE,
@@ -24,25 +20,10 @@ async def use_terminal(commands: str):
     stdout, stderr = await process.communicate()
     output = stdout.decode().strip() if stdout else ""
     errors = stderr.decode().strip() if stderr else ""
-    return FuncResult(content=[Block(data=str(output if output else str(errors)))])
+    return Result(content=Block(content=str(output if output else str(errors))))
 
 
-use_terminal.model = Tool(
-    name="use_terminal",
-    description="Executes shell commands asynchronously and yields the output and errors.",
-    parameters=Parameters(
-        properties=[
-            Parameter(
-                name="commands",
-                type="string",
-                description="The shell commands to be executed.",
-            )
-        ]
-    ),
-)
-
-
-async def search_github(tool, query: str):
+async def search_github(query: str):
     process = await asyncio.create_subprocess_shell(
         f"gh search repos {query}",
         stdout=asyncio.subprocess.PIPE,
@@ -51,8 +32,7 @@ async def search_github(tool, query: str):
     stdout, stderr = await process.communicate()
     output = stdout.decode().strip() if stdout else ""
     errors = stderr.decode().strip() if stderr else ""
-    blocks = [Block(data=errors) if errors else Block(data=output)]
-    return FuncResult(blocks=blocks)
+    return Block(content=errors) if errors else Block(content=output)
 
 
 async def load_image(url: str):
@@ -61,17 +41,9 @@ async def load_image(url: str):
             if response.status == 200:
                 with open("download.png", "wb") as f:
                     image = await f.read()
-                    base64_image = encode_image(image)
-                    return Response(
-                        blocks=[Block(type=BlockType.IMAGE, data=base64_image)]
-                    )
-
+                    return Block(content=image)
             else:
-                return Response(
-                    blocks=[
-                        Block(type=BlockType.TEXT, data="Failed to download image.")
-                    ]
-                )
+                return Block(content="Failed to download image.")
 
 
 async def load_website(url: str):
@@ -81,8 +53,4 @@ async def load_website(url: str):
             {"url": url, "pdf": True},
         ) as response:
             if response.status == 200:
-                blocks = [Block(data=str(response.json()))]
-                return Response(blocks=blocks)
-
-
-tools = []
+                return Block(content=response.json())

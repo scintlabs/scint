@@ -11,11 +11,43 @@ import rich
 from rich.markdown import Markdown, Panel, box
 from rich.prompt import Prompt
 
-from scint.api.models import Block, Message, Response
-from scint.api.types import Struct, Trait
+from scint.lib.schema.signals import Message, Response
+from scint.lib.types import Struct, Trait
+from scint.lib.types import Interface, Processor
+
+
+class Interfacable(Trait):
+    async def start(self, entity: Interface):
+        while True:
+            try:
+                entry = Prompt.ask("\n")
+                if entry.lower() == "q":
+                    break
+
+                await self.send(entity, entry)
+            except Exception as e:
+                self.errors.print(f"[error]{str(e)}[/error]")
+                self.errors.print(f"[error]Traceback: {traceback.format_exc()}[/error]")
+
+    async def send(self, entity: Interface, input: str):
+        entity.context.update(Message(content=input))
+        res = await entity.process()
+        return self.receive(res)
+
+    def receive(self, res: Response):
+        return self.console.print(
+            Panel(
+                Markdown(res.content),
+                title="[assistant]Scint[/assistant]",
+                border_style="white",
+                padding=(1, 2),
+                box=box.ROUNDED,
+            )
+        )
 
 
 class Console(Struct):
+    interpreter = Processor()
     console = rich.console.Console()
     errors = rich.console.Console(stderr=True)
     theme = {
@@ -23,35 +55,6 @@ class Console(Struct):
         "assistant": "cyan",
         "error": "red",
     }
-
-
-class Interface(Trait):
-    async def start(self):
-        while True:
-            try:
-                entry = Prompt.ask("\n")
-                if entry.lower() == "q":
-                    break
-
-                msg = Message(content=[Block(data=entry)], callback=self.output)
-                self.app.send(msg)
-
-            except Exception as e:
-                self.errors.print(f"[error]{str(e)}[/error]")
-                self.errors.print(f"[error]Traceback: {traceback.format_exc()}[/error]")
-
-    def output(self, msg: Response):
-        content_blocks = getattr(msg, "content", [])
-        content = "".join([b.data for b in content_blocks if hasattr(b, "schema")])
-        self.console.print(
-            Panel(
-                Markdown(content),
-                title="[assistant]Scint[/assistant]",
-                border_style="white",
-                padding=(1, 2),
-                box=box.ROUNDED,
-            )
-        )
 
 
 def format_message(message):

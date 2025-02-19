@@ -6,7 +6,7 @@ from typing import Any, List
 
 from meilisearch_python_sdk.models.search import Hybrid
 
-from scint.lib.traits import Trait
+from scint.lib.types import Trait
 from scint.lib.protocols import Index
 
 

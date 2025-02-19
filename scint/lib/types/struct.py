@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from scint.lib.util.typing import _validate_type, _finalize_type
+from scint.lib.types.typing import _validate_type, _finalize_type
 
 
 class StructType(type):

@@ -3,10 +3,10 @@ import asyncio
 
 from scint.lib.exchange import Exchange
 from scint.lib.intelligence import Intelligent
-from scint.lib.context import Contextual
-from scint.lib.entities import Interpreter
+from scint.lib.compose import ContextDescriptor
+from scint.lib.types import Processor
 from scint.lib.schema.signals import Message
-from scint.lib.tools import Tools
+from scint.lib.types.tools import Tools
 
 
 exchange = Exchange()
@@ -29,8 +29,8 @@ class Loadable(Tools):
 
 
 async def main():
-    interpreter = Interpreter()
-    interpreter.traits(Contextual, Intelligent)
+    interpreter = Processor()
+    interpreter.traits(ContextDescriptor, Intelligent)
     interpreter.tools(Loadable)
 
     message = Message(
