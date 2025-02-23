@@ -73,7 +73,3 @@ class Tools(metaclass=ToolsType):
     def __call__(self, *tools):
         return self.__init_tools__(*tools)
 
-
-class ToolKit(metaclass=ToolsType):
-    def __call__(self, *tools):
-        return self.__init_toolkit__(*tools)

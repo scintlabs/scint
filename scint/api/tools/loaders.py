@@ -1,10 +1,8 @@
 import asyncio
 
-from pprint import pp
 import aiohttp
 
 from scint.lib.schemas.signals import Block, Message, Result
-from scint.lib.types.prototype import Prototype
 from scint.lib.types.tools import Tools
 
 
@@ -66,24 +64,3 @@ class DevTools(Tools):
         output = stdout.decode().strip() if stdout else ""
         errors = stderr.decode().strip() if stderr else ""
         return Message(content=errors) if errors else Message(content=output)
-
-
-class Agent(Prototype): ...
-
-
-async def main():
-    agent = Agent()
-    agent.tools(DevTools)
-    agent.update(Message(content="What was the last thing you did?."))
-
-    async def first():
-        res = await agent.think()
-        if res:
-            print(agent.model)
-
-    await first()
-    pp(agent.model)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

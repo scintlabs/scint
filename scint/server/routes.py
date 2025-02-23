@@ -1,53 +1,53 @@
 from fastapi import APIRouter, HTTPException
 
-from scint.server.models import Request
-from scint.client.client import ScintClient
+from scint.api import ScintInterface
+from scint.lib.switch import Request
 
 
+interface = ScintInterface()
 router = APIRouter()
-client = ScintClient()
 
 
-@router.post("/message")
-async def message(req: Request):
+@router.post("/messages")
+async def messages_endpoint(req: Request):
     try:
-        res = await client.input(req)
+        res = await interface.messages(req)
         return res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/tasks")
-async def tasks(req: Request):
+async def tasks_endpoint(req: Request):
     try:
-        res = await client.tasks(req)
-        return res
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.post("/processes")
-async def processes(req: Request):
-    try:
-        res = await client.processes(req)
+        res = await interface.tasks(req)
         return res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/library")
-async def storage(req: Request):
+async def library_endpoint(req: Request):
     try:
-        res = await client.library(req)
+        res = await interface.library(req)
         return res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/search")
-async def search(req: Request):
+@router.post("/settings")
+async def settings_endpoint(req: Request):
     try:
-        res = await client.library(req)
+        res = await interface.settings(req)
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/find")
+async def find_endpoint(req: Request):
+    try:
+        res = await interface.find(req)
         return res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

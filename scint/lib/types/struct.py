@@ -1,34 +1,39 @@
 from __future__ import annotations
+from typing import List
 
-from scint.lib.types.typing import _validate_type, _finalize_type
+from scint.lib.types.traits import Trait
+from scint.lib.types.typing import _finalize_type
 
 
 class StructType(type):
-    def __new__(cls, name, bases, dct):
-        def __init__(self, *args, **kwargs):
-            self._data = self.__dict__
+    @classmethod
+    def __prepare__(cls, name, bases, **kwds):
+        new_bases = [b for b in bases if not isinstance(b, Trait)]
+        traits = [b for b in bases if isinstance(b, Trait)]
+        return super().__prepare__(name, tuple(new_bases), {"traits": traits})
 
-        def __post_init__(self, **kwargs):
-            for f, t in annotations.items():
-                if f not in kwargs:
-                    raise TypeError(f"Missing required argument: {f}")
-                value = kwargs[f]
-                if not _validate_type(value, t):
-                    raise TypeError(f"Expected {t} for {f}, got {type(value)}")
-                self._data[f] = value
+    def __new__(cls, name, bases, dct, **kwds):
+        def __init__(self, other=None, *args, **kwargs):
+            if other is not None:
+                self.other = other
+            traits = kwds.get("traits", [])
 
-        def __repr__(self):
-            fields = [f"{k}={self._data[k]!r}" for k in self._data]
-            return f"{self.__class__.__name__}({', '.join(fields)})"
+            for a in args:
+                if isinstance(a, Trait):
+                    traits.append(a)
+            self.__init_traits__(traits)
 
-        dct["type"] = name
+        def __init_traits__(self, traits: List[Trait] = None):
+            self._traits = [*traits]
+            for t in self._traits:
+                other = self
+                t.__init_trait__(other)
+
+        dct["traits"] = __init_traits__
         dct["__init__"] = __init__
-        dct["__post_init__"] = __post_init__
-        dct["__repr__"] = __repr__
+        dct["__init_traits__"] = __init_traits__
         dct = _finalize_type(name, bases, dct)
         return super().__new__(cls, name, bases, dct)
 
 
-class Struct(metaclass=StructType):
-    def __init__(self):
-        print(self.__dict__)
+class Struct(metaclass=StructType): ...

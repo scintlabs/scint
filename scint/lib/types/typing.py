@@ -7,7 +7,8 @@ from uuid import uuid4
 from typing import Any, Dict, List, Literal, Optional, Type, Union, Tuple
 from typing_extensions import TypeVar, get_args, get_origin
 
-from scint.lib.schema.models import Model, Param, Params
+from scint.lib.schemas.models import Model
+from scint.lib.schemas.tasks import Param, Params
 
 _I = TypeVar("_I")
 _Tr = TypeVar("_Tr")
@@ -80,7 +81,7 @@ def _parse_annotation(annotation: Any) -> Optional[Dict[str, Any]]:
     return None
 
 
-def _parse_params(func: FunctionType) -> "Params":
+def _parse_params(func: FunctionType) -> Params:
     if func is None:
         return None
     sig = inspect.signature(func)
@@ -167,7 +168,7 @@ def _create_service(name, bases, dct):
     return _build_type(name, bases, dct)
 
 
-def _create_interface(name: str, bases, dct: Dict[str, Any]):
+def _create_handler(name: str, bases, dct: Dict[str, Any]):
     dct["id"] = str(uuid4())
     dct["name"] = name
     return _build_type(name, bases, dct)
@@ -226,7 +227,6 @@ def _with_context(dct: Dict[str, Any]):
 
 
 def _parse_types(bases):
-
     pass
 
 
@@ -265,33 +265,17 @@ def _validate_type(value, expected_type):
 
 
 def _finalize_type(name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-    def __post_init__(self, **kwargs):
-        for f, t in annotations.items():
-            if f not in kwargs:
-                raise TypeError(f"Missing required argument: {f}")
-            value = kwargs[f]
-            if not _validate_type(value, t):
-                raise TypeError(f"Expected {t} for {f}, got {type(value)}")
-            self._fields[f] = value
-
+    dct["id"] = str(uuid4())
     if any(hasattr(b, "id") for b in bases):
         dct["__init_subclass__"] = lambda self, **kwargs: None
         dct["__subclasscheck__"] = lambda *args: False
-
-    dct["id"] = str(uuid4())
-    dct["__post_init__"] = __post_init__
     return dct
 
 
 def _build_type(name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-
     if any(hasattr(b, "id") for b in bases):
         dct["__init_subclass__"] = lambda self, *args, **kwargs: None
         dct["__subclasscheck__"] = lambda *args: False
-
-    dct["id"] = str(uuid4())
-    dct["type"] = name
-
     return dct
 
 
