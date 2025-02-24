@@ -13,9 +13,10 @@ class StructType(type):
         return super().__prepare__(name, tuple(new_bases), {"traits": traits})
 
     def __new__(cls, name, bases, dct, **kwds):
-        def __init__(self, other=None, *args, **kwargs):
-            if other is not None:
-                self.other = other
+        def __init__(self, prototype=None, *args, **kwargs):
+            self.prototype = prototype
+            if prototype is not None:
+                self.tools = self.prototype._tools
             traits = kwds.get("traits", [])
 
             for a in args:

@@ -8,7 +8,7 @@ from redis.asyncio import Redis
 
 from scint.lib.types import Struct, Trait
 from scint.lib.schemas.signals import Event, Message
-from scint.lib.schemas.models import Model
+from scint.lib.types.model import Model
 from scint.lib.util.utils import env
 
 _observers: Dict[str, Set[Callable]] = {}

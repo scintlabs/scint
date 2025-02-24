@@ -9,7 +9,7 @@ from meilisearch_python_sdk.models.search import Hybrid
 
 from scint.lib.types.exceptions import PromptError
 from scint.lib.schemas.signals import Block, Message
-from scint.lib.schemas.models import Model
+from scint.lib.types.model import Model
 from scint.lib.types.struct import Struct
 from scint.lib.types.traits import Trait
 

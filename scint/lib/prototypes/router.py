@@ -5,7 +5,7 @@ from enum import Enum, auto
 from typing import Any, List, Optional
 
 from scint.lib.prototypes.classifier import Classifier
-from scint.lib.prototypes.notifier import Notifier
+from scint.lib.prototypes.scheduler import Notifier
 from scint.lib.schemas.signals import Signal
 from scint.lib.types import Struct, Trait
 
@@ -72,7 +72,7 @@ class Switching(Trait):
             pass
 
 
-class Switch(Struct):
+class Router(Struct):
     traits: List[Trait] = [Switching]
     requests: List[Request] = []
     classifier = Classifier()

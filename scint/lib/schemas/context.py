@@ -5,17 +5,12 @@ from typing import Any, Dict, List, Optional, Type
 
 from redis.client import Redis
 
-from scint.lib.prototypes.notifier import Observable, Observe
-from scint.lib.schemas.models import Model
-from scint.lib.schemas.signals import (
-    Intention,
-    Message,
-    Prompt,
-    Response,
-    Result,
-    ToolCall,
-)
+from scint.lib.prototypes.composer import Composable
+from scint.lib.prototypes.scheduler import Observable
+from scint.lib.schemas.signals import Prompt, Intention, Message, Response
+from scint.lib.schemas.signals import ToolCall, Result
 from scint.lib.schemas.tasks import Task
+from scint.lib.types.model import Model
 from scint.lib.types.struct import Struct
 from scint.lib.types.tools import Tool
 from scint.lib.types.traits import Trait
@@ -25,86 +20,10 @@ _context: Dict[str, Any] = {}
 _redis = Redis(host="localhost", port=6379, db=0)
 
 
-class ContextConnector:
-    def __set_name__(self, owner: Type[Any], name: str) -> None:
-        self.name = name
-
-    def __get__(self, instance: Optional[Any], owner: Type[Any]) -> Any:
-        if instance is None:
-            return self
-
-        key = f"context:{instance.type}"
-        if instance.type != Composer:
-            stored_data = _redis.get(key)
-            if not stored_data:
-                c = Context(other=instance.type)
-                _redis.set(key, c.encode)
-                return c
-            else:
-                return Context.decode(stored_data)
-
-        all_keys = _redis.keys("context:*")
-        result = {}
-        for k in all_keys:
-            k_str = k.decode("utf-8")
-            data = _redis.get(k_str)
-            if data:
-                context_obj = Context.decode(data)
-                instance_type = k_str.split("context:")[-1]
-                result[instance_type] = context_obj
-        return result
-
-    def __set__(self, instance: Any, value: Any) -> None:
-        raise AttributeError("Context cannot be set directly")
-
-
-class SemanticContext(Model):
-    intention: Optional[Intention] = None
-    prompts: List[Prompt] = []
-
-    def update(self, *args):
-        for a in args:
-            if isinstance(a, (Message, Result, Response, ToolCall)):
-                self.messages.append(a)
-
-    @property
-    def model(self):
-        messages = []
-        if self.intention is not None:
-            messages.append(self.intention.model)
-
-        for p in self.prompts:
-            messages.append(p.model)
-
-        return {"messages": messages}
-
-
-class BaseContext(Model):
-    messages: List[Message] = []
-    tools: List[Tool] = []
-
-    def update(self, *args):
-        for a in args:
-            if isinstance(a, (Message, Result, Response, ToolCall)):
-                self.messages.append(a)
-
-    @property
-    def model(self):
-        messages = []
-        for m in self.messages:
-            messages.append(m.model)
-
-        return {
-            "messages": messages,
-            "tools": [t.model for t in self.tools],
-        }
-
-
 class ProcessContext(Model):
     task: Optional[Task] = None
     tasks: List[Task] = []
     results: List[Result] = []
-    tools: List[Tool] = []
 
     def update(self, *args):
         for a in args:
@@ -121,93 +40,90 @@ class ProcessContext(Model):
         return {"tools": []}
 
 
-class Context(Struct, traits=(Observable,), other=None):
-    other: str = None
-    base: BaseContext = BaseContext()
-    process: ProcessContext = ProcessContext()
-    semantic: SemanticContext = SemanticContext()
+class InterfaceContext(Model):
+    messages: List[Message | Result | Response | ToolCall] = []
 
-    def __init__(self, other):
-        self.other = other
-
-    def update(self, other, *args):
-        if self.other is None:
-            self.other = other
-        self.base.update(*args)
-        self.process.update(*args)
-        self.save()
-
-    def load(self):
-        if not self.other:
-            raise ValueError(f"Context {self.other} is not set; cannot load context.")
-        data = _redis.get(f"context:{self.other}")
-        raw = json.loads(data)
-        self.process = BaseContext(**raw.get("process", {}))
-        self.base = BaseContext(**raw.get("base", {}))
-
-    def save(self):
-        if not self.other:
-            raise ValueError(
-                f"Context {self.other} is not set; cannot build a proper key."
-            )
-        data = self.encode
-        _redis.set(f"context:{self.other}", data)
+    def update(self, *args):
+        for a in args:
+            if isinstance(a, (Message, Result, Response, ToolCall)):
+                self.messages.append(a)
 
     @property
-    def encode(self):
-        data = self.base.model_dump()
-        return json.dumps(data)
+    def model(self):
+        messages = []
+        for m in self.messages:
+            messages.append(m.model)
+        return {"messages": messages}
+
+
+class ComposedContext(Model):
+    intention: Optional[Intention] = None
+    prompts: List[Prompt] = []
+
+
+class Context(Struct):
+    traits = (Composable, Observable)
+    interface = InterfaceContext()
+    prototype: Type
+    tools: List[Tool]
+
+    def update(self, *args):
+        self.interface.update(*args)
+        self._sync_to_redis()
+
+    def _sync_to_redis(self) -> None:
+        key = f"context:{self.prototype.prototype}"
+        serialized = self.encode()
+        _redis.set(key, serialized)
+
+    def encode(self) -> bytes:
+        data = {"interface": self.interface.model_dump()}
+        data["interface"]["tools"] = [t.model for t in self.prototype._tools.values()]
+        return json.dumps(data).encode("utf-8")
 
     @classmethod
-    def decode(cls, data: str):
-        raw = json.loads(data)
-        return cls(
-            base=BaseContext(**raw.get("base", {})),
-            process=ProcessContext(**raw.get("process", {})),
-        )
+    def decode(cls, data):
+        data_dict = json.loads(data)
+        context = cls()
+        context.interface = InterfaceContext.model_validate(data_dict["interface"])
+        return context
 
     @property
     def model(self):
         return {
-            **self.semantic.model,
-            **self.process.model,
-            **self.base.model,
+            **self.interface.model,
+            "tools": [t.model for t in self.prototype._tools.values()],
         }
 
 
-class Compose(Trait):
-    def compose(self):
-        pass
+class ContextProvider:
+    def __set_name__(self, owner: Type[Any], name: str) -> None:
+        self.name = name
 
-    def search_intentions(self, message: Message):
-        return None
+    def __get__(self, instance: Optional[Any], owner: Type[Any]) -> Any:
+        if instance is not None and hasattr(instance, "prototype"):
+            stored_data = _redis.get(f"context:{instance.prototype}")
+            if not stored_data:
+                context = Context()
+                context.prototype = instance
+                return context
+            else:
+                context = Context.decode(stored_data)
+                context.prototype = instance
+                return context
 
-    def search_messages(self, message: Message):
-        return None
+        all_keys = _redis.keys("context:*")
+        result = {}
+        for k in all_keys:
+            k_str = k.decode("utf-8")
+            data = _redis.get(k)
+            if data:
+                context_obj = Context.decode(data)
+                instance_type = k_str.split("context:")[-1]
+                context_obj.prototype = instance_type
+                result[instance_type] = context_obj
+                return result
+        return self
 
-    def search_tools(self, message: Message):
-        return None
-
-    def search_tasks(self, message: Message):
-        return None
-
-
-class Composer(Struct, traits=(Compose, Observe)): ...
-
-
-# class ContextConnector:
-#     def __set_name__(self, owner: Type[Any], name: str) -> None:
-#         self.name = name
-
-#     def __get__(self, instance: Optional[Any], owner: Type[Any]) -> Any:
-#         if instance is None:
-#             return self
-
-#         if instance.id != "Composer":
-#             if instance.id not in _context:
-#                 _context[instance.id] = Context()
-#             return _context[instance.id]
-#         return _context
-
-#     def __set__(self, instance: Any, value: Any) -> None:
-#         raise AttributeError("Context cannot be set directly")
+    def __set__(self, instance: Any, value: Any) -> None:
+        raise AttributeError("Context cannot be set directly")

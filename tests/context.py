@@ -6,7 +6,7 @@ import aiohttp
 
 from scint.lib.prototypes.interface import Interface
 from scint.lib.prototypes.composer import Composer
-from scint.lib.schemas.context import BaseContext, SemanticContext
+from scint.lib.schemas.context import InterfaceContext, ComposedContext
 from scint.lib.schemas.signals import Message, Result
 from scint.lib.types.tools import Tools
 
@@ -81,8 +81,8 @@ class Context(Interface):
     This class provides methods to access and manage different states of context in a conversational AI system. When messages arrive, choose the most appropriate state given the message.
     """
 
-    _active: BaseContext = BaseContext()
-    _semantic: SemanticContext = SemanticContext()
+    _active: InterfaceContext = InterfaceContext()
+    _semantic: ComposedContext = ComposedContext()
 
     async def active_state(self, mixed: bool):
         """

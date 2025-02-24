@@ -41,3 +41,7 @@ class ContextUnavailable(BaseException):
 
 class ContextNotFound(BaseException):
     pass
+
+
+class ProviderError(Exception):
+    pass

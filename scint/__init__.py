@@ -4,7 +4,7 @@ from pprint import pp
 import aiohttp
 
 from scint.lib.schemas.signals import Block, Message, Result
-from scint.lib.types.prototype import Prototype
+from scint.lib.prototypes.interface import Interface
 from scint.lib.types.tools import Tools
 
 
@@ -57,32 +57,24 @@ class DevTools(Tools):
         Searches GitHub repositories using the GitHub CLI and returns the results.
         query: The search term to find repositories.
         """
-        process = await asyncio.create_subprocess_shell(
-            f"gh search repos {query}",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        stdout, stderr = await process.communicate()
-        output = stdout.decode().strip() if stdout else ""
-        errors = stderr.decode().strip() if stderr else ""
-        return Message(content=errors) if errors else Message(content=output)
-
-
-class Agent(Prototype): ...
+        return await self.use_terminal(f"gh search repos {query}")
 
 
 async def main():
-    agent = Agent()
-    agent.tools(DevTools)
-    agent.update(Message(content="What was the last thing you did?."))
+    ptype = Interface()
+    ptype.tools(DevTools)
+    ptype.update(
+        Message(
+            content="Pardon the repeated messages, busy working on your persistent memory."
+        )
+    )
+    print(ptype.context.model)
 
-    async def first():
-        res = await agent.think()
-        if res:
-            print(agent.model)
+    async def msg():
+        await ptype.think()
 
-    await first()
-    pp(agent.model)
+    await msg()
+    pp(ptype.model)
 
 
 if __name__ == "__main__":

@@ -14,13 +14,17 @@ def parse_created(created_str: str) -> dt:
 
 
 def sort_signals_by_time(signals: List[Signal]) -> List[Signal]:
-    return sorted(signals, key=lambda signal: parse_created(signal.created))
+    return sorted(signals, key=lambda signal: parse_created(signal.timestamp))
 
 
 class Signal(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
-    created: str = Field(default_factory=lambda: dt.now(tz.utc).isoformat())
+    created: str = Field(default_factory=lambda: str(dt.now(tz.utc).isoformat()))
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @property
+    def timestamp(self):
+        return str(dt.now(tz.utc).isoformat())
 
 
 class BlockType(Enum):
@@ -35,7 +39,6 @@ class BlockType(Enum):
 class Block(Signal):
     content: str
     annotation: Optional[str] = None
-    type: BlockType = BlockType.TextBlock
 
 
 class EventType(Enum):
@@ -80,9 +83,7 @@ class Intention(Signal):
     def model(self):
         return {
             "role": "assistant",
-            "content": "".join(
-                self.created + "\n" + "".join([b.content for b in self.blocks])
-            ),
+            "content": f"{self.timestamp}\n".join(b.content for b in self.blocks),
         }
 
 
@@ -118,9 +119,7 @@ class Result(Signal):
         return {
             "role": "tool",
             "tool_call_id": self.tool_call_id,
-            "content": "".join(
-                self.created + "\n" + "".join([b.content for b in self.blocks])
-            ),
+            "content": f"{self.timestamp}\n".join(b.content for b in self.blocks),
         }
 
 
@@ -130,7 +129,7 @@ class Message(Signal):
 
     @property
     def model(self):
-        return {"role": "user", "content": self.created + "\n" + self.content}
+        return {"role": "user", "content": f"{self.timestamp}\n{self.content}"}
 
 
 class Response(Signal):
@@ -143,9 +142,7 @@ class Response(Signal):
     def model(self):
         return {
             "role": "assistant",
-            "content": "".join(
-                self.created + "\n" + "".join([b.content for b in self.blocks])
-            ),
+            "content": f"{self.timestamp}\n".join(b.content for b in self.blocks),
         }
 
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum, EnumType
-from types import new_class
 from typing import Any, Dict, Type, Tuple
 
 
@@ -20,30 +19,24 @@ class FactoryType(EnumType):
 
 
 class Factory(Enum, metaclass=FactoryType):
-    def __init__(self, name=False, bases=False, dct=False, new=False):
+    def __init__(self, name: str, prototype: str, params=None, build=False):
         self.type_name = name
-        self.base = bases
-        self.dct = dct
-        self.new = self.__call__(name, bases, dct)
+        self.prototype = prototype
+        self.params = params
+        self.build = self.__call__(name, prototype, params)
 
-    def __call__(self, name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-        dct = self._get_type(name, bases, dct)
-        return new_class(name, bases, {}, lambda ns: dct)
+    def __call__(self, name: str, prototype, params):
+        type = self._get_type(name, prototype, params)
+        return type
 
-    def _get_type(self, name: str, bases: Tuple[Type], dct: Dict[str, Any]):
-        from importlib import import_module
-
+    def _get_type(self, name: str, prototype, params):
         try:
-            match name:
-                case "Entity":
-                    module = import_module("scint.lib.entities", "Handler")
-                    return getattr(module, name)
-                case "Context":
-                    module = import_module("scint.lib.context", "Context")
-                    return getattr(module, name)
-                case "Tool":
-                    module = import_module("scint.lib.types.tools", "Tools")
-                    return getattr(module, name)
+            if prototype is not None:
+                from importlib import import_module
+
+                module = import_module(f"scint.lib.prototypes.{"interface"}")
+                return getattr(module, name)
+
         except Exception as e:
             raise Exception(f"Couldn't create type '{name}': {e}.")
 

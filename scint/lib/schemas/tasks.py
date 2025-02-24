@@ -5,7 +5,7 @@ import asyncio
 from enum import Enum
 from typing import Any, Callable, List, Optional
 
-from scint.lib.schemas.models import Model
+from scint.lib.types.model import Model
 
 
 class ProcessState(Enum):

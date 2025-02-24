@@ -7,7 +7,7 @@ from uuid import uuid4
 from typing import Any, Dict, List, Literal, Optional, Type, Union, Tuple
 from typing_extensions import TypeVar, get_args, get_origin
 
-from scint.lib.schemas.models import Model
+from scint.lib.types.model import Model
 from scint.lib.schemas.tasks import Param, Params
 
 _I = TypeVar("_I")

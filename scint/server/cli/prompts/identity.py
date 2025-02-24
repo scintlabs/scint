@@ -1,5 +1,5 @@
 from scint.lib.schemas.records import Block
-from scint.lib.schemas.models import Prompt
+from scint.lib.types.model import Prompt
 
 name = "Scint"
 

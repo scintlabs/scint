@@ -8,7 +8,7 @@ from typing_extensions import get_origin, get_args
 import tree_sitter as ts
 
 
-from scint.lib.schemas.models import Param, Params
+from scint.lib.types.model import Param, Params
 from scint.lib.types.traits import Trait
 
 

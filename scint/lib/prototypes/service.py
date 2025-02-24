@@ -3,8 +3,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Dict, TypeVar
 
-from scint.lib.prototypes.notifier import Observable, Observe
-from scint.lib.schemas.models import Model
+from scint.lib.prototypes.scheduler import Observable, Observe
+from scint.lib.types.model import Model
 from scint.lib.types.enum import Factory
 from scint.lib.types.struct import Struct
 from scint.lib.types.traits import Trait, Traits
