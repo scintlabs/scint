@@ -16,7 +16,7 @@ Though Scint remains in an experimental phase, its composable design opens up a 
 
 ## Getting Started
 
-Because Scint’s APIs and internals are still under development, the recommended way to begin is by exploring the code examples and core modules in the repository. Look at how Structs are defined and how Traits and Interfaces attach to them, then experiment with smaller prototypes that evolve into more complex workflows. As your needs grow, the framework’s flexible architecture should let you snap in new behaviors without refactoring large swaths of code.
+Because Scint’s APIs and internals are still under development, the recommended way to begin is by exploring the code examples and core modules in the repository. Look at how Structs are defined and how Traits and Interfaces attach to them, then experiment with smaller frames that evolve into more complex workflows. As your needs grow, the framework’s flexible architecture should let you snap in new behaviors without refactoring large swaths of code.
 
 ## Contributing
 
