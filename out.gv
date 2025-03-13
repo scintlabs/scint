@@ -1,0 +1,523 @@
+digraph G {
+concentrate=true;
+splines="ortho";
+rankdir="LR";
+subgraph legend{
+    rank = min;
+    label = "legend";
+    Legend [shape=none, margin=0, label = <
+        <table cellspacing="0" cellpadding="0" border="1"><tr><td>Code2flow Legend</td></tr><tr><td>
+        <table cellspacing="0">
+        <tr><td>Regular function</td><td width="50px" bgcolor='#cccccc'></td></tr>
+        <tr><td>Trunk function (nothing calls this)</td><td bgcolor='#966F33'></td></tr>
+        <tr><td>Leaf function (this calls nothing else)</td><td bgcolor='#6db33f'></td></tr>
+        <tr><td>Function call</td><td><font color='black'>&#8594;</font></td></tr>
+        </table></td></tr></table>
+        >];
+}node_921742ec [label="0: (global)()" name="__init__::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_7b9087e4 [label="0: (global)()" name="agent::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_339a7544 [label="34: evaluate()" name="agent::Agent.evaluate" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_f33008f7 [label="14: __new__()" name="agent::AgentType.__new__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_f44ae6a5 [label="0: (global)()" name="components::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_cdb59b08 [label="21: __new__()" name="components::ComponentType.__new__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_5746812b [label="71: model()" name="components::Function.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_d385e73f [label="57: model()" name="components::Output.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_5f07d538 [label="47: model()" name="components::Prompt.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_ad6d80b6 [label="89: configure()" name="components::Routine.configure" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_31ebd7fd [label="102: functions()" name="components::Routine.functions" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_ba67c678 [label="98: output()" name="components::Routine.output" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_81c237c7 [label="106: request()" name="components::Routine.request" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_8fd400ed [label="112: start()" name="components::Routine.start" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_d0336c6b [label="0: (global)()" name="concepts::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_6a29977a [label="0: (global)()" name="exceptions::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_c529e77f [label="21: __init__()" name="exceptions::PromptError.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_96000ddb [label="0: (global)()" name="initializer::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_f8063900 [label="21: __init__()" name="initializer::Initializer.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_4eebbed9 [label="49: __init_function__()" name="initializer::Initializer.__init_function__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_90e0964e [label="45: __init_output__()" name="initializer::Initializer.__init_output__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_59ffd2a1 [label="39: __init_prompt__()" name="initializer::Initializer.__init_prompt__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_3350392d [label="58: __init_routine__()" name="initializer::Initializer.__init_routine__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_38099711 [label="25: _get_init()" name="initializer::Initializer._get_init" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_48ff04ec [label="13: __call__()" name="initializer::InitializerType.__call__" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_ead8c490 [label="0: (global)()" name="models::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_0489897d [label="67: model()" name="models::AgentMessage.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_890e64a5 [label="33: timestamp()" name="models::Block.timestamp" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_2bf30205 [label="135: model()" name="models::Context.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_da70fab2 [label="138: update()" name="models::Context.update" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_37552f9c [label="80: model()" name="models::FunctionCall.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_f8b3f9ed [label="102: model()" name="models::FunctionResult.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_f16ba04b [label="17: timestamp()" name="models::Model.timestamp" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_47946ba7 [label="47: timestamp()" name="models::Signal.timestamp" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_13d276fe [label="56: model()" name="models::UserMessage.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_2c13d73d [label="0: (global)()" name="params::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_2d135fa1 [label="15: model()" name="params::Param.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_1dc62df2 [label="28: model()" name="params::Params.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_212163dc [label="44: model()" name="params::Property.model" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_2452e36b [label="67: __get__()" name="params::Requirements.__get__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_7e3e00f9 [label="60: __init__()" name="params::Requirements.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_ea72a83a [label="64: __set_name__()" name="params::Requirements.__set_name__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_cb8a9ae7 [label="0: (global)()" name="resources::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_826fb8b1 [label="13: client()" name="resources::Provider.client" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_61a2d4b7 [label="18: __init__()" name="resources::Resource.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_3c80d0a5 [label="30: __get__()" name="resources::ResourceDescriptor.__get__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_5fba073a [label="23: __init__()" name="resources::ResourceDescriptor.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_5d2ce5d8 [label="43: __set__()" name="resources::ResourceDescriptor.__set__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_8d31c046 [label="26: __set_name__()" name="resources::ResourceDescriptor.__set_name__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_1ccd9661 [label="0: (global)()" name="structs::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_04ba5e90 [label="12: __new__()" name="structs::StructType.__new__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_2d858b28 [label="0: (global)()" name="traits::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_2e855fdd [label="9: __new__()" name="traits::TraitType.__new__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_f3883ccb [label="0: (global)()" name="typing::(global)" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_946bd701 [label="207: _finalize_type()" name="typing::_finalize_type" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_92edbc41 [label="196: _load_functions()" name="typing::_load_functions" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_64172f82 [label="180: _load_interfaces()" name="typing::_load_interfaces" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_a6052b90 [label="62: _parse_annotation()" name="typing::_parse_annotation" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_63d2c9a8 [label="44: _parse_doc()" name="typing::_parse_doc" shape="rect" style="rounded,filled" fillcolor="#6db33f" ];
+node_972f65d1 [label="108: _parse_params()" name="typing::_parse_params" shape="rect" style="rounded,filled" fillcolor="#cccccc" ];
+node_15384b32 [label="168: _validate_type()" name="typing::_validate_type" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_7892d404 [label="29: __init__()" name="typing::caller.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_1f53797c [label="33: __set_name__()" name="typing::caller.__set_name__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_0f25548e [label="13: __init__()" name="typing::entrypoint.__init__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_3879a1e5 [label="17: __set_name__()" name="typing::entrypoint.__set_name__" shape="rect" style="rounded,filled" fillcolor="#966F33" ];
+node_339a7544 -> node_8fd400ed [color="#F0E442" penwidth="2"];
+node_339a7544 -> node_da70fab2 [color="#F0E442" penwidth="2"];
+node_f33008f7 -> node_946bd701 [color="#CC79A7" penwidth="2"];
+node_cdb59b08 -> node_946bd701 [color="#000000" penwidth="2"];
+node_81c237c7 -> node_ad6d80b6 [color="#CC79A7" penwidth="2"];
+node_81c237c7 -> node_31ebd7fd [color="#CC79A7" penwidth="2"];
+node_81c237c7 -> node_ba67c678 [color="#CC79A7" penwidth="2"];
+node_8fd400ed -> node_81c237c7 [color="#0072B2" penwidth="2"];
+node_f8063900 -> node_38099711 [color="#000000" penwidth="2"];
+node_4eebbed9 -> node_63d2c9a8 [color="#E69F00" penwidth="2"];
+node_4eebbed9 -> node_972f65d1 [color="#E69F00" penwidth="2"];
+node_48ff04ec -> node_38099711 [color="#F0E442" penwidth="2"];
+node_48ff04ec -> node_48ff04ec [color="#F0E442" penwidth="2"];
+node_3c80d0a5 -> node_da70fab2 [color="#0072B2" penwidth="2"];
+node_04ba5e90 -> node_946bd701 [color="#000000" penwidth="2"];
+node_2e855fdd -> node_946bd701 [color="#0072B2" penwidth="2"];
+node_64172f82 -> node_da70fab2 [color="#56B4E9" penwidth="2"];
+node_a6052b90 -> node_a6052b90 [color="#000000" penwidth="2"];
+node_a6052b90 -> node_a6052b90 [color="#000000" penwidth="2"];
+node_a6052b90 -> node_a6052b90 [color="#000000" penwidth="2"];
+node_972f65d1 -> node_a6052b90 [color="#E69F00" penwidth="2"];
+node_972f65d1 -> node_63d2c9a8 [color="#E69F00" penwidth="2"];
+subgraph cluster_6a784238 {
+    node_921742ec;
+    label="File: __init__";
+    name="__init__";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_05edb71b {
+    node_7b9087e4;
+    label="File: agent";
+    name="agent";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_5ee09126 {
+        node_f33008f7;
+        label="Class: AgentType";
+        name="AgentType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_3a37e1f7 {
+        node_339a7544;
+        label="Class: Agent";
+        name="Agent";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_a0ec6f77 {
+    node_f44ae6a5;
+    label="File: components";
+    name="components";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_5809ec2c {
+        label="Class: ComponentInitializer";
+        name="ComponentInitializer";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_f7f90123 {
+        node_cdb59b08;
+        label="Class: ComponentType";
+        name="ComponentType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_79483089 {
+        node_5f07d538;
+        label="Class: Prompt";
+        name="Prompt";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_3d78e733 {
+        node_d385e73f;
+        label="Class: Output";
+        name="Output";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_ceec7a31 {
+        node_5746812b;
+        label="Class: Function";
+        name="Function";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_7af7c258 {
+        node_ad6d80b6 node_ba67c678 node_31ebd7fd node_81c237c7 node_8fd400ed;
+        label="Class: Routine";
+        name="Routine";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_da7f278f {
+    node_d0336c6b;
+    label="File: concepts";
+    name="concepts";
+    style="filled";
+    graph[style=dotted];
+};
+subgraph cluster_9599f1e7 {
+    node_6a29977a;
+    label="File: exceptions";
+    name="exceptions";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_591c6834 {
+        label="Class: StateTransitionError";
+        name="StateTransitionError";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_9429c1ad {
+        label="Class: RouterError";
+        name="RouterError";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_14b2c50e {
+        label="Class: ToolError";
+        name="ToolError";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_7f33c149 {
+        label="Class: ResourceError";
+        name="ResourceError";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_cccff711 {
+        node_c529e77f;
+        label="Class: PromptError";
+        name="PromptError";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_c96875eb {
+        label="Class: ContextUnavailable";
+        name="ContextUnavailable";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_79307a36 {
+        label="Class: ContextNotFound";
+        name="ContextNotFound";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_41e9bf2c {
+        label="Class: ProviderError";
+        name="ProviderError";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_5245dc65 {
+    node_96000ddb;
+    label="File: initializer";
+    name="initializer";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_27c093a3 {
+        node_48ff04ec;
+        label="Class: InitializerType";
+        name="InitializerType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_f547d5ad {
+        node_f8063900 node_38099711 node_59ffd2a1 node_90e0964e node_4eebbed9 node_3350392d;
+        label="Class: Initializer";
+        name="Initializer";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_a4b0cc6f {
+    node_ead8c490;
+    label="File: models";
+    name="models";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_a5de905b {
+        node_f16ba04b;
+        label="Class: Model";
+        name="Model";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_69f30e1d {
+        label="Class: BlockType";
+        name="BlockType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_33de3dc0 {
+        node_890e64a5;
+        label="Class: Block";
+        name="Block";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_3b476cad {
+        label="Class: SignalType";
+        name="SignalType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_f5329da9 {
+        node_47946ba7;
+        label="Class: Signal";
+        name="Signal";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_e1ef0cd0 {
+        node_13d276fe;
+        label="Class: UserMessage";
+        name="UserMessage";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_7ac3b181 {
+        node_0489897d;
+        label="Class: AgentMessage";
+        name="AgentMessage";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_8601d54f {
+        node_37552f9c;
+        label="Class: FunctionCall";
+        name="FunctionCall";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_b6a54c5e {
+        node_f8b3f9ed;
+        label="Class: FunctionResult";
+        name="FunctionResult";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_84fab382 {
+        label="Class: FileType";
+        name="FileType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_e283dcf0 {
+        label="Class: File";
+        name="File";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_533d046a {
+        label="Class: Directory";
+        name="Directory";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_af484df5 {
+        label="Class: Scaffold";
+        name="Scaffold";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_e9740697 {
+        node_2bf30205 node_da70fab2;
+        label="Class: Context";
+        name="Context";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_b3a08ecb {
+    node_2c13d73d;
+    label="File: params";
+    name="params";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_b70d512e {
+        node_2d135fa1;
+        label="Class: Param";
+        name="Param";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_42d812dc {
+        node_1dc62df2;
+        label="Class: Params";
+        name="Params";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_f911dbb0 {
+        node_212163dc;
+        label="Class: Property";
+        name="Property";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_c918e8fb {
+        label="Class: Properties";
+        name="Properties";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_5fe221cb {
+        node_7e3e00f9 node_ea72a83a node_2452e36b;
+        label="Class: Requirements";
+        name="Requirements";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_3ded7719 {
+    node_cb8a9ae7;
+    label="File: resources";
+    name="resources";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_f141365b {
+        node_826fb8b1;
+        label="Class: Provider";
+        name="Provider";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_94ea5da0 {
+        node_61a2d4b7;
+        label="Class: Resource";
+        name="Resource";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_ac423572 {
+        node_5fba073a node_8d31c046 node_3c80d0a5 node_5d2ce5d8;
+        label="Class: ResourceDescriptor";
+        name="ResourceDescriptor";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_1e9ff8f7 {
+    node_1ccd9661;
+    label="File: structs";
+    name="structs";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_71dd357c {
+        node_04ba5e90;
+        label="Class: StructType";
+        name="StructType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_8dd42092 {
+        label="Class: Struct";
+        name="Struct";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_082dd1f0 {
+        label="Class: Link";
+        name="Link";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_cb414352 {
+        label="Class: Boundary";
+        name="Boundary";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_f79ece9a {
+        label="Class: Domain";
+        name="Domain";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_1dacc4e9 {
+        label="Class: Incubator";
+        name="Incubator";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_ff093308 {
+    node_2d858b28;
+    label="File: traits";
+    name="traits";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_4739e21e {
+        node_2e855fdd;
+        label="Class: TraitType";
+        name="TraitType";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_184a9a48 {
+        label="Class: Trait";
+        name="Trait";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_39d66d13 {
+        label="Class: Composable";
+        name="Composable";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+subgraph cluster_9b55fed8 {
+    node_63d2c9a8 node_a6052b90 node_972f65d1 node_15384b32 node_64172f82 node_92edbc41 node_946bd701 node_f3883ccb;
+    label="File: typing";
+    name="typing";
+    style="filled";
+    graph[style=dotted];
+    subgraph cluster_bb7132be {
+        node_0f25548e node_3879a1e5;
+        label="Class: entrypoint";
+        name="entrypoint";
+        style="filled";
+        graph[style=dotted];
+    };
+    subgraph cluster_aa81ace1 {
+        node_7892d404 node_1f53797c;
+        label="Class: caller";
+        name="caller";
+        style="filled";
+        graph[style=dotted];
+    };
+};
+}

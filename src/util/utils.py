@@ -1,17 +1,11 @@
+import os
 import base64
 import hashlib
 import json
 import math
-import os
-import random
 import dotenv
 from datetime import datetime as dt
 from typing import Any, Dict, List
-
-
-def identifier():
-    id = int(dt.now().timestamp()) << 64 | random.getrandbits(64)
-    return str(id)
 
 
 def time(unix_ts=None):

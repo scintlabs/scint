@@ -77,7 +77,7 @@ class Loaders(Tools):
 ### DevTools
 ```python
 class DevTools(Tools):
-    async def use_terminal(self, commands: str):
+    async def use_terminal_function(self, commands: str):
         """Executes shell commands asynchronously."""
         # Implementation here
 

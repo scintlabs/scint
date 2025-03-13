@@ -5,7 +5,7 @@ from scint.lib.types.tools import Tools
 
 
 class Develop(Tools):
-    async def use_terminal(self, commands: str, *args, **kwargs):
+    async def use_terminal_function(self, commands: str, *args, **kwargs):
         """
         Executes shell commands asynchronously and yields the output and errors.
         commands: The shell commands to be executed.

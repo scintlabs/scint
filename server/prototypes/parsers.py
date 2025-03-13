@@ -8,8 +8,8 @@ from typing_extensions import get_origin, get_args
 import tree_sitter as ts
 
 
-from scint.lib.types.model import Param, Params
-from scint.lib.types.traits import Trait
+from src.types.aspects import Param, Params
+from src.types.interfaces import Trait
 
 
 class Parser(Trait):
