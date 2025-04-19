@@ -4,28 +4,22 @@ import asyncio
 import traceback
 
 import rich
+from attrs import define
 from rich.markdown import Markdown, Panel, box
 from rich.prompt import Prompt
 
-from src.schemas.system import System
-from src.types.models import AgentMessage, UserMessage
-
-system = System()
-
-system.library.load()
-system.load()
+from src.core.broadcast import Broadcast
+from src.core.continuity import Continuity
+from src.core.types.ensemble import Ensemble
+from src.core.types.signals import Input, Output
 
 
+@define
 class Console:
-    def __init__(self):
-        self.boundary = system.regions[-1].get_boundary("default")
-        self.console = rich.console.Console()
-        self.errors = rich.console.Console(stderr=True)
-        self.theme = {
-            "user": "white",
-            "assistant": "cyan",
-            "error": "red",
-        }
+    broadcast: Broadcast
+    console = rich.console.Console()
+    errors = rich.console.Console(stderr=True)
+    theme = {"user": "white", "assistant": "cyan", "error": "red"}
 
     async def start(self):
         while True:
@@ -33,22 +27,21 @@ class Console:
                 entry = Prompt.ask("\n")
                 if entry.lower() == "q":
                     break
-
-                await self.send(entry)
+                async for res in self.send(entry):
+                    await self.receive(res)
             except Exception as e:
                 self.errors.print(f"[error]{str(e)}[/error]")
-                self.errors.print(f"[error]Traceback: {traceback.format_exc()}[/error]")
+                self.errors.print(f"[error]{traceback.format_exc()}[/error]")
 
     async def send(self, input: str):
-        msg = UserMessage(content=input)
-        self.boundary.update(msg)
-        res = await self.boundary.invoke()
-        return self.receive(res)
+        msg = Input(content=input)
+        async for res in self.broadcast.input(msg):
+            yield res
 
-    def receive(self, message: AgentMessage):
-        return self.console.print(
+    async def receive(self, output: Output):
+        self.console.print(
             Panel(
-                Markdown("".join(b.content for b in message.content)),
+                Markdown(output.content),
                 title="[assistant]Scint[/assistant]",
                 border_style="white",
                 padding=(1, 2),
@@ -58,7 +51,10 @@ class Console:
 
 
 async def main():
-    console = Console()
+    persona = Ensemble("Persona")
+    continuity = Continuity()
+    continuity.register(persona)
+    console = Console(continuity.broadcast)
     await console.start()
 
 

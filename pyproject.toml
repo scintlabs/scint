@@ -9,12 +9,29 @@ dependencies = [
     "aiofiles>=24.1.0",
     "aiohttp>=3.10.10",
     "anthropic>=0.39.0",
+    "attrs>=25.1.0",
+    "bs4>=0.0.2",
+    "cattrs>=24.1.3",
+    "httpx>=0.28.1",
+    "jsonschema>=4.23.0",
+    "kuzu>=0.9.0",
+    "lxml>=5.3.1",
+    "matplotlib[pyplot]>=3.10.1",
+    "mcp>=1.6.0",
     "meilisearch>=0.34.0",
     "meilisearch-python-sdk>=4.3.0",
+    "nebula3-python>=3.8.3",
+    "networkx>=3.4.2",
+    "numpy>=2.2.4",
     "openai>=1.55.2",
+    "pandas>=2.2.3",
+    "pathspec>=0.12.1",
     "python-dotenv>=1.0.1",
     "redis>=5.2.1",
     "rich>=13.9.4",
+    "selenium>=4.30.0",
+    "tavily-python>=0.5.4",
+    "tomlkit>=0.13.2",
     "tree-sitter>=0.24.0",
     "tree-sitter-css>=0.23.2",
     "tree-sitter-html>=0.23.2",
@@ -27,11 +44,6 @@ dependencies = [
 
 [tool.setuptools]
 package-dir = {"src" = "src"}
-
-[tool.pytest]
-testpaths = ["tests"]
-addopts = "--import-mode=importlib"
-pythonpath = ["."]
 
 [tool.pyright]
 venvPath = ".venv"

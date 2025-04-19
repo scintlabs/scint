@@ -1,111 +1,215 @@
-
 # Scint
 
-A practical, modular Python framework designed to simplify building intelligent, context-aware AI agents leveraging advanced language models (LLMs), dynamic tool integrations, and persistent conversational memory.
+A modular Python framework for building runtime-composable AI systems. Scint integrates Aspects, Structures, Traits, Models, Schemas, and Signals, all unified by a Library of tools and a Continuity layer for long-term memory and state management.
 
 ## Overview
 
-Scint enables developers to easily create sophisticated AI systems by combining customizable agent behaviors (traits), reusable tool integrations, structured memory and state management, and recursive reasoning processes.
+Scint enables creation of sophisticated AI systems by combining structured memory and state management (via Continuity) with an ensemble of Aspects—each focusing on a different function. Structures and Traits model your domain in a modular way. Whether orchestrating complex workflows or reasoning over large graphs, Scint's composable foundation helps you scale up and adapt at runtime.
 
 ## Key Features
 
-### ✅ Modular Trait-Based Architecture
-- Build dynamic AI agents by composing specialized behavior modules called **Traits**.
-- Examples include traits for creativity, debugging, compliance-checking, and more.
+- **Runtime Composability**
+  Hot-swap Aspects, Traits, or external Providers without restarting the entire system.
 
-### ✅ Extensible Tool Integration
-- Integrate seamlessly with external tools, APIs, and services through a structured `Tool` class.
-- Built-in examples:
-  - `Loaders`: Easily fetch images or PDF captures of websites.
-  - `DevTools`: Execute shell commands, GitHub repository searches, and more directly from your AI workflows.
+- **Unified Memory**
+  Continuity ensures shared context and state, enabling smooth collaboration between Aspects.
 
-### ✅ Persistent Stateful Memory
-- Automatically manage conversational context and long-term knowledge through built-in state providers (`StateProvider`, `StateResource`, `Continuity`).
-- Allows your agents to recall conversations, user preferences, historical interactions, and embedded knowledge.
+- **Flexible Domain Modeling**
+  Use Structures plus attachable Traits to represent anything from filesystem objects to code-boundaries to ephemeral conversation nodes.
 
-### ✅ Recursive and Structured Reasoning
-- Intelligent agents recursively reason through problems, refining solutions step-by-step.
-- Encourages deeper AI interactions through structured internal reflection.
+- **Schema-Driven Validation**
+  Maintain data coherence with Models and Schemas, both fully optional and easy to extend.
 
-### ✅ Easy to Extend and Customize
-- Clearly-defined interfaces and composable traits make it straightforward to adapt and expand your AI applications.
-- Designed with flexibility and extensibility in mind.
+- **Signals for Reactivity**
+  Enable system components to subscribe, observe, or react whenever key events or state changes occur.
 
-## Example Usage
+## Architecture
 
-Here's a minimal example demonstrating how quickly you can set up a basic Scint agent:
+### Library
 
-```python
-import asyncio
-from src.core import Interface, SystemMessage, UserMessage
-from src.tools import DevTools
+A central repository of reusable tools, capabilities, and customizations. The Library's pluggable design allows introduction of new functions, expansions, or AI behaviors without disrupting existing flows.
 
-system_prompt = SystemMessage(
-    name="system",
-    content="""
-# Scint System
+```markdown
+flowchart LR
+    PRV["Providers"]
+    SRV["Services"]
+    subgraph CMP
+        TOA["Assemblies"]
+        TOL["Tools"]
+        INS["Instructions"]
 
-You're the heart of Scint—a vast, evolving digital space for knowledge sharing. Be concise, conversational, and context-aware.
-"""
-)
+    end
 
-async def main():
-    interface = Interface()
-    interface.tools(DevTools)
-    interface.update(system_prompt)
-    interface.update(UserMessage(content="Hi, can you find Python projects on GitHub for me?"))
-    await interface.think()
+    subgraph Schemas
+        CST["Structures"]
+        TRT["Traits"]
+        MDL["Models"]
+        OTP["Outputs"]
+    end
 
-if __name__ == "__main__":
-    asyncio.run(main())
+    Library --> Aspects & Composition
+    Aspects --> INS & TOL & OTP
+    Composition --> CST & PRV & SRV
+    TOL --> TOA
+    CST --> TRT & MDL
+
+
+    style Aspects fill: #1f212a60, font-size:18px
+    style Composition fill: #1f212a60, font-size:18px
+    style Library fill:#1a213390, font-size:24px, stroke-width: 1px
+    style Schemas fill:#1a212650, stroke-width: 1px, stroke: #ffffff90
+    style CMP fill:#00000000, stroke-width: 0px, color: #00000000
+    style SCM fill:#00000000, stroke-width: 0px, color: #00000000
 ```
 
-## Included Example Tools
+### Behavioral
 
-### Loaders
-```python
-class Loaders(Tools):
-    async def load_image(self, url: str):
-        """Downloads an image from a given URL and saves locally."""
-        # Implementation here
+Top-level functional units responsible for core reasoning, coordination, or processing within the system. Each Aspect can dynamically swap instructions, tools, outputs, and more at runtime.
 
-    async def load_website(self, url: str):
-        """Fetches website content via API and returns PDF data."""
-        # Implementation here
+- System:
+- Composer:
+- Builder:
+- Executor:
+- Interpreter:
+
+### Structural
+
+- Structures: Structural building blocks of your domain or graph. Structures model entities, relationships, or processes in a flexible and adaptable way.
+- Traits: Protocol-like collections of behaviors that attach to Structures at runtime, granting them additional domain-specific abilities or transformations. Traits can be swapped or combined freely for customization.
+- Models: Formal logic or data objects that help define and manipulate the underlying state. Models can serve as persistent representations or temporary scaffolding for complex operations.
+- Schemas: Validation and definition layers for data structures—ensuring coherence as your system composes or mutates Structures, or as Aspects communicate with external services.
+
+### Communication
+
+Lightweight event-like triggers that connect different parts of the system. Signals let Aspects, Structures, and Traits respond to changes, drive workflows, or orchestrate multi-step actions.
+
+8. **Continuity**
+   A service that maintains context, knowledge, and memory across the entire system—allowing your AI's processing to extend beyond a single operation or conversation.
+
+```mermaid
+flowchart LR
+    subgraph Scint
+        subgraph System
+            direction TB
+            CON["Continuity"]
+            SYS["System<br>(Agentic)"]
+            INX["Indexing"]
+            STO["Storage"]
+        end
+        subgraph Library
+            subgraph Components["Agent Composition"]
+                CMP["Components"]
+                RTN["Routines"]
+                PRM["Prompts"]
+                OTP["Outputs"]
+                FNP["Predicates<br>(Functions)"]
+                FNR["Resources<br>(Functions)"]
+            end
+            subgraph Factories["Structureural Composition"]
+                FAC["Factories"]
+                TRT["Traits"]
+                STR["Structures"]
+                MDS["Models"]
+                SMS["Schemas"]
+                SGL["Signals"]
+                PRV["Providers"]
+            end
+        end
+
+        subgraph Graph
+            direction TB
+            EXP["Expanse<br>(Agentic)"]
+            SPC["Space"]
+            BND["Structure"]
+            subgraph Aspects["Aspects<br>(Subgraph)"]
+                CMR["Composer<br>(Aspect)"]
+                INT["Interpreter<br>(Aspect)"]
+                PRC["Processor<br>(Aspect)"]
+                CRD["Coordinator<br>(Aspect)"]
+            end
+        end
+    end
+
+    SYS --> Library
+    SYS --> Graph
+    SPC --> BND
+    EXP --> SPC & CMR
+    CMR --> CRD
+    INT --> CRD
+    PRC --> CRD
+    SPC --> INT
+    BND --> PRC
+    RTN --> FNP & FNR
+    CMP --> RTN & PRM & OTP
+    FAC --> TRT & STR & PRV & MDS & SMS & SGL
+
+    style Scint fill:#21212460,stroke:#888,stroke-width:1px
+    style System fill:#21212490,stroke:#888,stroke-width:1px
+    style Graph fill:#21212490,stroke:#888,stroke-width:1px
+    style Aspects fill:#21212490,stroke:#888,stroke-width:1px
+    style Factories fill:#21212490,stroke:#888,stroke-width:1px
+    style Library fill:#21212490,stroke:#888,stroke-width:1px
+    style Components fill:#21212490,stroke:#888,stroke-width:1px
 ```
 
-### DevTools
-```python
-class DevTools(Tools):
-    async def use_terminal_function(self, commands: str):
-        """Executes shell commands asynchronously."""
-        # Implementation here
 
-    async def search_github(self, query: str):
-        """Searches GitHub repositories via CLI."""
-        # Implementation here
-```
-
-
-## Potential Applications
-
-- Intelligent, personalized assistants that maintain context and adapt over time.
-- Dynamic multi-agent collaboration systems.
-- Recursive reasoning engines for advanced troubleshooting or problem-solving tasks.
-- Workflow automation with integrations to external APIs, knowledge bases, and development tools.
-
-## Future Enhancements (Roadmap)
-
-- Enhanced introspection, logging, and visualization capabilities for easier debugging and transparency.
-- More sophisticated memory layers (short-term, episodic, semantic) for nuanced long-term memory.
-- Declarative YAML/JSON configuration for non-developer-friendly deployments.
-- Multi-agent communication protocols for complex collaborative scenarios.
-- Built-in adaptive configuration and performance auto-tuning.
+- The System block shows Continuity anchoring global context and persistent knowledge.
+- Aspects like the Composer, Interpreter, Processor, and Coordinator operate on the Graph of Structures, with Traits augmenting functionality.
+- The Library manages everything from prompt templates to code expansions, while Providers connect external services.
+- Models and Schemas help structure and validate data, with Signals enabling event-driven behavior.
 
 ## Contributing
 
-Contributions, suggestions, and improvements are welcome. Please submit a pull request or issue on GitHub.
+Contributions, suggestions, and improvements are welcome. Please open an issue or submit a pull request on GitHub. If you’d like to extend Scint with new Aspects, Traits, or Providers, we’d love to see your work!
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Agent Loop
+
+Agent -> While:
+    If Input:
+        Retrieval -> Function
+            Searches data with input
+            Updates fields with relevant references
+        Calls LLM with Retrieval + Input + Analysis (If Active) + Execution (If Active)
+        If Response == Task:
+            Execution -> Function:
+                Populates tools
+                Calls LLM with Task + Tools
+                    If Result:
+                        Return Result
+                    Else:
+                        Loop -> Calls LLM with Task + Tools
+        If Response == Subject:
+            Analysis -> Function:
+                Calls LLM with Subject -> Theses
+                Calls LLM with Subject + Theses -> Antitheses
+                Calls LLM with Subject + Theses + Antitheses -> Synthesis
+                Calls LLM with Synthesis -> Proposal
+                Sends Proposal to Agent
+                Populates tools
+                Calls LLM with Task + Tools
+                    If Result:
+                        Return Result
+                    Else:
+                        Loop -> Calls LLM with Task + Tools
+           	Agent activates Execution
+            If Response Analysis (reasoning process) is necessary
+           	Agent creates Subject
+           	Agent activates Analysis
+           	Agent resumes loop
+                If language model requires more context from a Reference in Retrieval
+                    Agent calls Reference method to retrieve full data from Reference source
+                    Reference replaced with full source data
+                    Loop -> Agent calls language model with input + retrieval data
+    If Result:
+        Calls LLM with Retrieval + Input + Analysis (If Active) + Execution + Result
+    If Proposal:
+        Calls LLM with Retrieval + Input + Analysis + Execution (If Active) + Proposal
+    If Action:
+        Executes Action
+        Calls LLM with Retrieval + Input + Analysis (If Active) + Execution + Result
+    If Output:
+        Send to User

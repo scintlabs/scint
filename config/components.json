@@ -1,0 +1,26 @@
+{
+  "instructions": [],
+  "tools": [
+    {
+      "_sig": "dab15f1dcddc25382c17bda4dd9c87a5dd949936",
+      "schema": {
+        "type": "function",
+        "name": "use_terminal",
+        "description": "Executes a shell command asynchronously in the terminal and returns the output and any errors produced during execution.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "Hello! It looks like your message is empty except for the word \"command.\" How can I assist you? If you have a specific command or task in mind, please provide more details, and I'll do my best to help!"
+            }
+          },
+          "required": [
+            "command"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}
