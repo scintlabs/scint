@@ -1,0 +1,163 @@
+[
+    {
+        "_sig": "d94ea357de3c69b4b8122b6c2669c470364ee55f",
+        "schema": {
+            "type": "function",
+            "name": "complete_task",
+            "description": "Marks a task as complete using the provided results. This function is used to indicate that a task has finished and to record its outcome.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "string",
+                        "description": "The **results** parameter is a string that contains the outcome or data associated with the completed task."
+                    }
+                },
+                "required": ["results"],
+                "additionalProperties": false
+            }
+        }
+    },
+    {
+        "_sig": "535fc1451bb31bbd420a01dc16e3bbf1a7321a03",
+        "schema": {
+            "type": "function",
+            "name": "download_file",
+            "description": "Downloads a file from the specified URL and saves it to the given path. Returns a status indicating success or failure along with a relevant message.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The **url** parameter is a string representing the web address of the file to be downloaded."
+                    },
+                    "save_path": {
+                        "type": "string",
+                        "description": "The **save_path** parameter specifies the local file path where the downloaded content will be saved."
+                    }
+                },
+                "required": ["url", "save_path"],
+                "additionalProperties": false
+            }
+        }
+    },
+    {
+        "_sig": "ed8c8a6bbca1dd6652f0f8094fa85dfd0c6f457e",
+        "schema": {
+            "type": "function",
+            "name": "download_image",
+            "description": "Downloads an image from a specified URL, optionally resizes it, and returns the image as a base64-encoded PNG string.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The **url** parameter is a string representing the web address of the image to be downloaded."
+                    },
+                    "resize": {
+                        "type": "string",
+                        "description": "The **resize** parameter is an optional tuple specifying the desired width and height to resize the downloaded image to before encoding it."
+                    }
+                },
+                "required": ["url"],
+                "additionalProperties": false
+            }
+        }
+    },
+    {
+        "_sig": "2c930cd3d8bd5c813619ce5fb2252d17e678ab59",
+        "schema": {
+            "type": "function",
+            "name": "fetch_webpage",
+            "description": "Fetches the content of a webpage from a given URL and returns the result along with a success status. Used to retrieve webpage data asynchronously over HTTP.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The **url** parameter is a string that specifies the web address of the page to be fetched by the function."
+                    }
+                },
+                "required": ["url"],
+                "additionalProperties": false
+            }
+        }
+    },
+    {
+        "_sig": "7070fbee137e9137ed7f24e06a82d697d52d6917",
+        "schema": {
+            "type": "function",
+            "name": "post_request",
+            "description": "Sends an asynchronous HTTP POST request to a specified URL with the provided data and returns the response status and content. This function is typically used for interacting with web APIs or remote servers.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The **url** parameter is a string representing the endpoint to which the asynchronous HTTP POST request will be sent."
+                    },
+                    "data": {
+                        "type": "string",
+                        "description": "The **data** parameter is a dictionary containing the JSON payload to be sent in the body of the POST request."
+                    }
+                },
+                "required": ["url", "data"],
+                "additionalProperties": false
+            }
+        }
+    },
+    {
+        "_sig": "5596eda19f21d567a50987cb0f400448cabb2306",
+        "schema": {
+            "type": "function",
+            "name": "search_web",
+            "description": "Searches the web for information related to a given query, allowing customization of search depth and recency of results. Returns a list of relevant findings based on the specified criteria.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The parameter `query` is a string representing the search term or phrase to be used for the web search."
+                    },
+                    "depth": {
+                        "type": "string",
+                        "description": "The `depth` parameter specifies the thoroughness of the web search, with `\"advanced\"` indicating a more comprehensive search."
+                    },
+                    "age": {
+                        "type": "string",
+                        "description": "The `age` parameter specifies the time range for search results, with options such as \"year\" to limit results to those from the past year."
+                    }
+                },
+                "required": ["query"],
+                "additionalProperties": false
+            }
+        }
+    },
+    {
+        "_sig": "4256b60f2e3229beb37d33239ff9b91246e63ea5",
+        "schema": {
+            "type": "function",
+            "name": "task_handoff",
+            "description": "Facilitates transferring control to a specified activity, using a custom prompt and contextual information to guide the process. This function is used to initiate or delegate tasks between different activity types within a workflow.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "target_activity": {
+                        "type": "string",
+                        "description": "The **target_activity** parameter specifies the type of activity to be performed and must be one of the following: \"composition\", \"dialogue\", \"execution\", \"prediction\", or \"reasoning\"."
+                    },
+                    "custom_prompt": {
+                        "type": "string",
+                        "description": "**custom_prompt** is a string parameter that provides a user-defined instruction or message to guide the behavior of the task handoff process."
+                    },
+                    "context": {
+                        "type": "string",
+                        "description": "The **context** parameter provides relevant background information or state that should be considered when handing off the task to the specified target activity."
+                    }
+                },
+                "required": ["target_activity", "custom_prompt", "context"],
+                "additionalProperties": false
+            }
+        }
+    }
+]
