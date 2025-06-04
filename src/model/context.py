@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from functools import singledispatchmethod
-from typing import List
+from typing import List, Callable, Awaitable
 
 from attrs import define, field
 
-from src.model.records import Message
+from src.model.records import Message, SearchHits
 from src.model.threads import Thread
 from src.runtime.utils import timestamp, iso_to_epoch
 
@@ -15,15 +15,20 @@ SEPARATOR = "\n\n---\n\n"
 
 @define
 class ActiveContext:
+    thread: Thread | None = field(default=None)
     last_n: int = field(default=4)
     thread: Thread | None = None
 
     async def build(self):
-        pass
+        if not self.thread:
+            return ""
+        body = await self.thread.build(self.last_n)
+        return "## Active Thread\n" + body
 
 
 @define
 class RecentContext:
+    threads: List[Thread] = field(factory=list)
     cutoff_sec: int = 60 * 60 * 6
     threads: List[Thread] = field(factory=list)
 
@@ -45,11 +50,18 @@ class RecentContext:
 
 @define
 class SemanticContext:
-    embed: List[float] = []
+    embed: List[float] = field(factory=list)
     top_k: int = 6
+    search: Callable[[List[float], int], Awaitable[SearchHits]] | None = field(default=None, repr=False)
 
     async def build(self):
-        pass
+        if not self.embed or not self.search:
+            return ""
+        hits = await self.search(self.embed, self.top_k)
+        results = [h.get("content", "") for h in hits.hits]
+        if not results:
+            return ""
+        return "## Semantic Search\n" + "\n".join(results)
 
 
 @define
