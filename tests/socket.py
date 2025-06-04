@@ -6,8 +6,7 @@ from attrs import define
 from falcon.asgi.ws import WebSocket
 from falcon.errors import WebSocketDisconnected
 
-from src.base.records import Message
-from src.base.broker import Broker
+from src.model.records import Message
 
 
 @define

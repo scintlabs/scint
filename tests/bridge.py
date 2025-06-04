@@ -6,7 +6,7 @@ from typing import Any
 
 from attrs import define, field
 from redis.asyncio import from_url
-from src.base.records import Message
+from src.model.records import Message
 
 
 @define

@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import json
-import uuid
-from typing import Any, Dict, Iterable
 
 from kuzu import Database
 from attrs import define
 from contextlib import suppress
 
-from src.util.constants import DATA
+from src.config import DATA
 
 
 # import os

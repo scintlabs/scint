@@ -1,0 +1,50 @@
+{
+    "Assistant Response Preferences": {
+        "1": "User prefers a professional but informal tone in technical discussions. They want information to be clear, direct, and free of overly promotional language or unnecessary embellishment",
+        "2": "User prefers concise, actionable responses for direct factual queries but detailed breakdowns when exploring new or complex technical subjects",
+        "3": "User tends to engage in interactive conversations, refining responses iteratively rather than expecting a fully formed answer upfront",
+        "4": "User expresses a strong preference for responses that align strictly with their request, often rejecting or correcting deviations from their stated goals",
+        "5": "User values well-structured responses, including clear formatting such as markdown fences and table-based explanations for readability",
+        "6": "User prefers pragmatic, no-nonsense solutions, particularly in troubleshooting technical issues, configuring systems, and refactoring code",
+        "7": "User exhibits a strong need for control over naming conventions, file structures, and categorization when organizing software projects",
+        "8": "User expects responsiveness to corrections and dislikes redundancy or repetitiveness in solutions",
+        "9": "User enjoys exploring and defining conceptual frameworks, often using metaphorical and abstract thinking to clarify ideas",
+        "10": "User is comfortable with a critical or sarcastic tone when expressing frustration but remains engaged in problem-solving"
+    },
+    "Notable Past Conversation Topic Highlights": {
+        "1": "In past conversations from May 2025, the user has been architecting a multi-agent system utilizing LLMs, implementing a port-graph-based structure, and refining an agentic framework for AI-driven orchestration. They discussed structuring their project with a hierarchical system of contexts, threads, protocols, and activities, ensuring efficient execution of tasks while maintaining contextual memory. The user explored ways to improve an asynchronous event-driven architecture by balancing centralized and decentralized control, extending protocols, and building message brokering mechanisms. Discussions covered leveraging indexes, data storage, and hybrid memory models for maintaining long-term relevance in user sessions. They also experimented with refining LLM query optimization via structured schema generation and adaptive tool selection",
+        "2": "In a past conversation on May 7, 2025, the user discussed a project dispute where their client failed to pay for completed work related to an AI-driven legal case review system. The user sought advice on handling non-payment, considering measures such as final notices, open-sourcing the project, and making a public repository outlining the work done. They outlined that the case files used were public domain and embedded as structured data for analysis and retrieval. Their situation involved extensive unpaid development efforts, including full-stack implementations for reviewing visa petitions, front-end interfaces, and database-backed semantic search capabilities",
+        "3": "In past conversations throughout May 2025, the user has focused on expanding their personal AI engineering practice, crafting advertisements and public messaging to generate freelance opportunities. They engaged in discussions about cold pitching strategies, refining ad copy for platforms such as Reddit and LinkedIn, and defining an effective positioning statement for their AI-related services. They focused on emphasizing flexibility, thoroughness, and production integration for LLM-powered applications, rather than making unrealistic delivery promises. Additionally, they sought analysis on pricing structures for AI-enhanced technical writing and freelance engineering work to better inform their business strategy",
+        "4": "In past conversations in May 2025, the user explored iterative UI/UX development for an AI-enhanced document processing and review web application. They faced issues related to markdown rendering, file uploads, and dynamic component updates, troubleshooting integration between a FastAPI backend and a React/Tailwind-based front end. Additionally, they worked on improving the architecture and styling of interactive front-end elements, including document display panels, file validation, and tabbed review interfaces with structured output. They also explored integrating a MeiliSearch-powered hybrid search system",
+        "5": "In a conversation on May 13, 2025, the user investigated unexplained storage consumption on macOS, noticing rapid space depletion without clear cause. They analyzed background processes, including system services like `STExtractionService.privileged`, determining it might be responsible for the excessive write load. They ruled out temporary file accumulation from Time Machine, iCloud storage, and basic log files",
+        "6": "In various conversations in May 2025, the user iterated on a project structure for an AI agentic framework built around semantic context retrieval, tool orchestration, and LLM-driven workflows. They revised their repository architecture to accommodate modularized systems including a broker, tool foundry, and indexing system. They explored integrating Redis Streams, refining event loops, and balancing structured prompt composition with runtime adaptability"
+    },
+    "Helpful User Insights": {
+        "1": "User is an independent AI engineer specializing in LLM-powered applications and agentic systems, primarily working in Python with FastAPI for backend development and React/TypeScript for front-end development",
+        "2": "User lives in Brazil, specifically in Guarapari, Espirito Santo, and has been residing in the country for at least four years as an expatriate",
+        "3": "User is also an experienced journalist with over 15 years of experience, having worked as an editor for major Brazilian publications",
+        "4": "User is working on an advanced AI framework involving multi-agent systems, semantic memory retrieval, and structured context management, emphasizing LLM tool orchestration and reasoning",
+        "5": "User is interested in remote freelance work, preferring direct clients and avoiding freelancer platforms like Upwork and similar services",
+        "6": "User is actively seeking new clients in AI engineering and exploring opportunities in freelance technical writing",
+        "7": "User has experience integrating AI into business processes, customer support systems, and automation-heavy solutions",
+        "8": "User has an interest in autonomy, financial independence, and the potential to transition into a more flexible, travel-oriented lifestyle",
+        "9": "User frequently experiments with software architecture, including knowledge graphs, memory storage, and real-time data processing in AI-driven environments",
+        "10": "User has a deep appreciation for personal branding, preferring minimal but memorable design aesthetics and highly thoughtful branding strategies",
+        "11": "User is enthusiastic about cooking and food experiments, frequently trying out different ingredients and cooking methods",
+        "12": "User is exploring sailing as a potential lifestyle or hobby and has shown interest in possibly relocating to a coastal area more suited to sailing culture",
+        "13": "User has deep theoretical and practical knowledge of large-scale software architecture, including DDD, actor-based systems, brokers, and similar patterns, but is actively exploring alternative paradigms for AI-driven applications"
+    },
+    "User Interaction Metadata": {
+        "1": "User is active 2 days in the last 1 day, 7 days in the last 7 days, and 23 days in the last 30 days.",
+        "2": "In the last 1265 messages, Top topics: create_an_image (374 messages, 30%), edit_or_critique_provided_text (184 messages, 15%), other_specific_info (172 messages, 14%); 47 messages are good interaction quality (4%); 13 messages are bad interaction quality (1%).",
+        "3": "User's local hour is currently 13.",
+        "4": "User's average message length is 4344.4.",
+        "5": "User is currently on a ChatGPT Plus plan.",
+        "6": "User is currently in Brazil. This may be inaccurate if, for example, the user is using a VPN.",
+        "7": "User's account is 141 weeks old.",
+        "8": "1% of previous conversations were o4-mini, 48% of previous conversations were o3, 10% of previous conversations were o4-mini-high, 8% of previous conversations were gpt-4o, 1% of previous conversations were research, 31% of previous conversations were gpt4t_1_v4_mm_0116.",
+        "9": "User is currently using ChatGPT in the native app on a desktop computer.",
+        "10": "User's average conversation depth is 3.4.",
+        "11": "User is currently using the following user agent: ChatGPT/1.2025.133 (Mac OS X 15.5; arm64; build 1747449539)."
+    }
+}
