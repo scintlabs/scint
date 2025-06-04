@@ -24,6 +24,12 @@ class Library(Actor):
             self._loaded = True
 
     async def _load_modules(self):
-        for cfg in ("directions", "outlines"):
+        await self._indexes.load_indexes()
+        for cfg in ("directions", "outlines", "instructions", "tools"):
             with open(f"config/{cfg}.json", "r") as f:
-                setattr(self, cfg, json.loads(f.read()))
+                data = json.loads(f.read())
+                setattr(self, cfg, data)
+                if cfg == "tools":
+                    idx = await self._indexes.get_index("tools")
+                    records = [{"id": t.get("_sig"), **t.get("schema", {})} for t in data]
+                    await idx.update_documents(records)
