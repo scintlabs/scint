@@ -162,8 +162,8 @@ class Threads:
         self._rollover(ActiveThread, self.maxlen, self._to_stale)
         self._rollover(StaleThread, self.stale_threshold, self._advance_stale)
 
-    def _rollover(self, kind: str, limit: int, advance: Callable[[Thread], Thread]):
-        while self.counts[kind] > limit:
+    def _rollover(self, kind, limit: int, advance: Callable[[Thread], Thread]):
+        while self.counts.get(kind, 0) > limit:
             node = self._oldest(kind)
             if node is None:
                 break
@@ -195,12 +195,12 @@ class Threads:
         self._shift_counts(EncodedThread, PurgedThread)
         return nxt
 
-    def _shift_counts(self, frm: str, to: str):
+    def _shift_counts(self, frm, to):
         self.counts[frm] -= 1
         self.counts[to] += 1
 
-    def _oldest(self, kind: str):
-        cls = globals()[kind]
+    def _oldest(self, kind):
+        cls = kind if isinstance(kind, type) else globals()[kind]
         cur = self.head
         while cur and not isinstance(cur, cls):
             cur = cur.next

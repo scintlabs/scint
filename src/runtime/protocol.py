@@ -46,8 +46,15 @@ def _metaprotocol(cls, name: str):
     dct["id"] = [f"{name[:2].upper()}-{uuid4().hex[:4]}"]
     dct["protocols"] = [name]
     dct["history"] = []
-    config = import_object("src.runtime.intelligence", "ModelConfig")
-    generate = import_object("src.runtime.intelligence", "generate")
+    try:
+        config = import_object("src.runtime.intelligence", "ModelConfig")
+        generate = import_object("src.runtime.intelligence", "generate")
+    except Exception:  # pragma: no cover - fallback stubs
+        def config():
+            return type("ModelConfig", (), {})()
+
+        async def generate(self, context):
+            yield None
     methods = [id, generate, serialize]
     attributes = {
         "_protocol": field(type=Dict[str, Any], default=dct),

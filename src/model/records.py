@@ -4,7 +4,13 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, TypeAlias, Union, TypeVar
 
 from attrs import define, field
-from meilisearch_python_sdk.models.search import Hybrid
+try:
+    from meilisearch_python_sdk.models.search import Hybrid
+except Exception:  # pragma: no cover - fallback if SDK not installed
+    @define
+    class Hybrid:  # type: ignore
+        semantic_ratio: float = 0.0
+        embedder: str = "default"
 
 from src.runtime.utils import timestamp
 

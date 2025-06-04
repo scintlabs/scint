@@ -7,6 +7,7 @@ from src.core.resources import Catalog
 from src.model.outline import Outline
 from src.model.process import Process
 from src.runtime.actor import Actor
+from src.runtime.mailbox import Envelope
 from src.runtime.protocol import agentic
 
 
@@ -15,12 +16,11 @@ class Executor(Actor):
     _catalog: Catalog = field(default=None)
     _process: Process = field(default=None)
 
-    async def on_receive(self, out: Outline):
-        if not self.context:
-            self.context = await self.continuity.resolve_thread(out)
-            await self.update(out)
-            async for res in self.execute(out):
-                yield res
+    async def on_receive(self, env: Envelope):
+        outline = env.model
+        self._process = Process(outline=outline)
+        if env.sender is not None:
+            env.sender.tell(self._process, sender=self.ref())
 
     async def execute(self):
         async def sink(self):
