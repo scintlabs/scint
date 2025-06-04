@@ -16,6 +16,7 @@ SEPARATOR = "\n\n---\n\n"
 @define
 class ActiveContext:
     last_n: int = field(default=4)
+    thread: Thread | None = None
 
     async def build(self):
         pass
@@ -24,6 +25,7 @@ class ActiveContext:
 @define
 class RecentContext:
     cutoff_sec: int = 60 * 60 * 6
+    threads: List[Thread] = field(factory=list)
 
     async def build(self):
         now = timestamp()

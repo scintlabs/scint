@@ -19,12 +19,10 @@ class Interpreter(Actor):
     _workers: Dict[str, Actor] = field(factory=dict)
 
     async def on_receive(self, env: Envelope):
-        print(env)
-        if not self._context:
-            self._context = await self._continuity.resolve_thread(env)
-            await self.update(env)
-            async for res in self.interpret(env):
-                yield res
+        msg = env.model
+        self._context = await self._continuity.get_context(msg)
+        if env.sender is not None:
+            env.sender.tell(self._context, sender=self.ref())
 
     async def interpret(self, env: Envelope):
         async for res in self.generate(self._context):

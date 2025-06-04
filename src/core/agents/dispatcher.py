@@ -21,12 +21,13 @@ from src.runtime.protocol import agentic
 @agentic
 class Dispatcher(Actor):
     _registry: Dict[str, ActorRef] = field(factory=dict)
+    _actors: Dict[str, Actor] = field(factory=dict)
 
     def load(self):
         idx = Indexes()
         self.spawn("interpreter", Interpreter, continuity=Continuity(indexes=idx))
         self.spawn("composer", Composer, library=Library(indexes=idx))
-        self.spawn("executor", Executor, catalog=Catalog(_indexes=idx))
+        self.spawn("executor", Executor, catalog=Catalog(indexes=idx))
 
     def spawn(self, name: str, actor_cls: Type[Actor], *args, **kwargs):
         if name in self._registry:
@@ -36,6 +37,7 @@ class Dispatcher(Actor):
         instance.start()
         ref = instance.ref()
         self._registry[name] = ref
+        self._actors[name] = instance
         return ref
 
     async def on_receive(self, env: Envelope):
@@ -51,7 +53,7 @@ class Dispatcher(Actor):
 
         if target is None:
             raise RuntimeError("Dispatcher missing target for " f"{type(mdl).__name__}")
-        target.tell(env, sender=self.ref())
+        target.tell(mdl, sender=self.ref())
 
 
 # @agentic
