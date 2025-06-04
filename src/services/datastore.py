@@ -4,7 +4,7 @@ import uuid
 import json
 from contextlib import suppress
 from typing import Any, Dict, Iterable
-from attr import define
+from attrs import define
 
 from kuzu import Database
 

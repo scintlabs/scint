@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict
 
-from attr import field
+from attrs import field
 
 from src.model import Message, Outline
 from src.runtime.actor import Actor
