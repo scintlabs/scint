@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from attr import define
-from attrs import field
+from attrs import define, field
 from meilisearch_python_sdk import AsyncClient
 from meilisearch_python_sdk.index import AsyncIndex
 
