@@ -8,7 +8,7 @@ from monotonic import monotonic
 from datetime import timedelta
 
 from src.model.threads import Threads, Thread, ActiveThread
-from src.model.context import Context, ActiveContext, RecentContext
+from src.model.context import Context, ActiveContext, RecentContext, SemanticContext
 from src.model.records import Message, Metadata, Search, SearchHits
 from src.runtime.actor import Actor
 from src.runtime.utils import cosine_similarity, iso_to_epoch
@@ -64,7 +64,9 @@ class Continuity(Actor):
     async def get_context(self, msg: Message):
         thread = await self.resolve_thread(msg)
         context = Context(
-            active=ActiveContext(thread), recent=RecentContext(self.get_threads())
+            active=ActiveContext(thread),
+            recent=RecentContext(self.get_threads()),
+            semantic=SemanticContext(embed=msg.metadata.embedding, search=self.search),
         )
         await context.update(msg)
         return context

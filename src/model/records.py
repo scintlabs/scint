@@ -92,6 +92,7 @@ class Metadata:
     annotations: List[str] = field(factory=list)
     embedding: List[float] = field(factory=list, repr=False)
     keywords: List[str] = field(factory=list)
+    events: List[Dict[str, Any]] = field(factory=list)
 
 
 __all__ = (
