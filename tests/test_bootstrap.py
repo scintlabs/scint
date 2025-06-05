@@ -1,20 +1,27 @@
 import importlib
 import types
 import sys
-import importlib.util
+import importlib
 import pathlib
 import sysconfig
+
 path = pathlib.Path(sysconfig.get_path("stdlib")) / "typing.py"
 spec = importlib.util.spec_from_file_location("typing", path)
 _typing = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(_typing)
 sys.modules["typing"] = _typing
+
+import os
+from pathlib import Path
 import attrs
 import pytest
 
 
 @pytest.mark.asyncio
 async def test_bootstrap_runs():
+    repo_root = Path(__file__).resolve().parents[1]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
     sent = {"flag": False}
 
     records = types.ModuleType("src.model.records")

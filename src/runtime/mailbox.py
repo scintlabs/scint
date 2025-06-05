@@ -21,7 +21,6 @@ class Envelope:
 
 @define
 class Mailbox:
-    """Simple async message queue used by actors."""
     _queue: asyncio.Queue = field(factory=lambda: asyncio.Queue(maxsize=24))
 
     def empty(self) -> bool:
@@ -36,8 +35,15 @@ class Mailbox:
     async def get(self) -> Envelope:
         return await self._queue.get()
 
-    def task_done(self) -> None:
+    def task_done(self):
         self._queue.task_done()
 
 
-__all__ = ["Mailbox", "Envelope"]
+@define
+class Envelope:
+    sender: str
+    model: object
+
+    @classmethod
+    def create(cls, sender: str, model: object):
+        return cls(sender=sender, model=model)

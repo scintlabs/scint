@@ -1,215 +1,113 @@
 # Scint
 
-A modular Python framework for building runtime-composable AI systems. Scint integrates Aspects, Structures, Traits, Models, Schemas, and Signals, all unified by a Library of tools and a Continuity layer for long-term memory and state management.
-
-## Overview
-
-Scint enables creation of sophisticated AI systems by combining structured memory and state management (via Continuity) with an ensemble of Aspects—each focusing on a different function. Structures and Traits model your domain in a modular way. Whether orchestrating complex workflows or reasoning over large graphs, Scint's composable foundation helps you scale up and adapt at runtime.
-
-## Key Features
-
-- **Runtime Composability**
-  Hot-swap Aspects, Traits, or external Providers without restarting the entire system.
-
-- **Unified Memory**
-  Continuity ensures shared context and state, enabling smooth collaboration between Aspects.
-
-- **Flexible Domain Modeling**
-  Use Structures plus attachable Traits to represent anything from filesystem objects to code-boundaries to ephemeral conversation nodes.
-
-- **Schema-Driven Validation**
-  Maintain data coherence with Models and Schemas, both fully optional and easy to extend.
-
-- **Signals for Reactivity**
-  Enable system components to subscribe, observe, or react whenever key events or state changes occur.
+Scint is an experimental Python framework for building AI agents from small, composable pieces.  The code is structured around an asynchronous **actor** model.  Each actor receives messages via a mailbox and runs in its own `asyncio` task.
 
 ## Architecture
 
-### Library
+The entry point is the `Dispatcher` actor which instantiates three main workers:
 
-A central repository of reusable tools, capabilities, and customizations. The Library's pluggable design allows introduction of new functions, expansions, or AI behaviors without disrupting existing flows.
+* **Interpreter** – builds a conversational `Context` using the `Continuity` service.
+* **Composer** – creates an `Outline` from that context using the `Library` of prompts and instructions.
+* **Executor** – turns the outline into a `Process` and calls available tools from the `Catalog`.
 
-```markdown
-flowchart LR
-    PRV["Providers"]
-    SRV["Services"]
-    subgraph CMP
-        TOA["Assemblies"]
-        TOL["Tools"]
-        INS["Instructions"]
-
-    end
-
-    subgraph Schemas
-        CST["Structures"]
-        TRT["Traits"]
-        MDL["Models"]
-        OTP["Outputs"]
-    end
-
-    Library --> Aspects & Composition
-    Aspects --> INS & TOL & OTP
-    Composition --> CST & PRV & SRV
-    TOL --> TOA
-    CST --> TRT & MDL
-
-
-    style Aspects fill: #1f212a60, font-size:18px
-    style Composition fill: #1f212a60, font-size:18px
-    style Library fill:#1a213390, font-size:24px, stroke-width: 1px
-    style Schemas fill:#1a212650, stroke-width: 1px, stroke: #ffffff90
-    style CMP fill:#00000000, stroke-width: 0px, color: #00000000
-    style SCM fill:#00000000, stroke-width: 0px, color: #00000000
+```python
+# src/core/agents/dispatcher.py
+class Dispatcher(Actor):
+    def load(self):
+        idx = Indexes()
+        self.spawn("interpreter", Interpreter, continuity=Continuity(indexes=idx))
+        self.spawn("composer", Composer, library=Library(indexes=idx))
+        self.spawn("executor", Executor, catalog=Catalog(indexes=idx))
 ```
 
-### Behavioral
+Every actor inherits from `Actor` which manages a mailbox and a background task:
 
-Top-level functional units responsible for core reasoning, coordination, or processing within the system. Each Aspect can dynamically swap instructions, tools, outputs, and more at runtime.
+```python
+# src/runtime/actor.py
+@define
+class Actor:
+    _mailbox: Mailbox = Mailbox()
+    _task: Optional[asyncio.Task] = field(init=False, default=None, repr=False)
 
-- System:
-- Composer:
-- Builder:
-- Executor:
-- Interpreter:
-
-### Structural
-
-- Structures: Structural building blocks of your domain or graph. Structures model entities, relationships, or processes in a flexible and adaptable way.
-- Traits: Protocol-like collections of behaviors that attach to Structures at runtime, granting them additional domain-specific abilities or transformations. Traits can be swapped or combined freely for customization.
-- Models: Formal logic or data objects that help define and manipulate the underlying state. Models can serve as persistent representations or temporary scaffolding for complex operations.
-- Schemas: Validation and definition layers for data structures—ensuring coherence as your system composes or mutates Structures, or as Aspects communicate with external services.
-
-### Communication
-
-Lightweight event-like triggers that connect different parts of the system. Signals let Aspects, Structures, and Traits respond to changes, drive workflows, or orchestrate multi-step actions.
-
-8. **Continuity**
-   A service that maintains context, knowledge, and memory across the entire system—allowing your AI's processing to extend beyond a single operation or conversation.
-
-```mermaid
-flowchart LR
-    subgraph Scint
-        subgraph System
-            direction TB
-            CON["Continuity"]
-            SYS["System<br>(Agentic)"]
-            INX["Indexing"]
-            STO["Storage"]
-        end
-        subgraph Library
-            subgraph Components["Agent Composition"]
-                CMP["Components"]
-                RTN["Routines"]
-                PRM["Prompts"]
-                OTP["Outputs"]
-                FNP["Predicates<br>(Functions)"]
-                FNR["Resources<br>(Functions)"]
-            end
-            subgraph Factories["Structureural Composition"]
-                FAC["Factories"]
-                TRT["Traits"]
-                STR["Structures"]
-                MDS["Models"]
-                SMS["Schemas"]
-                SGL["Signals"]
-                PRV["Providers"]
-            end
-        end
-
-        subgraph Graph
-            direction TB
-            EXP["Expanse<br>(Agentic)"]
-            SPC["Space"]
-            BND["Structure"]
-            subgraph Aspects["Aspects<br>(Subgraph)"]
-                CMR["Composer<br>(Aspect)"]
-                INT["Interpreter<br>(Aspect)"]
-                PRC["Processor<br>(Aspect)"]
-                CRD["Coordinator<br>(Aspect)"]
-            end
-        end
-    end
-
-    SYS --> Library
-    SYS --> Graph
-    SPC --> BND
-    EXP --> SPC & CMR
-    CMR --> CRD
-    INT --> CRD
-    PRC --> CRD
-    SPC --> INT
-    BND --> PRC
-    RTN --> FNP & FNR
-    CMP --> RTN & PRM & OTP
-    FAC --> TRT & STR & PRV & MDS & SMS & SGL
-
-    style Scint fill:#21212460,stroke:#888,stroke-width:1px
-    style System fill:#21212490,stroke:#888,stroke-width:1px
-    style Graph fill:#21212490,stroke:#888,stroke-width:1px
-    style Aspects fill:#21212490,stroke:#888,stroke-width:1px
-    style Factories fill:#21212490,stroke:#888,stroke-width:1px
-    style Library fill:#21212490,stroke:#888,stroke-width:1px
-    style Components fill:#21212490,stroke:#888,stroke-width:1px
+    def start(self):
+        if self._task is None:
+            self._task = asyncio.create_task(self._runner())
 ```
 
+### Continuity
 
-- The System block shows Continuity anchoring global context and persistent knowledge.
-- Aspects like the Composer, Interpreter, Processor, and Coordinator operate on the Graph of Structures, with Traits augmenting functionality.
-- The Library manages everything from prompt templates to code expansions, while Providers connect external services.
-- Models and Schemas help structure and validate data, with Signals enabling event-driven behavior.
+`Continuity` tracks threads of conversation and performs semantic search over them. When a new `Message` arrives, the service assembles a `Context` object that blends the active thread, recent history and search hits:
+
+```python
+# src/core/resources/continuity.py
+async def get_context(self, msg: Message):
+    thread = await self.resolve_thread(msg)
+    context = Context(
+        active=ActiveContext(thread=thread),
+        recent=RecentContext(threads=self.get_threads()),
+        semantic=SemanticContext(embed=msg.metadata.embedding, search=self.search),
+    )
+    await context.update(msg)
+    return context
+```
+
+### Library and Catalog
+
+The `Library` loads instructions, outlines and tool specifications from the `config/` directory and stores them in a search index:
+
+```python
+# src/core/resources/library.py
+async def _load_modules(self):
+    await self._indexes.load_indexes()
+    for cfg in ("directions", "outlines", "instructions", "tools"):
+        with open(f"config/{cfg}.json", "r") as f:
+            data = json.loads(f.read())
+            setattr(self, cfg, data)
+            if cfg == "tools":
+                idx = await self._indexes.get_index("tools")
+                records = [{"id": t.get("_sig"), **t.get("schema", {})} for t in data]
+                await idx.update_documents(records)
+```
+
+`Catalog` collects callable tools from `src/core/tools` and registers their schemas for use during execution:
+
+```python
+# src/core/resources/catalog.py
+async def _load_modules(self):
+    module = import_module("src.lib.tools")
+    for _, attr in inspect.getmembers(module):
+        if inspect.isfunction(attr) and attr.__module__ == module.__name__:
+            fp = generate_signature(attr)
+            wrapper = tool(attr)
+            self._tools.setdefault("functions", {})[fp] = wrapper.schema
+            await self._register_wrappers(wrapper)
+    await self._sync_index()
+```
+
+## Running
+
+Running the package launches the bootstrap routine and a small FastAPI server:
+
+```python
+# src/__init__.py
+async def main():
+    await bootstrap()
+    server = uvicorn.Server(
+        uvicorn.Config(app=FastAPI(), host="127.0.0.1", port=8000, log_level="info")
+    )
+```
+
+Invoke `python -m scint` to start the demo dispatcher and server.
+
+## Repository Layout
+
+- `src/core/agents/` – interpreter, composer and executor actors.
+- `src/core/resources/` – services such as `Continuity`, `Library` and `Catalog`.
+- `src/runtime/` – actor framework utilities.
+- `config/` – JSON files describing prompts, outlines and tool metadata.
+- `tests/` – unit tests.
 
 ## Contributing
 
-Contributions, suggestions, and improvements are welcome. Please open an issue or submit a pull request on GitHub. If you’d like to extend Scint with new Aspects, Traits, or Providers, we’d love to see your work!
+Pull requests and issues are welcome.  The project is released under the MIT license.
 
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
-## Agent Loop
-
-Agent -> While:
-    If Input:
-        Retrieval -> Function
-            Searches data with input
-            Updates fields with relevant references
-        Calls LLM with Retrieval + Input + Analysis (If Active) + Execution (If Active)
-        If Response == Task:
-            Execution -> Function:
-                Populates tools
-                Calls LLM with Task + Tools
-                    If Result:
-                        Return Result
-                    Else:
-                        Loop -> Calls LLM with Task + Tools
-        If Response == Subject:
-            Analysis -> Function:
-                Calls LLM with Subject -> Theses
-                Calls LLM with Subject + Theses -> Antitheses
-                Calls LLM with Subject + Theses + Antitheses -> Synthesis
-                Calls LLM with Synthesis -> Proposal
-                Sends Proposal to Agent
-                Populates tools
-                Calls LLM with Task + Tools
-                    If Result:
-                        Return Result
-                    Else:
-                        Loop -> Calls LLM with Task + Tools
-           	Agent activates Execution
-            If Response Analysis (reasoning process) is necessary
-           	Agent creates Subject
-           	Agent activates Analysis
-           	Agent resumes loop
-                If language model requires more context from a Reference in Retrieval
-                    Agent calls Reference method to retrieve full data from Reference source
-                    Reference replaced with full source data
-                    Loop -> Agent calls language model with input + retrieval data
-    If Result:
-        Calls LLM with Retrieval + Input + Analysis (If Active) + Execution + Result
-    If Proposal:
-        Calls LLM with Retrieval + Input + Analysis + Execution (If Active) + Proposal
-    If Action:
-        Executes Action
-        Calls LLM with Retrieval + Input + Analysis (If Active) + Execution + Result
-    If Output:
-        Send to User
