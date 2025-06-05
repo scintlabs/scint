@@ -3,14 +3,13 @@ from __future__ import annotations
 import inspect
 from uuid import uuid4
 from functools import wraps
-from typing import Any, Callable, Dict, List, Type
+from typing import Callable, Any, Dict, List, Type
 
 from attrs import define, field
 
-from src.model.records import Instructions
-from src.runtime.serialize import serialize
-from src.runtime.types import Format
-from src.runtime.utils import import_object, timestamp
+from .serialize import serialize
+from .utils import import_object, timestamp
+from .records import Instructions
 
 
 def _generate_id(name: str) -> str:
@@ -46,20 +45,14 @@ def _metaprotocol(cls, name: str):
     dct["id"] = [f"{name[:2].upper()}-{uuid4().hex[:4]}"]
     dct["protocols"] = [name]
     dct["history"] = []
-    try:
-        config = import_object("src.runtime.intelligence", "ModelConfig")
-        generate = import_object("src.runtime.intelligence", "generate")
-    except Exception:  # pragma: no cover - fallback stubs
-        def config():
-            return type("ModelConfig", (), {})()
 
-        async def generate(self, context):
-            yield None
+    config = import_object("src.runtime.intelligence", "ModelConfig")
+    generate = import_object("src.runtime.intelligence", "generate")
     methods = [id, generate, serialize]
+
     attributes = {
         "_protocol": field(type=Dict[str, Any], default=dct),
         "config": config(),
-        "format": Format.Message(),
     }
 
     cls = _set_attributes(cls, attributes)

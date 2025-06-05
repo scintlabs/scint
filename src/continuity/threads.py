@@ -1,19 +1,40 @@
 from __future__ import annotations
 
+from datetime import timedelta
+from enum import Enum
 from typing import Callable, List, Optional, Type
 
 from attrs import define, field
 
-from .records import Content, Metadata
-from .events import ThreadEvent
+from src.base.metadata import Metadata
+from src.base.records import Content
+from src.base.utils import timestamp
+
+
+THREAD_TIMEOUT = timedelta(minutes=30)
+
+
+class ThreadEvent(Enum):
+    Created = {"created": lambda: timestamp()}
+    Staled = {"staled": lambda: timestamp()}
+    Encoded = {"encoded": lambda: timestamp()}
+    Pruned = {"purged": lambda: timestamp()}
+
+    def __init__(self, event):
+        self.event = event
+
+    def __call__(self, content: str = None):
+        if content is not None:
+            self.event["content"] = content
+        return self.event
 
 
 @define
 class Thread:
-    metadata: Metadata | None = None
+    metadata: Metadata = field(default=None)
     content: List[Content] = field(factory=list)
-    prev: Optional[Thread] = None
-    next: Optional[Thread] = None
+    prev: Optional[Thread] = field(default=None)
+    next: Optional[Thread] = field(default=None)
 
     def _record(self, event: ThreadEvent, msg: str | None = None):
         self.metadata.events.append(event(msg) if msg else event())

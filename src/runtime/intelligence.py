@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import json
 import random
-from typing import Any
+from typing import Any, TypeAlias, TypeVar, Union, Dict, List
 
 from attrs import asdict, define, field
 
-from src.core.records import Message, Metadata, Result
+from src.base.records import Message
+from src.resources.outlines import Result
 from src.services.models import completion, response
+
+T = TypeVar("T")
+Content: TypeAlias = Union[str, List[str], Dict[str, Any]]
 
 
 @define
@@ -103,16 +107,3 @@ async def description(obj: Any, kind: str, /, val: str = None):
     res = await response(**req)
     if res.output_text is not None:
         return res.output_text
-
-
-async def metadata(self):
-    res = await response(
-        input=f"Generate concise, intelligent, semantically-rich metadata for the following thread:\n\n{await self.render()}",
-        text={"format": self.serialize(Metadata)},
-        model="gpt-4.1",
-    )
-    for obj in res.output:
-        if obj.type == "message":
-            for content in obj.content:
-                text = json.loads(content.text)
-                return Metadata(**text)

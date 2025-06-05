@@ -24,7 +24,7 @@ class Node(str):
 
 
 @define
-class DataStore:
+class Storage:
     schema: Iterable[str] = _DEFAULT_BASELINE
     database: Database = Database(DATA)
 
@@ -84,4 +84,4 @@ class DataStore:
                 self._con.execute(stmt)
 
 
-__all__ = DataStore, Node
+__all__ = Storage, Node

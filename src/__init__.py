@@ -2,16 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import uvicorn
-from src.bootstrap import bootstrap
+
 from src.api import create_app
 
 
 async def main():
-    await bootstrap()
     server = uvicorn.Server(
-        uvicorn.Config(
-            app=create_app(), host="127.0.0.1", port=8000, log_level="info"
-        )
+        uvicorn.Config(app=create_app(), host="127.0.0.1", port=8000, log_level="info")
     )
     server_task = asyncio.create_task(server.serve())
     done, pending = await asyncio.wait(

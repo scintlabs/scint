@@ -1,15 +1,10 @@
 from __future__ import annotations
+import random
 
-from anthropic import AsyncAnthropic
-from openai import AsyncOpenAI, OpenAI
+from attrs import define, field
+
 
 from src.services.utils import env
-
-ANTHROPIC_API_KEY = env("OPENAI_API_KEY")
-ANTHROPIC_CLIENT = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
-OPENAI_API_KEY = env("OPENAI_API_KEY")
-OPENAI_CLIENT = AsyncOpenAI(api_key=OPENAI_API_KEY)
-OPENAI_CLIENT_S = OpenAI(api_key=OPENAI_API_KEY)
 
 
 async def _stream(res):
@@ -35,3 +30,10 @@ async def image():
     req = {"quality": "hd", "size": "1024x1024", "n": 1, "style": "vibrant"}
     res = await OPENAI_CLIENT.images.generate.create(**req)
     return res.choices[0].library.url
+
+
+@define
+class ModelConfig:
+    model: str = field(default="gpt-4.1")
+    top_p: float = field(default=round(random.uniform(0.5, 1), 2))
+    temperature: float = field(default=round(random.uniform(0.9, 1.7), 2))

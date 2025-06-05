@@ -3,16 +3,9 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-try:
-    from meilisearch_python_sdk import AsyncClient
-except Exception:  # pragma: no cover - fallback for tests
-    class AsyncClient:  # type: ignore
-        def __init__(self, **kwargs):
-            pass
-
-        async def get_index(self, name):
-            return None
-
+from anthropic import AsyncAnthropic
+from openai import AsyncOpenAI, OpenAI
+from meilisearch_python_sdk import AsyncClient
 from redis.asyncio import Redis
 
 from src.services.utils import env
@@ -42,3 +35,10 @@ MEILI_HOST = env("MEILISEARCH_HOST")
 MEILI_API_KEY = env("MEILISEARCH_API_KEY")
 MEILI_STRING = {"url": MEILI_HOST, "api_key": MEILI_API_KEY}
 MEILI_CLIENT: AsyncClient = AsyncClient(**MEILI_STRING)
+
+
+ANTHROPIC_API_KEY = env("OPENAI_API_KEY")
+ANTHROPIC_CLIENT = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+OPENAI_CLIENT = AsyncOpenAI(api_key=OPENAI_API_KEY)
+OPENAI_CLIENT_S = OpenAI(api_key=OPENAI_API_KEY)

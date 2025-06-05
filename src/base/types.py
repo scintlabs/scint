@@ -4,9 +4,10 @@ from enum import Enum
 from functools import wraps
 from types import FunctionType
 from typing import Any, List, Type, Generic, TypeVar
+
 from attrs import field
 
-from src.runtime.utils import import_object
+from .utils import import_object
 
 
 P = TypeVar("P")
@@ -175,19 +176,3 @@ def _attach_intercepts(cls, intercepts: List[Callable] = None):
         return decorator
 
     return cls
-
-
-{
-    "type": "function",
-    "name": "agent_enum",
-    "description": "",
-    "parameters": {
-        "agent_type": {
-            "type": "string",
-            "description": "",
-            "enum": ["Composer", "Executor", "Parser", "Observer"],
-        }
-    },
-    "required": ["agent_type"],
-    "additionalProperties": False,
-}

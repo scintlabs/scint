@@ -5,16 +5,15 @@ from typing import Callable, Dict
 
 from attrs import define, field
 
-from src.runtime.actor import Actor
 from src.services.indexes import Indexes
 
 
 @define
-class Library(Actor):
-    _outlines: Dict[str, Callable] = field(factory=dict)
-    _directions: Dict[str, Callable] = field(factory=dict)
-    _instructions: Dict[str, Callable] = field(factory=dict)
+class Library:
     _indexes: Indexes = Indexes()
+    _outlines: Dict[str, Callable] = field(factory=dict)
+    _preferences: Dict[str, Callable] = field(factory=dict)
+    _instructions: Dict[str, Callable] = field(factory=dict)
 
     async def load(self):
         if self._loaded:
@@ -31,5 +30,7 @@ class Library(Actor):
                 setattr(self, cfg, data)
                 if cfg == "tools":
                     idx = await self._indexes.get_index("tools")
-                    records = [{"id": t.get("_sig"), **t.get("schema", {})} for t in data]
+                    records = [
+                        {"id": t.get("_sig"), **t.get("schema", {})} for t in data
+                    ]
                     await idx.update_documents(records)

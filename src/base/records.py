@@ -39,15 +39,4 @@ class ToolResult:
     content: Content = field(factory=str)
 
 
-@define
-class Metadata:
-    name: str = field(default=None)
-    description: str = field(default=None)
-    recap: str = field(default=None)
-    annotations: List[str] = field(factory=list)
-    embedding: List[float] = field(factory=list, repr=False)
-    keywords: List[str] = field(factory=list)
-    events: List[Dict[str, Any]] = field(factory=list)
-
-
-__all__ = Message, Metadata, Instructions, Response, ToolCall, ToolResult
+__all__ = Message, Instructions, Response, ToolCall, ToolResult

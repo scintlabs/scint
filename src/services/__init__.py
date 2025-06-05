@@ -1,5 +1,5 @@
-from .storage import DataStore, Database
+from .storage import Storage
 from .indexes import Indexes
 
 
-__all__ = DataStore, Database, Indexes
+__all__ = Storage, Indexes
