@@ -5,7 +5,6 @@ from openai import AsyncOpenAI, OpenAI
 
 from src.services.utils import env
 
-
 ANTHROPIC_API_KEY = env("OPENAI_API_KEY")
 ANTHROPIC_CLIENT = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 OPENAI_API_KEY = env("OPENAI_API_KEY")

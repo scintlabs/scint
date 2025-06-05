@@ -6,11 +6,24 @@ from typing import Awaitable, Callable, Optional, Any
 
 from attrs import define, field
 
-from src.model.records import Envelope
+from src.core.records import Envelope
+
+
+class ActorExit(Exception):
+    """Raise inside an actor to exit gracefully."""
+
+
+@define(slots=True, frozen=True)
+class Address:
+    _tell: Callable[[Envelope], None] = field(repr=False)
+
+    def tell(self, obj):
+        self._tell(obj)
 
 
 @define
 class Mailbox:
+    _address: Address = Address()
     _queue: asyncio.Queue = field(factory=lambda: asyncio.Queue(maxsize=24))
 
     def empty(self):
@@ -29,14 +42,6 @@ class Mailbox:
         return self._queue.task_done()
 
 
-@define(slots=True, frozen=True)
-class ActorRef:
-    _tell: Callable[[Envelope], None] = field(repr=False)
-
-    def tell(self, obj):
-        self._tell(obj)
-
-
 @define(slots=True)
 class Actor:
     _mailbox: Mailbox = Mailbox()
@@ -50,7 +55,7 @@ class Actor:
         raise NotImplementedError("override on_receive() in subclass")
 
     def ref(self):
-        return ActorRef(self._mailbox.put_nowait)
+        return Address(self._mailbox.put_nowait)
 
     async def _runner(self):
         while True:
@@ -68,53 +73,3 @@ class Actor:
                 print(f"{type(self).__name__} crashed: {exc}")
             finally:
                 self._mailbox.task_done()
-
-
-class ActorExit(Exception):
-    """Raise inside an actor to exit gracefully."""
-
-
-# @define
-# class Actor:
-#     _mailbox: Mailbox = Mailbox()
-
-#     def tell(self, envelope: Envelope):
-#         self._inbox.put_nowait(envelope)
-
-#     async def spawn(self, actor_cls: Actor, *args, **kwargs):
-#         actor = actor_cls(self, *args, **kwargs)
-#         await actor.start()
-#         return actor
-
-#     async def ask(self, envelope: Envelope):
-#         self._inbox.put_nowait(envelope)
-#         await self.start()
-#         return await asyncio.wait_for(self._outbox.get(), timeout=60)
-
-#     async def on(self, envelope: Envelope):
-#         raise NotImplementedError("Subclasses must implement on()")
-
-#     async def start(self):
-#         if not self._task:
-#             self._task = asyncio.create_task(self._run())
-
-#     async def stop(self):
-#         pass
-
-#     async def _run(self):
-#         try:
-#             while True:
-#                 try:
-#                     msg = await self._inbox.get()
-#                     handler = self.on(msg)
-#                     async for res in handler:
-#                         await self._outbox.put(res)
-#                 except Exception as e:
-#                     if self._outbox:
-#                         await self._outbox.put(e)
-
-#                 self._inbox.task_done()
-#         except ActorExit:
-#             pass
-#         except Exception as e:
-#             print(f"Actor {self.__class__.__name__} crashed: {e}")

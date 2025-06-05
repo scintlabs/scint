@@ -6,15 +6,11 @@ from contextlib import suppress
 from typing import Any, Dict, Iterable
 from attrs import define
 
-try:
-    from kuzu import Database
-except Exception:  # pragma: no cover - fallback
-    class Database:  # type: ignore
-        def __init__(self, *args, **kwargs):
-            pass
+from kuzu import Database
 
-from src.config import DATA
-from src.services.utils import _DEFAULT_BASELINE, _json_dumps, _quote
+
+from .config import DATA
+from .utils import _DEFAULT_BASELINE, _json_dumps, _quote
 
 
 @define

@@ -11,12 +11,12 @@ from typing import Callable, Dict
 from attrs import define, field
 
 from src.runtime.actor import Actor
-from src.runtime.protocol import serialize
+from src.core.serialize import serialize
 from src.services.indexes import Indexes
 
 
 @define
-class Catalog(Actor):
+class ToolCatalog(Actor):
     _tools: Dict[str, Callable] = field(factory=dict)
     _indexes: Indexes = Indexes()
 
@@ -32,7 +32,7 @@ class Catalog(Actor):
 
         for _, attr in inspect.getmembers(module):
             if inspect.isfunction(attr) and attr.__module__ == module.__name__:
-                fp = generate_signature(attr)
+                fp = generate_tool_signature(attr)
                 wrapper = tool(attr)
                 self._tools.setdefault("functions", {})[fp] = wrapper.schema
                 await self._register_wrappers(wrapper)
@@ -47,7 +47,7 @@ class Catalog(Actor):
         await self.index.add_records([record])
 
 
-def generate_signature(obj):
+def generate_tool_signature(obj):
     node = ast.parse(inspect.getsource(obj)).body[0]
     node.body = []
     digest = hashlib.sha1(ast.unparse(node).encode()).hexdigest()
@@ -55,7 +55,7 @@ def generate_signature(obj):
 
 
 def build_tool(func):
-    sig = generate_signature(func)
+    sig = generate_tool_signature(func)
     return {"sig": sig, "schema": serialize(func)}
 
 

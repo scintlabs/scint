@@ -122,11 +122,6 @@ class Callable(Enum):
                 return Callable.Function
 
 
-class Event(Enum):
-    FunctionCall = {"type": "function_call"}
-    FunctionCallOutput = {"type": "function_call_output"}
-
-
 class Serializer(Enum):
     Message = (lambda o: Serializer.get_schema(type(o).__name__),)
     Function = (lambda o: Serializer.get_schema(o.name),)

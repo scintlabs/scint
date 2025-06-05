@@ -70,7 +70,7 @@ class Callable(Enum):
                 return Callable.Function
 
 
-class Format(Enum):
+class Record(Enum):
     Message = ("src.model.records", "Message")
     Response = ("src.model.records", "Response")
     Metadata = ("src.model.records", "Metadata")

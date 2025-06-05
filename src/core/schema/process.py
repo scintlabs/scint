@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import Callable, List
 
 from attrs import define, field
 
-from src.runtime.protocol import agentic
-from src.runtime.types import Format
-from src.model.outline import Outline
-from src.model.records import Content
-
-
-class ExecutionEvent(Enum):
-    Execution = {"type": "function_call"}
-    Result = {"type": "function_call_output"}
+from .records import Content
+from .outline import Outline
+from src.core.agents.protocol import agentic
+from src.core.types import Record
 
 
 @agentic
@@ -22,7 +16,7 @@ class Process:
     results: List[Result] = field(factory=list)
 
     @classmethod
-    def create(cls, content: Content, format: Format, tools: List[Callable]):
+    def create(cls, content: Content, format: Record, tools: List[Callable]):
         return cls(content, format, tools)
 
 
@@ -33,5 +27,5 @@ class Result:
     result: Result = field(default=None)
 
     @classmethod
-    def create(cls, content: Content, format: Format, tools: List[Callable]):
+    def create(cls, content: Content, format: Record, tools: List[Callable]):
         return cls(content, format, tools)

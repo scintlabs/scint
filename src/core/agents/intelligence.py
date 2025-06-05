@@ -6,8 +6,8 @@ from typing import Any
 
 from attrs import asdict, define, field
 
-from src.model.records import Message, Metadata, Result
-from src.services.llm import completion, response
+from src.core.records import Message, Metadata, Result
+from src.services.models import completion, response
 
 
 @define

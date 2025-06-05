@@ -1,27 +1,11 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import Callable, List, Optional, Type
 
 from attrs import define, field
 
-from src.model.records import Metadata, Content
-from src.runtime.utils import timestamp
-
-
-class ThreadEvent(Enum):
-    Created = {"created": lambda: timestamp()}
-    Staled = {"staled": lambda: timestamp()}
-    Encoded = {"encoded": lambda: timestamp()}
-    Purged = {"purged": lambda: timestamp()}
-
-    def __init__(self, event):
-        self.event = event
-
-    def __call__(self, content: str = None):
-        if content is not None:
-            self.event["content"] = content
-        return self.event
+from .records import Content, Metadata
+from .events import ThreadEvent
 
 
 @define
@@ -84,7 +68,7 @@ class StaleThread(Thread):
 @define
 class EncodedThread(Thread):
     _NEXT = None
-    _EVENT_AFTER = ThreadEvent.Purged
+    _EVENT_AFTER = ThreadEvent.Pruned
 
     def transition(self):
         nxt = super().transition()
@@ -93,9 +77,14 @@ class EncodedThread(Thread):
 
 
 @define
-class PurgedThread(Thread):
+class PrunedThread(Thread):
     _NEXT = None
-    _EVENT_AFTER = None
+    _EVENT_AFTER = ThreadEvent.Pruned
+
+    def transition(self):
+        nxt = super().transition()
+        nxt.metadata.events[-1]["content"] = "Content purged"
+        return nxt
 
 
 @define
@@ -108,7 +97,7 @@ class Threads:
     should_purge: Callable[[StaleThread], bool] = lambda self, t: False
     counts: dict[str, int] = field(
         factory=lambda: {
-            n: 0 for n in (ActiveThread, StaleThread, EncodedThread, PurgedThread)
+            n: 0 for n in (ActiveThread, StaleThread, EncodedThread, PrunedThread)
         }
     )
 
@@ -187,12 +176,6 @@ class Threads:
 
         self._replace(node, nxt)
         self._rollover(EncodedThread, self.encoded_threshold, self._purge_encoded)
-        return nxt
-
-    def _purge_encoded(self, node: EncodedThread) -> PurgedThread:
-        nxt = PurgedThread(metadata=node.metadata, prev=node.prev, next=node.next)
-        nxt._record(ThreadEvent.Purged, "Content purged")
-        self._shift_counts(EncodedThread, PurgedThread)
         return nxt
 
     def _shift_counts(self, frm, to):

@@ -5,10 +5,12 @@ from typing import List, Callable, Awaitable
 
 from attrs import define, field
 
-from src.model.outline import Outline
-from src.model.process import Process
-from src.model.records import Message, SearchHits, Envelope
-from src.model.threads import Thread
+from .outline import Outline
+from .process import Process
+from .records import Message
+from .threads import Thread
+from src.core.broker import Envelope
+from src.core.tools.search import SearchHits
 from src.runtime.utils import timestamp, iso_to_epoch
 
 
@@ -19,7 +21,6 @@ SEPARATOR = "\n\n---\n\n"
 class ActiveContext:
     thread: Thread | None = field(default=None)
     last_n: int = field(default=4)
-    thread: Thread | None = None
 
     async def build(self):
         if not self.thread:
