@@ -3,6 +3,14 @@ import os
 import sys
 import types
 import pytest
+import importlib.util as iu
+import pathlib
+import sysconfig
+path = pathlib.Path(sysconfig.get_path("stdlib")) / "typing.py"
+spec = iu.spec_from_file_location("typing", path)
+_typing = iu.module_from_spec(spec)
+spec.loader.exec_module(_typing)
+sys.modules["typing"] = _typing
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
@@ -13,13 +21,19 @@ if 'src' not in sys.modules:
     sys.modules['src'] = pkg
 
 # stub external service modules so imports succeed
-if 'src.services' not in sys.modules:
+services = sys.modules.get('src.services')
+if services is None:
     services = types.ModuleType('src.services')
     services.__path__ = []
     sys.modules['src.services'] = services
+
+indexes_mod = sys.modules.get('src.services.indexes')
+if indexes_mod is None:
     indexes_mod = types.ModuleType('src.services.indexes')
-    services.indexes = indexes_mod
     sys.modules['src.services.indexes'] = indexes_mod
+services.indexes = indexes_mod
+
+if 'src.services.llm' not in sys.modules:
     llm_mod = types.ModuleType('src.services.llm')
     llm_mod.completion = lambda **kwargs: None
     llm_mod.response = lambda **kwargs: None

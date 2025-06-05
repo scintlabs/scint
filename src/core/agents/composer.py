@@ -30,7 +30,7 @@ class Composer(Actor):
         self.context = env.model
         outline = await self.on(env.model)
         if env.sender is not None:
-            env.sender.tell(outline, sender=self.ref())
+            env.sender.tell(Envelope(model=outline), sender=self.ref())
 
     async def execute(self, msg: Message):
         async for res in self.generate(self.context):
