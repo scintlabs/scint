@@ -6,6 +6,8 @@ import sys
 import os
 
 src_path = Path(__file__).resolve().parents[1] / "src"
+repo_root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(repo_root))
 sys.path.insert(0, str(src_path))
 os.environ["PYTHONPATH"] = str(src_path)
 tests_dir = str(Path(__file__).resolve().parent)
