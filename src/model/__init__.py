@@ -2,14 +2,11 @@ from __future__ import annotations
 
 from enum import Enum
 from importlib import import_module
-from typing import TypeAlias, Union
 
 from .context import Context
 from .outline import Outline
 from .process import Process
 from .records import Content, Message, Metadata
-
-Model: TypeAlias = Union[Context, Outline, Process, Content]
 
 
 class OutputFormat(Enum):
@@ -30,4 +27,4 @@ class OutputFormat(Enum):
         return cls
 
 
-__all__ = Context, Outline, Process, Content, Model, Metadata, Message
+__all__ = Context, Outline, Process, Content, Metadata, Message

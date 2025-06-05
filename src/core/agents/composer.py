@@ -6,8 +6,7 @@ from attrs import field
 
 from src.model import Message, Outline, Context
 from src.model.outline import Task
-from src.model.records import Directions
-from src.runtime.mailbox import Envelope
+from src.model.records import Directions, Envelope
 from src.runtime.actor import Actor
 from src.runtime.protocol import agentic
 from src.runtime.types import Format

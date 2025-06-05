@@ -2,19 +2,39 @@ from __future__ import annotations
 
 import asyncio
 import inspect
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Optional, Any
 
 from attrs import define, field
 
-from src.runtime.mailbox import Envelope, Mailbox
+from src.model.records import Envelope
+
+
+@define
+class Mailbox:
+    _queue: asyncio.Queue = field(factory=lambda: asyncio.Queue(maxsize=24))
+
+    def empty(self):
+        return self._queue.empty()
+
+    def put_nowait(self, obj: Any):
+        self._queue.put_nowait(obj)
+
+    async def put(self, obj: Any):
+        await self._queue.put(obj)
+
+    async def get(self):
+        return await self._queue.get()
+
+    def task_done(self):
+        return self._queue.task_done()
 
 
 @define(slots=True, frozen=True)
 class ActorRef:
     _tell: Callable[[Envelope], None] = field(repr=False)
 
-    def tell(self, model, sender: ActorRef | None = None):
-        self._tell(Envelope(model=model, sender=sender))
+    def tell(self, obj):
+        self._tell(obj)
 
 
 @define(slots=True)

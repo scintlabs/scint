@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cosmic Kaleidoscope</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background: #000;
+            }
+            canvas {
+                display: block;
+                cursor: none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="kaleidoscope"></canvas>
+        <script>
+            const canvas = document.getElementById("kaleidoscope")
+            const ctx = canvas.getContext("2d")
+
+            let width, height, centerX, centerY
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1
+                width = window.innerWidth
+                height = window.innerHeight
+                canvas.width = width * dpr
+                canvas.height = height * dpr
+                canvas.style.width = width + "px"
+                canvas.style.height = height + "px"
+                ctx.scale(dpr, dpr)
+                centerX = width / 2
+                centerY = height / 2
+            }
+
+            window.addEventListener("resize", resize)
+            resize()
+
+            function animate() {
+                const time = Date.now() * 0.001
+
+                // Semi-transparent overlay for motion blur
+                ctx.fillStyle = "rgba(0, 0, 0, 0.08)"
+                ctx.fillRect(0, 0, width, height)
+
+                // Number of radial segments
+                const segments = 12
+                const angleStep = (Math.PI * 2) / segments
+
+                ctx.save()
+                ctx.translate(centerX, centerY)
+
+                for (let i = 0; i < segments; i++) {
+                    ctx.save()
+                    ctx.rotate(angleStep * i)
+
+                    // Create clipping mask for this segment
+                    ctx.beginPath()
+                    ctx.moveTo(0, 0)
+                    ctx.arc(0, 0, Math.min(width, height), 0, angleStep)
+                    ctx.closePath()
+                    ctx.clip()
+
+                    // Draw multiple layers of shapes
+                    for (let layer = 0; layer < 5; layer++) {
+                        const layerTime = time + layer * 0.3
+                        const layerScale = 1 + layer * 0.2
+
+                        // Morphing polygons
+                        for (let j = 0; j < 3; j++) {
+                            ctx.save()
+
+                            const polyTime = layerTime + j * 0.7
+                            const radius = 50 + Math.sin(polyTime * 0.8 + j) * 30
+                            const x = Math.sin(polyTime * 0.6 + j * 2) * 100 * layerScale
+                            const y = Math.cos(polyTime * 0.7 + j * 3) * 100 * layerScale
+                            const sides = Math.floor(3 + Math.sin(polyTime * 0.3) * 3 + 3)
+                            const rotation = polyTime * 0.5
+
+                            ctx.translate(x, y)
+                            ctx.rotate(rotation)
+
+                            // Color with HSL
+                            const hue = (time * 50 + i * 30 + j * 120 + layer * 60) % 360
+                            const saturation = 70 + Math.sin(polyTime * 0.9) * 30
+                            const lightness = 50 + Math.sin(polyTime * 1.1) * 20
+                            ctx.fillStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.6)`
+                            ctx.strokeStyle = `hsla(${hue + 180}, ${saturation}%, ${lightness}%, 0.8)`
+                            ctx.lineWidth = 2 + Math.sin(polyTime * 0.8) * 2
+
+                            // Shadow effects
+                            ctx.shadowColor = `hsla(${hue}, 100%, 50%, 0.5)`
+                            ctx.shadowBlur = 10 + Math.sin(polyTime * 0.7) * 10
+
+                            // Draw morphing polygon
+                            ctx.beginPath()
+                            for (let k = 0; k < sides; k++) {
+                                const angle = (k / sides) * Math.PI * 2
+                                const morphRadius = radius * (1 + Math.sin(polyTime * 2 + k) * 0.3)
+                                const px = Math.cos(angle) * morphRadius
+                                const py = Math.sin(angle) * morphRadius
+                                if (k === 0) {
+                                    ctx.moveTo(px, py)
+                                } else {
+                                    ctx.lineTo(px, py)
+                                }
+                            }
+                            ctx.closePath()
+                            ctx.fill()
+                            ctx.stroke()
+
+                            ctx.restore()
+                        }
+
+                        // Spiraling curves
+                        for (let j = 0; j < 2; j++) {
+                            ctx.save()
+
+                            const spiralTime = layerTime * 0.8 + j * Math.PI
+                            const spiralX = Math.sin(spiralTime * 0.5) * 80 * layerScale
+                            const spiralY = Math.cos(spiralTime * 0.6) * 80 * layerScale
+
+                            ctx.translate(spiralX, spiralY)
+                            ctx.rotate(spiralTime * 0.3)
+
+                            const hue = (time * 80 + i * 45 + j * 180 + layer * 90) % 360
+                            const saturation = 80 + Math.sin(spiralTime * 1.2) * 20
+                            const lightness = 60 + Math.sin(spiralTime * 0.8) * 15
+                            ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.7)`
+                            ctx.lineWidth = 3 + Math.sin(spiralTime * 0.9) * 2
+
+                            ctx.shadowColor = `hsla(${hue + 90}, 100%, 60%, 0.6)`
+                            ctx.shadowBlur = 15
+
+                            // Draw parametric spiral
+                            ctx.beginPath()
+                            for (let t = 0; t < Math.PI * 4; t += 0.1) {
+                                const r = t * 10 * (1 + Math.sin(spiralTime * 2 + t) * 0.3)
+                                const sx = Math.cos(t + spiralTime * 0.5) * r
+                                const sy = Math.sin(t + spiralTime * 0.5) * r
+                                if (t === 0) {
+                                    ctx.moveTo(sx, sy)
+                                } else {
+                                    ctx.lineTo(sx, sy)
+                                }
+                            }
+                            ctx.stroke()
+
+                            ctx.restore()
+                        }
+
+                        // Fractal-like loops
+                        ctx.save()
+
+                        const fractalTime = layerTime * 0.6
+                        const fractalScale = 30 + Math.sin(fractalTime * 0.4) * 20
+
+                        for (let f = 0; f < 3; f++) {
+                            const fx = Math.sin(fractalTime * 0.7 + f * 2.1) * 60 * layerScale
+                            const fy = Math.cos(fractalTime * 0.8 + f * 2.5) * 60 * layerScale
+
+                            ctx.save()
+                            ctx.translate(fx, fy)
+
+                            const hue = (time * 120 + i * 60 + f * 240 + layer * 120) % 360
+                            ctx.strokeStyle = `hsla(${hue}, 90%, 55%, 0.5)`
+                            ctx.lineWidth = 1.5
+
+                            // Draw Lissajous curve
+                            ctx.beginPath()
+                            for (let t = 0; t < Math.PI * 2; t += 0.05) {
+                                const a = 3 + Math.sin(fractalTime * 0.3 + f) * 2
+                                const b = 4 + Math.cos(fractalTime * 0.4 + f) * 2
+                                const delta = fractalTime * 0.5 + (f * Math.PI) / 3
+                                const lx = Math.sin(a * t + delta) * fractalScale
+                                const ly = Math.sin(b * t) * fractalScale
+                                if (t === 0) {
+                                    ctx.moveTo(lx, ly)
+                                } else {
+                                    ctx.lineTo(lx, ly)
+                                }
+                            }
+                            ctx.stroke()
+
+                            ctx.restore()
+                        }
+
+                        ctx.restore()
+                    }
+
+                    // Mirror effect for alternating segments
+                    if (i % 2 === 0) {
+                        ctx.scale(-1, 1)
+
+                        // Redraw some elements mirrored
+                        for (let m = 0; m < 2; m++) {
+                            const mirrorTime = time * 1.2 + m * Math.PI
+                            const mx = Math.sin(mirrorTime * 0.9) * 120
+                            const my = Math.cos(mirrorTime * 0.7) * 120
+
+                            ctx.save()
+                            ctx.translate(mx, my)
+                            ctx.rotate(mirrorTime * 0.4)
+
+                            const hue = (time * 100 + i * 50 + m * 180) % 360
+                            ctx.fillStyle = `hsla(${hue}, 85%, 60%, 0.3)`
+
+                            ctx.beginPath()
+                            ctx.arc(0, 0, 20 + Math.sin(mirrorTime * 1.5) * 15, 0, Math.PI * 2)
+                            ctx.fill()
+
+                            ctx.restore()
+                        }
+                    }
+
+                    ctx.restore()
+                }
+
+                ctx.restore()
+
+                // Add some floating orbs
+                for (let orb = 0; orb < 8; orb++) {
+                    const orbTime = time * 0.7 + orb * 0.8
+                    const orbX = centerX + Math.sin(orbTime * 0.6 + orb) * (width * 0.4)
+                    const orbY = centerY + Math.cos(orbTime * 0.7 + orb * 1.1) * (height * 0.4)
+                    const orbRadius = 5 + Math.sin(orbTime * 1.5 + orb) * 3
+
+                    const hue = (time * 90 + orb * 45) % 360
+
+                    ctx.save()
+                    ctx.shadowColor = `hsla(${hue}, 100%, 70%, 0.8)`
+                    ctx.shadowBlur = 20
+
+                    const gradient = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, orbRadius)
+                    gradient.addColorStop(0, `hsla(${hue}, 100%, 70%, 0.9)`)
+                    gradient.addColorStop(1, `hsla(${hue + 60}, 100%, 50%, 0.3)`)
+
+                    ctx.fillStyle = gradient
+                    ctx.beginPath()
+                    ctx.arc(orbX, orbY, orbRadius, 0, Math.PI * 2)
+                    ctx.fill()
+                    ctx.restore()
+                }
+
+                requestAnimationFrame(animate)
+            }
+
+            animate()
+        </script>
+    </body>
+</html>

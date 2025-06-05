@@ -4,10 +4,9 @@ import asyncio
 from attrs import field
 
 from src.core.resources import Catalog
-from src.model.outline import Outline
 from src.model.process import Process
+from src.model.records import Envelope
 from src.runtime.actor import Actor
-from src.runtime.mailbox import Envelope
 from src.runtime.protocol import agentic
 
 

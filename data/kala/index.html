@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Kaleidoscope</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background: #000;
+            }
+            canvas {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="kaleidoscope"></canvas>
+        <script>
+            const canvas = document.getElementById("kaleidoscope")
+            const ctx = canvas.getContext("2d")
+
+            // Configuration
+            const NUM_SEGMENTS = 12
+            const SEGMENT_ANGLE = (Math.PI * 2) / NUM_SEGMENTS
+
+            // Resize handler
+            function resizeCanvas() {
+                const dpr = window.devicePixelRatio || 1
+                canvas.width = window.innerWidth * dpr
+                canvas.height = window.innerHeight * dpr
+                canvas.style.width = window.innerWidth + "px"
+                canvas.style.height = window.innerHeight + "px"
+                ctx.scale(dpr, dpr)
+            }
+
+            window.addEventListener("resize", resizeCanvas)
+            resizeCanvas()
+
+            // Shape drawing functions
+            function drawPolygon(ctx, x, y, radius, sides, rotation) {
+                ctx.beginPath()
+                for (let i = 0; i < sides; i++) {
+                    const angle = (i / sides) * Math.PI * 2 + rotation
+                    const px = x + Math.cos(angle) * radius
+                    const py = y + Math.sin(angle) * radius
+                    if (i === 0) {
+                        ctx.moveTo(px, py)
+                    } else {
+                        ctx.lineTo(px, py)
+                    }
+                }
+                ctx.closePath()
+            }
+
+            function drawOscillatingCurve(ctx, x, y, baseRadius, time, segments = 36) {
+                ctx.beginPath()
+                for (let i = 0; i <= segments; i++) {
+                    const angle = (i / segments) * Math.PI * 2
+                    const oscillation = Math.sin(angle * 3 + time * 2) * 0.3 + 1
+                    const radius = baseRadius * oscillation
+                    const px = x + Math.cos(angle + time * 0.5) * radius
+                    const py = y + Math.sin(angle + time * 0.5) * radius
+                    if (i === 0) {
+                        ctx.moveTo(px, py)
+                    } else {
+                        ctx.lineTo(px, py)
+                    }
+                }
+                ctx.closePath()
+            }
+
+            function drawSegment(ctx, time, segmentIndex) {
+                ctx.save()
+
+                // Apply segment rotation
+                ctx.rotate(SEGMENT_ANGLE * segmentIndex)
+
+                // Apply mirror transformation to every other segment
+                if (segmentIndex % 2 === 1) {
+                    ctx.scale(1, -1)
+                }
+
+                // Calculate time-based parameters
+                const baseTime = time * 0.001
+                const segmentOffset = segmentIndex * 0.1
+
+                // Draw multiple shapes with different parameters
+                for (let i = 0; i < 3; i++) {
+                    const shapeTime = baseTime + i * 0.3 + segmentOffset
+
+                    // Position calculations
+                    const radius = 50 + Math.sin(shapeTime * 1.5) * 30
+                    const distance = 100 + Math.cos(shapeTime * 0.7) * 50
+                    const x = Math.cos(shapeTime) * distance
+                    const y = Math.sin(shapeTime * 1.2) * distance * 0.5
+
+                    // Color calculations
+                    const hue = (baseTime * 30 + segmentIndex * 30 + i * 120) % 360
+                    const saturation = 70 + Math.sin(shapeTime * 2) * 10
+                    const lightness = 50 + Math.cos(shapeTime * 1.5) * 10
+
+                    // Set shadow for depth
+                    ctx.shadowBlur = 10 + Math.sin(shapeTime * 3) * 5
+                    ctx.shadowColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.5)`
+
+                    // Set fill color
+                    ctx.fillStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.8)`
+
+                    // Draw shape based on layer
+                    if (i === 0) {
+                        drawPolygon(ctx, x, y, radius, 6, shapeTime)
+                    } else if (i === 1) {
+                        drawOscillatingCurve(ctx, x * 0.7, y * 0.7, radius * 0.8, shapeTime)
+                    } else {
+                        drawPolygon(ctx, x * 1.2, y * 1.2, radius * 0.5, 3, -shapeTime * 2)
+                    }
+
+                    ctx.fill()
+                }
+
+                ctx.restore()
+            }
+
+            function render(timestamp) {
+                // Get canvas center
+                const centerX = window.innerWidth / 2
+                const centerY = window.innerHeight / 2
+
+                // Create trailing effect with translucent overlay
+                ctx.fillStyle = "rgba(0, 0, 0, 0.05)"
+                ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
+
+                // Save context state
+                ctx.save()
+
+                // Translate to center
+                ctx.translate(centerX, centerY)
+
+                // Draw all segments
+                for (let i = 0; i < NUM_SEGMENTS; i++) {
+                    drawSegment(ctx, timestamp, i)
+                }
+
+                // Restore context state
+                ctx.restore()
+
+                // Continue animation
+                requestAnimationFrame(render)
+            }
+
+            // Start animation
+            requestAnimationFrame(render)
+        </script>
+    </body>
+</html>

@@ -3,21 +3,23 @@ from __future__ import annotations
 from typing import Any, Sequence, List, Type
 
 from attrs import define
+
 try:
     from meilisearch_python_sdk.models.search import Hybrid
 except Exception:  # pragma: no cover - fallback if SDK not installed
+
     @define
     class Hybrid:  # type: ignore
         semantic_ratio: float = 0.0
         embedder: str = "default"
-from monotonic import monotonic
+
+
 from datetime import timedelta
 
-from src.model.threads import Threads, Thread, ActiveThread
+from src.model.threads import Threads, Thread
 from src.model.context import Context, ActiveContext, RecentContext, SemanticContext
 from src.model.records import Message, Metadata, Search, SearchHits
 from src.runtime.actor import Actor
-from src.runtime.utils import cosine_similarity, iso_to_epoch
 from src.services.indexes import Indexes
 
 
@@ -34,20 +36,12 @@ class Continuity(Actor):
         return list(self._threads.walk(kind) if kind else self._threads.walk())
 
     async def resolve_thread(self, msg: Message) -> Thread:
-        # Simplified thread resolution for tests
         if hasattr(msg, "metadata"):
             return await self.create_thread(msg)
         metadata = Metadata()
         thread = self._threads.append(metadata=metadata)
         await thread.update(msg)
         return thread
-
-    async def search(self, embed: List[float], top_k: int):
-        hybrid = Hybrid(semantic_ratio=0.9, embedder="default")
-        q = Search(query="", hybrid=hybrid, vector=embed, limit=top_k)
-        idx = await self._indexes.get_index("threads")
-        res = idx.search(q)
-        return SearchHits(hits=res.hits)
 
     async def create_thread(self, msg: Message):
         metadata = getattr(msg, "metadata", Metadata())
@@ -60,12 +54,17 @@ class Continuity(Actor):
         context = Context(
             active=ActiveContext(thread=thread),
             recent=RecentContext(threads=self.get_threads()),
-            active=ActiveContext(thread),
-            recent=RecentContext(self.get_threads()),
             semantic=SemanticContext(embed=msg.metadata.embedding, search=self.search),
         )
         await context.update(msg)
         return context
+
+    async def search(self, embed: List[float], top_k: int):
+        hybrid = Hybrid(semantic_ratio=0.9, embedder="default")
+        q = Search(query="", hybrid=hybrid, vector=embed, limit=top_k)
+        idx = await self._indexes.get_index("threads")
+        res = idx.search(q)
+        return SearchHits(hits=res.hits)
 
 
 def build(self, obj: Any):

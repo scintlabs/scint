@@ -4,10 +4,8 @@ from typing import Dict
 from attrs import field
 
 from src.runtime.actor import Actor
-from src.runtime.mailbox import Envelope
 from src.runtime.protocol import agentic
-from src.runtime.types import Format
-from src.model.records import Content, Instructions
+from src.model.records import Content, Instructions, Envelope
 from src.model.context import Context
 from src.core.resources.continuity import Continuity
 
@@ -19,8 +17,7 @@ class Interpreter(Actor):
     _workers: Dict[str, Actor] = field(factory=dict)
 
     async def on_receive(self, env: Envelope):
-        msg = env.model
-        self._context = await self._continuity.get_context(msg)
+        self._context = await self._continuity.get_context(env)
         if env.sender is not None:
             env.sender.tell(self._context, sender=self.ref())
 
@@ -37,7 +34,6 @@ class Interpreter(Actor):
 class Parser(Actor):
     _context: Context
     _instructions: Instructions
-    _format: Format = Format.Message()
 
     async def parse(self):
         pass
@@ -56,7 +52,6 @@ class Parser(Actor):
 class Observer(Actor):
     _context: Context
     _instructions: Instructions
-    _format: Format = Format.Message()
 
     async def observe(self):
         pass

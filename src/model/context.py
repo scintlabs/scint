@@ -5,7 +5,9 @@ from typing import List, Callable, Awaitable
 
 from attrs import define, field
 
-from src.model.records import Message, SearchHits
+from src.model.outline import Outline
+from src.model.process import Process
+from src.model.records import Message, SearchHits, Envelope
 from src.model.threads import Thread
 from src.runtime.utils import timestamp, iso_to_epoch
 
@@ -52,7 +54,9 @@ class RecentContext:
 class SemanticContext:
     embed: List[float] = field(factory=list)
     top_k: int = 6
-    search: Callable[[List[float], int], Awaitable[SearchHits]] | None = field(default=None, repr=False)
+    search: Callable[[List[float], int], Awaitable[SearchHits]] | None = field(
+        default=None, repr=False
+    )
 
     async def build(self):
         if not self.embed or not self.search:
@@ -111,4 +115,16 @@ class Context:
 
     @update.register(Message)
     async def _(self, obj: Message):
+        await self.active.thread.update(obj)
+
+    @update.register(Outline)
+    async def _(self, obj: Outline):
+        await self.active.thread.update(obj)
+
+    @update.register(Process)
+    async def _(self, obj: Process):
+        await self.active.thread.update(obj)
+
+    @update.register(Envelope)
+    async def _(self, obj: Envelope):
         await self.active.thread.update(obj)

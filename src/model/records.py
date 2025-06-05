@@ -4,13 +4,16 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, TypeAlias, Union, TypeVar
 
 from attrs import define, field
+
 try:
     from meilisearch_python_sdk.models.search import Hybrid
 except Exception:  # pragma: no cover - fallback if SDK not installed
+
     @define
     class Hybrid:  # type: ignore
         semantic_ratio: float = 0.0
         embedder: str = "default"
+
 
 from src.runtime.utils import timestamp
 
@@ -99,6 +102,18 @@ class Metadata:
     embedding: List[float] = field(factory=list, repr=False)
     keywords: List[str] = field(factory=list)
     events: List[Dict[str, Any]] = field(factory=list)
+
+
+@define(slots=True)
+class Envelope:
+    model: Any = field(default=None)
+    sender: str = field(default=None)
+    metadata: Metadata = field(default=None)
+    correlation: str = field(default=None)
+
+    @classmethod
+    def create(cls, sender: str, model: Any):
+        return cls(model=model, metadata=Metadata())
 
 
 __all__ = (

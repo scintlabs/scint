@@ -14,7 +14,7 @@ from src.core.resources.continuity import Continuity
 from src.core.resources.library import Library
 from src.model import Context, Outline, Message
 from src.runtime.actor import Actor, ActorRef
-from src.runtime.mailbox import Envelope
+from src.model.records import Envelope
 from src.runtime.protocol import agentic
 
 
@@ -42,6 +42,7 @@ class Dispatcher(Actor):
 
     async def on_receive(self, env: Envelope):
         mdl = env.model
+        print(env)
         if isinstance(mdl, Message):
             target = self._registry.get("interpreter")
         elif isinstance(mdl, Context):

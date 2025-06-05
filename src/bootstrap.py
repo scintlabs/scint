@@ -6,8 +6,7 @@ from functools import partial
 from typing import TypeAlias
 
 from src.core.agents.dispatcher import Dispatcher
-from src.model.records import Message
-from src.runtime.mailbox import Envelope
+from src.model.records import Message, Envelope
 
 Container: TypeAlias = SimpleNamespace
 ns = partial(SimpleNamespace, _mutable=False)
