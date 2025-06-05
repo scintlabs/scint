@@ -1,6 +1,16 @@
 import importlib
 import types
 import sys
+import importlib
+import pathlib
+import sysconfig
+
+path = pathlib.Path(sysconfig.get_path("stdlib")) / "typing.py"
+spec = importlib.util.spec_from_file_location("typing", path)
+_typing = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(_typing)
+sys.modules["typing"] = _typing
+
 import os
 from pathlib import Path
 import attrs
@@ -24,6 +34,7 @@ async def test_bootstrap_runs():
     records.Message = Message
     records.Metadata = Metadata
     records.Content = str
+    orig_records = sys.modules.get("src.model.records")
     sys.modules["src.model.records"] = records
 
     model = types.ModuleType("src.model")
@@ -31,6 +42,7 @@ async def test_bootstrap_runs():
     model.Metadata = Metadata
     model.Content = str
     model.Model = Message
+    orig_model = sys.modules.get("src.model")
     sys.modules["src.model"] = model
 
     dispatcher = types.ModuleType("src.core.agents.dispatcher")
@@ -50,3 +62,11 @@ async def test_bootstrap_runs():
     bootstrap = importlib.import_module("src.bootstrap").bootstrap
     await bootstrap()
     assert sent["flag"]
+    if orig_model is not None:
+        sys.modules["src.model"] = orig_model
+    else:
+        sys.modules.pop("src.model", None)
+    if orig_records is not None:
+        sys.modules["src.model.records"] = orig_records
+    else:
+        sys.modules.pop("src.model.records", None)

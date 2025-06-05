@@ -4,6 +4,15 @@ from contextlib import suppress
 from pathlib import Path
 import sys
 import os
+import types
+import importlib.util as iu
+import pathlib
+import sysconfig
+path = pathlib.Path(sysconfig.get_path("stdlib")) / "typing.py"
+spec = iu.spec_from_file_location("typing", path)
+_typing = iu.module_from_spec(spec)
+spec.loader.exec_module(_typing)
+sys.modules["typing"] = _typing
 
 src_path = Path(__file__).resolve().parents[1] / "src"
 repo_root = Path(__file__).resolve().parents[1]
@@ -15,6 +24,25 @@ if tests_dir in sys.path:
     sys.path.remove(tests_dir)
 sys.modules.pop("typing", None)
 sys.modules.pop("socket", None)
+
+if 'src' not in sys.modules:
+    pkg = types.ModuleType('src')
+    pkg.__path__ = [str(src_path)]
+    sys.modules['src'] = pkg
+if 'src.services' not in sys.modules:
+    services = types.ModuleType('src.services')
+    services.__path__ = []
+    sys.modules['src.services'] = services
+indexes_mod = types.ModuleType('src.services.indexes')
+services.indexes = indexes_mod
+sys.modules['src.services.indexes'] = indexes_mod
+llm_mod = types.ModuleType('src.services.llm')
+llm_mod.completion = lambda **kwargs: None
+llm_mod.response = lambda **kwargs: None
+sys.modules['src.services.llm'] = llm_mod
+sys.modules['src.services.datastore'] = types.ModuleType('src.services.datastore')
+sys.modules.setdefault('src.config', types.ModuleType('src.config')).DATA = ''
+indexes_mod.Indexes = lambda: None
 
 class DummyReceiver:
     def __init__(self):
@@ -47,10 +75,18 @@ class ActorTests(unittest.IsolatedAsyncioTestCase):
     async def test_interpreter_handles_message(self):
         from src.core.agents.interpreter import Interpreter
         from src.core.resources.continuity import Continuity
-        from src.model.records import Message
+        from src.model.records import Message, Metadata
+        import attrs
+        @attrs.define(slots=True)
+        class DummyMessage(Message):
+            metadata: Metadata = attrs.field(factory=Metadata)
+
         interp = Interpreter(continuity=Continuity())
         receiver = DummyReceiver()
-        await interp.on_receive(Message(content="hello"))
+        from src.runtime.mailbox import Envelope
+        msg = DummyMessage(content="hello", metadata=Metadata(embedding=[]))
+        msg.metadata.events = []
+        await interp.on_receive(Envelope.create(None, msg))
         env = receiver.received
         self.assertIsNone(env)
 
@@ -62,7 +98,8 @@ class ActorTests(unittest.IsolatedAsyncioTestCase):
         comp = Composer(library=Library())
         comp.start()
         ctx = Context(ActiveContext(thread=Thread()), RecentContext(threads=[]))
-        comp.ref().tell(ctx)
+        from src.runtime.mailbox import Envelope
+        comp.ref().tell(Envelope.create(None, ctx))
         await asyncio.sleep(0.1)
         self.assertIn("last", comp.outlines)
         comp._task.cancel()
@@ -76,7 +113,8 @@ class ActorTests(unittest.IsolatedAsyncioTestCase):
         exe = Executor(catalog=Catalog())
         exe.start()
         out = Outline(tasks=[])
-        exe.ref().tell(out)
+        from src.runtime.mailbox import Envelope
+        exe.ref().tell(Envelope.create(None, out))
         await asyncio.sleep(0.1)
         self.assertIsNotNone(exe._process)
         exe._task.cancel()

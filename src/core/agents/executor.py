@@ -19,7 +19,7 @@ class Executor(Actor):
         outline = env.model
         self._process = Process(outline=outline)
         if env.sender is not None:
-            env.sender.tell(self._process, sender=self.ref())
+            env.sender.tell(Envelope(model=self._process), sender=self.ref())
 
     async def execute(self):
         async def sink(self):

@@ -1,5 +1,14 @@
 import importlib.util
 from pathlib import Path
+import sys
+import importlib.util as iu
+import pathlib
+import sysconfig
+path = pathlib.Path(sysconfig.get_path("stdlib")) / "typing.py"
+spec = iu.spec_from_file_location("typing", path)
+_typing = iu.module_from_spec(spec)
+spec.loader.exec_module(_typing)
+sys.modules["typing"] = _typing
 import attrs
 
 # Load serialize module without importing package __init__

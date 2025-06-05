@@ -39,7 +39,7 @@ class ActorRef:
 
 @define(slots=True)
 class Actor:
-    _mailbox: Mailbox = Mailbox()
+    _mailbox: Mailbox = field(factory=Mailbox)
     _task: Optional[asyncio.Task] = field(init=False, default=None, repr=False)
 
     def start(self):
