@@ -12,7 +12,37 @@ from attrs import define, field
 
 from src.base.actor import Actor
 from src.base.serialize import serialize
-from src.services.indexes import Indexes
+
+
+@define
+class ToolRepository(Actor):
+    _tools: Dict[str, Callable] = field(factory=dict)
+
+    async def load(self):
+        if self._loaded:
+            return
+        async with self._lock:
+            await self._load_modules()
+            self._loaded = True
+
+    async def _load_modules(self):
+        module = import_module("src.lib.tools")
+
+        for _, attr in inspect.getmembers(module):
+            if inspect.isfunction(attr) and attr.__module__ == module.__name__:
+                fp = generate_tool_signature(attr)
+                wrapper = tool(attr)
+                self._tools.setdefault("functions", {})[fp] = wrapper.schema
+                await self._register_wrappers(wrapper)
+        await self._sync_index()
+
+    async def _register_wrappers(self, wrapper: Callable):
+        self.registry[wrapper.schema["name"]] = wrapper
+        record = {
+            "id": hashlib.sha1(wrapper.schema["name"].encode()).hexdigest(),
+            **wrapper.schema,
+        }
+        await self.index.add_records([record])
 
 
 def generate_tool_signature(obj):
@@ -51,35 +81,3 @@ def tool(func):
     dispatcher.schema = schema
     dispatcher.exec = _exec
     return dispatcher
-
-
-@define
-class ToolCatalog(Actor):
-    _indexes: Indexes = Indexes()
-    _tools: Dict[str, Callable] = field(factory=dict)
-
-    async def load(self):
-        if self._loaded:
-            return
-        async with self._lock:
-            await self._load_modules()
-            self._loaded = True
-
-    async def _load_modules(self):
-        module = import_module("src.lib.tools")
-
-        for _, attr in inspect.getmembers(module):
-            if inspect.isfunction(attr) and attr.__module__ == module.__name__:
-                fp = generate_tool_signature(attr)
-                wrapper = tool(attr)
-                self._tools.setdefault("functions", {})[fp] = wrapper.schema
-                await self._register_wrappers(wrapper)
-        await self._sync_index()
-
-    async def _register_wrappers(self, wrapper: Callable):
-        self.registry[wrapper.schema["name"]] = wrapper
-        record = {
-            "id": hashlib.sha1(wrapper.schema["name"].encode()).hexdigest(),
-            **wrapper.schema,
-        }
-        await self.index.add_records([record])

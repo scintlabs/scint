@@ -1,58 +1,36 @@
 from __future__ import annotations
 
-from attrs import define, field
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, APIRouter
+from fastapi.requests import Request
 
-from src.base.actor import Actor
-from src.base.records import Message
-from src.runtime.system import System, Envelope
+router = APIRouter()
 
 
-@define
-class WebSocketActor(Actor):
-    _ws: WebSocket = field(init=False)
-
-    def __attrs_post_init__(self, ws: WebSocket):
-        self._ws = ws
-
-    async def on_receive(self, env: Envelope):
-        data = env.model
-        if isinstance(data, Message):
-            content = data.content
-        else:
-            content = data
-        if isinstance(content, bytes):
-            await self._ws.send_bytes(content)
-        else:
-            await self._ws.send_text(str(content))
+@router.post("/tell")
+def tell_endpoint(req: Request):
+    pass
 
 
-def create_app() -> FastAPI:
-    app = FastAPI()
-    sys = System()
-    sys.start()
+@router.post("/ask")
+async def ask_endpoint(req: Request):
+    pass
 
-    @app.websocket("/ws")
-    async def websocket_endpoint(ws: WebSocket):
-        await ws.accept()
-        actor = WebSocketActor(ws)
-        actor.start()
-        try:
-            while True:
-                try:
-                    message = await ws.receive()
-                except WebSocketDisconnect:
-                    break
-                if "text" in message and message["text"] is not None:
-                    msg = Message(content=message["text"])
-                elif "bytes" in message and message["bytes"] is not None:
-                    msg = Message(content=message["bytes"])
-                else:
-                    continue
-                env = Envelope.create("user", msg)
-                sys.address().tell(env, sender=actor.address())
-        finally:
-            if actor._task:
-                actor._task.cancel()
 
-    return app
+@router.get("/system")
+async def system_endpoint(req: Request):
+    pass
+
+
+@router.get("/context")
+async def context_endpoint(req: Request):
+    pass
+
+
+@router.get("/processes")
+async def processes_endpoint(req: Request):
+    pass
+
+
+@router.websocket("/ws")
+async def ws_endpoint(ws: WebSocket):
+    pass

@@ -1,24 +1,20 @@
 from __future__ import annotations
 
 import json
-from typing import Callable, Dict
+from typing import Dict
 
-from attrs import define, field
+from attrs import define
 
-from src.base.actor import Actor
-from src.services.indexes import Indexes
+from src.base.actor import Address
 
 
 @define
-class Library(Actor):
-    _indexes: Indexes = Indexes()
-    _outlines: Dict[str, Callable] = field(factory=dict)
-    _preferences: Dict[str, Callable] = field(factory=dict)
-    _instructions: Dict[str, Callable] = field(factory=dict)
+class Directory:
+    _agents: Dict[str, Address]
+    _resources: Dict[str, Address]
+    _services: Dict[str, Address]
 
     async def load(self):
-        if self._loaded:
-            return
         async with self._lock:
             await self._load_modules()
             self._loaded = True

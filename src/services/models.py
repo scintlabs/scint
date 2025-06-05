@@ -3,8 +3,7 @@ import random
 
 from attrs import define, field
 
-
-from src.services.utils import env
+from src.services.config import OPENAI_CLIENT
 
 
 async def _stream(res):

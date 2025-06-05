@@ -10,16 +10,16 @@ from src.runtime.broker import Broker, Envelope
 from src.services.indexes import Indexes
 from src.services.storage import Storage
 
-broker_args = {"indexes": Indexes(), "storage": Storage(), "threads": Threads()}
+resources = {"indexes": Indexes(), "storage": Storage(), "threads": Threads()}
 
 
 @define
 class System(Actor):
+    _broker: Broker = Broker()
     _actors: Dict[str, Actor] = field(factory=dict)
-    _directory: Dict[str, Address] = field(factory=dict)
 
     def start(self, *args, **kwargs):
-        self.spawn("broker", Broker, **broker_args)
+        self.spawn("broker", Broker, **resources)
         self.spawn("interpreter", Interpreter)
         self.spawn("composer", Composer)
         self.spawn("executor", Executor)
@@ -27,16 +27,14 @@ class System(Actor):
     def stop(self):
         pass
 
-    def spawn(self, name: str, actor_cls: Type[Actor], *args, **kwargs):
-        if name in self._directory:
-            return self._directory[name]
+    def spawn(self, name: str, actor: Type[Actor], *args, **kwargs):
+        if name in self._actors:
+            return self._actors[name]
 
-        instance = actor_cls(*args, **kwargs)
-        instance.start()
-        ref = instance.address()
-        self._directory[name] = ref
-        self._actors[name] = instance
-        return ref
+        self._actors[name] = actor(*args, **kwargs)
+        address = self._actors[name].address()
+        self._actors[name] = address
+        return address
 
     def tell(self, address: Address, env: Envelope):
         if not isinstance(address, Address) or not self._registry[address]:

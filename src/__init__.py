@@ -1,22 +1,21 @@
 from __future__ import annotations
 
 import asyncio
-import uvicorn
+from uvicorn import Config, Server
 
-from src.api import create_app
+from src.bootstrap import create_app
+from src.routes import router
 
 
 async def main():
-    server = uvicorn.Server(
-        uvicorn.Config(app=create_app(), host="127.0.0.1", port=8000, log_level="info")
-    )
-    server_task = asyncio.create_task(server.serve())
-    done, pending = await asyncio.wait(
-        [server_task], return_when=asyncio.FIRST_COMPLETED
-    )
+    app = create_app(router=router)
+    cfg = Config(app=app, host="127.0.0.1", port=8000, log_level="info")
+    svr = Server(config=cfg)
+    tsk = asyncio.create_task(svr.serve())
+    _, pnd = await asyncio.wait([tsk], return_when=asyncio.FIRST_COMPLETED)
 
-    for task in pending:
-        task.cancel()
+    for tsk in pnd:
+        tsk.cancel()
 
 
 if __name__ == "__main__":

@@ -6,8 +6,7 @@ from typing import Any, TypeAlias, TypeVar, Union, Dict, List
 
 from attrs import asdict, define, field
 
-from src.base.records import Message
-from src.resources.outlines import Result
+from src.base.records import Message, TaskResult
 from src.services.models import completion, response
 
 T = TypeVar("T")
@@ -63,12 +62,12 @@ async def generate(self, context):
             if execution.name == func.__name__:
                 args = json.loads(execution.arguments)
                 res = await func(**args)
-                yield Result(execution.call_id, execution.name, str(res))
+                yield TaskResult(execution.call_id, execution.name, str(res))
 
     req = await build_request(context)
     async for res in handle_request(req):
         await context.update(res)
-        if isinstance(res, Result):
+        if isinstance(res, TaskResult):
             async for out in generate(context):
                 yield out
         yield res

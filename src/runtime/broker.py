@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, List, Type
+from typing import Any, Dict, List, Type
 
 from attrs import define, field
 from meilisearch_python_sdk.models.search import Hybrid
 
-from src.base.actor import Actor
-from src.base.records import Message
+from src.base.actor import Actor, Address
+from src.base.records import Message, Outline
 from src.base.metadata import Metadata
 from src.continuity.context import Context
 from src.continuity.threads import Thread, Threads
-from src.resources.outlines import Outline
 from src.resources.search import Search, SearchHits
 from src.services.indexes import Indexes
 from src.services.storage import Storage
@@ -33,6 +32,23 @@ class Broker(Actor):
     _indexes: Indexes = field(default=None)
     _storage: Storage = field(default=None)
     _threads: Threads = field(default=None)
+    _directory: Dict[str, Address] = field(factory=dict)
+
+    async def on_receive(self, env: Envelope):
+        content = env.content
+        if isinstance(content, Message):
+            dest = self._registry.get("interpreter")
+        elif isinstance(content, Context):
+            dest = self._registry.get("composer")
+        elif isinstance(content, Outline):
+            dest = self._registry.get("executor")
+        else:
+            dest = None
+
+        if dest is None:
+            raise RuntimeError(f"Unable to route {type(content).__name__}")
+
+        dest.tell(content, sender=self.address())
 
     def get_threads(self, kind: Type[Thread] = None):
         return list(self._threads.walk(kind) if kind else self._threads.walk())
@@ -57,18 +73,3 @@ class Broker(Actor):
         idx = await self._indexes.get_index("threads")
         res = idx.search(q)
         return SearchHits(hits=res.hits)
-
-    async def on_receive(self, env: Envelope):
-        mdl = env.content
-        if isinstance(mdl, Message):
-            target = self._registry.get("interpreter")
-        elif isinstance(mdl, Context):
-            target = self._registry.get("composer")
-        elif isinstance(mdl, Outline):
-            target = self._registry.get("executor")
-        else:
-            target = None
-
-        if target is None:
-            raise RuntimeError("Dispatcher missing target for " f"{type(mdl).__name__}")
-        target.tell(mdl, sender=self.address())

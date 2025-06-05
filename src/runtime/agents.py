@@ -7,12 +7,10 @@ from attrs import field
 
 from src.base.actor import Actor
 from src.base.protocol import agentic
-from src.base.records import Content, Instructions, Message
+from src.base.records import Content, Instructions, Message, Outline, Process, Task
 from src.continuity import Context
-from src.resources.catalog import ToolCatalog
+from src.resources.tools import ToolRepository
 from src.resources.library import Library
-from src.resources.outlines import Outline, Outlines, Task
-from src.resources.process import Process
 
 
 @agentic
@@ -35,44 +33,7 @@ class Interpreter(Actor):
 
 
 @agentic
-class Observer(Actor):
-    _context: Context
-    _instructions: Instructions
-
-    async def observe(self):
-        pass
-
-    async def update(self, content: Content):
-        await self.thread.update(content)
-        if self.thread.metadata is None:
-            self.thread.metadata = await self.generate_meta()
-
-    async def render(self):
-        parts = [self.context.Active()]
-        return "\n".join(parts)
-
-
-@agentic
-class Parser(Actor):
-    _context: Context
-    _instructions: Instructions
-
-    async def parse(self):
-        pass
-
-    async def update(self, content: Content):
-        await self.thread.update(content)
-        if self.thread.metadata is None:
-            self.thread.metadata = await self.generate_meta()
-
-    async def render(self):
-        parts = [self._context.Active()]
-        return "\n".join(parts)
-
-
-@agentic
 class Composer(Actor):
-    _outlines: Outlines
     _library: Library = field(default=None)
 
     async def on_receive(self, context: Context):
@@ -87,7 +48,7 @@ class Composer(Actor):
 
 @agentic
 class Executor(Actor):
-    _catalog: ToolCatalog = field(default=None)
+    _catalog: ToolRepository = field(default=None)
     _process: Process = field(default=None)
 
     async def on_receive(self, msg: Message):
@@ -132,3 +93,39 @@ class Executor(Actor):
 
     async def render(self):
         return [t.schema for t in self.tools]
+
+
+@agentic
+class Observer(Actor):
+    _context: Context
+    _instructions: Instructions
+
+    async def observe(self):
+        pass
+
+    async def update(self, content: Content):
+        await self.thread.update(content)
+        if self.thread.metadata is None:
+            self.thread.metadata = await self.generate_meta()
+
+    async def render(self):
+        parts = [self.context.Active()]
+        return "\n".join(parts)
+
+
+@agentic
+class Parser(Actor):
+    _context: Context
+    _instructions: Instructions
+
+    async def parse(self):
+        pass
+
+    async def update(self, content: Content):
+        await self.thread.update(content)
+        if self.thread.metadata is None:
+            self.thread.metadata = await self.generate_meta()
+
+    async def render(self):
+        parts = [self._context.Active()]
+        return "\n".join(parts)

@@ -39,4 +39,36 @@ class ToolResult:
     content: Content = field(factory=str)
 
 
+@define
+class Task:
+    id: str = field(default=None)
+    instructions: Instructions = field(default=None)
+
+
+@define
+class Outline:
+    id: str = field(default=None)
+    tasks: List[Task] = field(factory=list)
+    instructions: Instructions = field(default=None)
+
+
+@define
+class TaskResult:
+    task_id: str = field()
+    content: Content = field()
+
+
+@define
+class ProcessResults:
+    process_id: str = field()
+    task_results: List[TaskResult] = field(factory=list)
+
+
+@define
+class Process:
+    id: str = field(default=None)
+    outlines: List[Outline] = field(factory=list)
+    results: ProcessResults = field(default=None)
+
+
 __all__ = Message, Instructions, Response, ToolCall, ToolResult

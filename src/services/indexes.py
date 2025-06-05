@@ -6,28 +6,15 @@ from attrs import define, field
 from meilisearch_python_sdk import AsyncClient
 from meilisearch_python_sdk.index import AsyncIndex
 
+from src.base.actor import Actor
 from src.services.config import MEILI_CLIENT
 
 
 _INDEXES = ("threads", "tools")
 
 
-try:
-    from meilisearch_python_sdk import AsyncClient
-    from meilisearch_python_sdk.index import AsyncIndex
-except Exception:  # pragma: no cover - fallback
-
-    class AsyncClient:  # type: ignore
-        async def get_index(self, name):
-            return AsyncIndex()
-
-    class AsyncIndex:  # type: ignore
-        async def search(self, *args, **kwargs):
-            return type("SearchResults", (), {"hits": []})()
-
-
 @define
-class Indexes:
+class Indexes(Actor):
     _client: AsyncClient = MEILI_CLIENT
     _indexes: Dict[str, AsyncIndex] = field(factory=dict)
 

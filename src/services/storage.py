@@ -8,6 +8,8 @@ from attrs import define
 
 from kuzu import Database
 
+from src.base.actor import Actor
+
 
 from .config import DATA
 from .utils import _DEFAULT_BASELINE, _json_dumps, _quote
@@ -24,9 +26,9 @@ class Node(str):
 
 
 @define
-class Storage:
-    schema: Iterable[str] = _DEFAULT_BASELINE
-    database: Database = Database(DATA)
+class Storage(Actor):
+    _schema: Iterable[str] = _DEFAULT_BASELINE
+    _database: Database = Database(DATA)
 
     def upsert_node(self, label: str, node_id: str = None, **props):
         node_id = node_id or uuid.uuid4().hex
